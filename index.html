@@ -12,9 +12,8 @@
       --side-rail:240px;
       --main-max:1160px;
       --main-extra-pad:32px;
-      --main-shift-right:12px;
+      --layout-offset-x:-8px;
       --page-gray:#505050;
-      --ad-left-nudge:8px;
       --ad-right-nudge:18px;
       --scroll-gutter:12px;
     }
@@ -126,10 +125,10 @@
       }
       .pageRow .adCol .deployerAd{pointer-events:auto}
       .pageRow .adCol:first-child{
-        left:calc(max(20px,calc(50% - min(calc((100vw - var(--side-rail) * 2 - var(--main-extra-pad)) / 2),calc(var(--main-max) / 2)) - var(--ad-gap) - var(--ad-w))) + var(--main-shift-right) + var(--ad-left-nudge));
+        left:calc(max(12px,calc(50% - min(calc((100vw - var(--side-rail) * 2 - var(--main-extra-pad)) / 2),calc(var(--main-max) / 2)) - var(--ad-gap) - var(--ad-w))) + var(--layout-offset-x));
       }
       .pageRow .adCol:last-child{
-        right:calc(max(12px,calc(50% - min(calc((100vw - var(--side-rail) * 2 - var(--main-extra-pad)) / 2),calc(var(--main-max) / 2)) - var(--ad-gap) - var(--ad-w))) + var(--scroll-gutter) - var(--main-shift-right) + var(--ad-right-nudge));
+        right:calc(max(12px,calc(50% - min(calc((100vw - var(--side-rail) * 2 - var(--main-extra-pad)) / 2),calc(var(--main-max) / 2)) - var(--ad-gap) - var(--ad-w))) + var(--scroll-gutter) - var(--layout-offset-x) + var(--ad-right-nudge));
       }
     }
   </style>

@@ -26,7 +26,7 @@
     --side-rail:240px;
     --main-max:1160px;
     --main-extra-pad:32px;
-    --main-shift-right:12px;
+    --layout-offset-x:-8px;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   html{background:var(--page-gray);}
@@ -37,7 +37,7 @@
   }
   .scouterShell{
     width:min(calc(100vw - var(--side-rail) * 2 - var(--main-extra-pad)), var(--main-max));
-    margin-left:calc(50% - min(calc((100vw - var(--side-rail) * 2 - var(--main-extra-pad)) / 2), calc(var(--main-max) / 2)) + var(--main-shift-right));
+    margin-left:calc(50% - min(calc((100vw - var(--side-rail) * 2 - var(--main-extra-pad)) / 2), calc(var(--main-max) / 2)) + var(--layout-offset-x));
     margin-right:auto;
     background:var(--bg);
     border:2px solid #1e2433;
