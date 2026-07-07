@@ -22,15 +22,33 @@
     --txt:#eef1f6; --sub:#aeb6c4; --hint:#6b7385;
     --accent:#ff5436; --accent2:#ffb454; --accent3:#4ea1ff;
     --good:#46d39a;
+    --page-gray:#505050;
+    --side-rail:240px;
+    --main-max:1160px;
+    --main-extra-pad:32px;
+    --main-shift-right:12px;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
+  html{background:var(--page-gray);}
   body{
-    background:var(--bg); color:var(--txt);
+    background:var(--page-gray); color:var(--txt);
     font-family:"Pretendard","Noto Sans KR",-apple-system,BlinkMacSystemFont,sans-serif;
-    line-height:1.5; padding:24px 28px 60px; max-width:none; width:100%; margin:0;
+    line-height:1.5; padding:16px 0 48px; width:100%; margin:0;
   }
-  .eyebrow{font-size:12px; letter-spacing:.18em; color:var(--hint); font-weight:700; text-transform:uppercase;}
-  .eyebrow b{color:var(--accent);}
+  .scouterShell{
+    width:min(calc(100vw - var(--side-rail) * 2 - var(--main-extra-pad)), var(--main-max));
+    margin-left:calc(50% - min(calc((100vw - var(--side-rail) * 2 - var(--main-extra-pad)) / 2), calc(var(--main-max) / 2)) + var(--main-shift-right));
+    margin-right:auto;
+    background:var(--bg);
+    border:2px solid #1e2433;
+    border-radius:12px;
+    padding:24px 28px 60px;
+    box-shadow:0 8px 40px rgba(0,0,0,.45);
+  }
+  @media(max-width:960px){
+    .scouterShell{margin:0 12px;width:auto;padding:20px 16px 48px}
+  }
+  .eyebrow{display:none}
   h1{font-size:38px; font-weight:800; letter-spacing:-.02em; margin:8px 0 6px; line-height:1.15;}
   .lead{color:var(--sub); font-size:14px;}
   .lead .upd{color:var(--hint); font-size:12px; margin-left:6px;}
@@ -127,6 +145,8 @@
 </head>
 <body>
 
+<div class="scouterShell">
+
   <div class="eyebrow"><b>Content Scouter</b></div>
   <h1>Discover Trending YouTube Videos Worldwide</h1>
   <div class="lead">Surfacing trending videos across 16 countries.<span class="upd" id="updated"></span></div>
@@ -172,6 +192,8 @@
   <div id="content">
     <div class="state"><div class="spin"></div><div>Loading data...</div></div>
   </div>
+
+</div>
 
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
