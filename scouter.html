@@ -71,8 +71,8 @@
   .lead{color:var(--sub); font-size:14px;}
   .lead .upd{color:var(--hint); font-size:12px; margin-left:6px;}
 
-  /* View buttons */
-  .tabs{display:grid; grid-template-columns:repeat(9,1fr); gap:9px; margin:24px 0 8px;}
+  /* View buttons — 8 tabs in one row (live site layout) */
+  .tabs{display:grid; grid-template-columns:repeat(8,1fr); gap:9px; margin:24px 0 8px;}
   .tab{
     background:var(--panel); border:1.5px solid var(--line); border-radius:14px;
     padding:13px 12px; cursor:pointer; transition:.15s; text-align:left;
@@ -105,7 +105,7 @@
   .grid{display:grid; grid-template-columns:repeat(5,1fr); gap:18px; min-width:0}
   .cardArticle{min-width:0}
   .card{min-width:0}
-  @media(max-width:1100px){.grid{grid-template-columns:repeat(3,1fr);} .tabs{grid-template-columns:repeat(3,1fr);}}
+  @media(max-width:1100px){.grid{grid-template-columns:repeat(3,1fr);} .tabs{grid-template-columns:repeat(2,1fr);}}
   @media(max-width:640px){.grid{grid-template-columns:repeat(2,1fr);} h1{font-size:28px;}}
   .card{background:var(--panel); border:1px solid var(--line); border-radius:14px; overflow:hidden; transition:.15s; text-decoration:none; color:inherit; display:flex; flex-direction:column;}
   .card:hover{transform:translateY(-3px); border-color:#3a4150;}
@@ -218,10 +218,6 @@
     <button class="tab kill" data-view="cc">
       <div class="t"><span class="dot" style="background:#7ee787"></span>Reuse Allowed <span style="font-size:10px;color:#0d0f14;background:#7ee787;border-radius:8px;padding:1px 7px;margin-left:4px;font-weight:800;">CC</span></div>
       <div class="d">Videos legally available for reuse · updated weekly</div>
-    </button>
-    <button class="tab kill" data-view="pastcc">
-      <div class="t"><span class="dot" style="background:#7ee787"></span>Past CC Search</div>
-      <div class="d">Growing catalog of reuse-allowed videos</div>
     </button>
     <button class="tab" data-view="continent">
       <div class="t"><span class="dot" style="background:var(--good)"></span>By Continent</div>
@@ -545,7 +541,7 @@ function renderChips(){
     box.innerHTML = modes.map(([m,name])=>
       `<button class="chip ${state.keywordMode===m?'on':''}" data-type="keyword" data-val="${m}">${name}</button>`).join('');
   } else if(state.view==='cc'){
-    const modes = [['popular','Popular'],['reaction','Top Engagement'],['surge','Rising']];
+    const modes = [['popular','Popular'],['archive','Past CC Search'],['reaction','Top Engagement'],['surge','Rising']];
     box.innerHTML = modes.map(([m,name])=>
       `<button class="chip ${state.ccMode===m?'on':''}" data-type="cc" data-val="${m}">${name}</button>`).join('');
   } else {
@@ -1091,49 +1087,28 @@ async function render(){
       return;
     }
 
+    // --- Past CC Search (accumulated catalog) ---
+    if(state.ccMode==='archive'){
+      const { tally, videos, weeks } = await loadCCArchive();
+      const archiveNotice = noticeHTML + `<div class="ccnotice" style="margin-top:12px;margin-bottom:0;">
+        <b style="color:#7ee787;">📚 Growing catalog</b> <span style="color:#9aa;">· ${weeks} week${weeks===1?'':'s'} collected · Last added: ${ccDate}</span>
+      </div>`;
+      $('#sectitle').firstChild.textContent = 'Past CC Search ';
+      $('#count').textContent = videos.length ? `${videos.length} · accumulated` : '';
+      if(!videos.length){
+        content.innerHTML = archiveNotice + `<div class="state">No past CC videos found yet.</div>`;
+        return;
+      }
+      content.innerHTML = archiveNotice + tallyHTML(tally) + `<div class="grid">${videos.map((v,i)=>ccCardHTML(v,i)).join('')}</div>`;
+      return;
+    }
+
     // --- Popular (default): this week's CC ---
     const { tally, videos } = await loadCCCurrentWeek();
     $('#sectitle').firstChild.textContent = 'Reuse Allowed ';
     $('#count').textContent = videos.length ? `${videos.length}` : '';
     if(!videos.length){
       content.innerHTML = noticeHTML + `<div class="state">No Reuse Allowed videos found.</div>`;
-      return;
-    }
-    content.innerHTML = noticeHTML + tallyHTML(tally) + `<div class="grid">${videos.map((v,i)=>ccCardHTML(v,i)).join('')}</div>`;
-    return;
-  }
-
-  // Past CC Search — accumulated catalog (own tab, same card layout as live site)
-  if(state.view==='pastcc'){
-    const snap = await loadLatestCCSnapshot();
-    if(!snap){
-      $('#sectitle').firstChild.textContent = 'Past CC Search ';
-      $('#count').textContent = '';
-      content.innerHTML = `<div class="state">No CC data yet. Please run the CC collector first.</div>`;
-      return;
-    }
-    const ccDate = snap.collected_at ? new Date(snap.collected_at).toLocaleDateString('en-US') : '';
-    const { tally, videos, weeks } = await loadCCArchive();
-    const noticeHTML = `<div class="ccnotice">
-      <div style="margin-bottom:6px;"><b style="color:#7ee787;">📚 Growing catalog</b> <span style="color:#9aa;">· ${weeks} week${weeks===1?'':'s'} collected · Last added: ${ccDate}</span></div>
-      ⚠️ Reuse-allowed (CC BY) videos — credit the original creator and check each video's YouTube description.
-    </div>`;
-    function tallyHTML(tally){
-      return `<div class="cctally">
-        <div class="cctally-title">Reuse Allowed Video Count by Category</div>
-        <div class="cctally-grid">
-          ${tally.map(t=>`
-            <div class="cccount ${t.count===0?'zero':''}">
-              <span class="cccount-name">${t.name}</span>
-              <span class="cccount-num">${t.count}</span>
-            </div>`).join('')}
-        </div>
-      </div>`;
-    }
-    $('#sectitle').firstChild.textContent = 'Past CC Search ';
-    $('#count').textContent = videos.length ? `${videos.length} · accumulated` : '';
-    if(!videos.length){
-      content.innerHTML = noticeHTML + `<div class="state">No past CC videos found yet.</div>`;
       return;
     }
     content.innerHTML = noticeHTML + tallyHTML(tally) + `<div class="grid">${videos.map((v,i)=>ccCardHTML(v,i)).join('')}</div>`;
