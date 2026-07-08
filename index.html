@@ -42,10 +42,9 @@
       --ad-right-out:4px;
       --scroll-gutter:12px;
     }
-    html,body{height:100%;overflow:hidden}
-    body{display:flex;flex-direction:column;min-height:100%;overflow:hidden}
     html,body{margin:0;padding:0;background:var(--page-gray);color:#eef1f6;font-family:Arial,"Segoe UI",sans-serif}
-    a{color:inherit;text-decoration:none}
+    html{overflow-x:hidden}
+    body{display:flex;flex-direction:column;min-height:100%;overflow-x:hidden;overflow-y:auto}
 
     .siteHead{
       background:#0d0f14;border-bottom:1px solid #2a2f3c;
@@ -56,13 +55,17 @@
       color:#ff5436;text-transform:uppercase;
     }
 
-    .pageRow{position:relative;width:100%;padding:0;flex:1 1 auto;min-height:0;box-sizing:border-box}
-    .pageRowInner{display:block;width:100%;height:100%;margin:0}
-    .adCol{width:200px;flex:0 0 200px;padding-top:8px}
+    a{color:inherit;text-decoration:none}
+
+    .pageRow{width:100%;padding:0;box-sizing:border-box}
+    .pageRowInner{margin:0 auto;padding:12px 16px 48px}
+    .adCol{width:var(--ad-w);flex:0 0 var(--ad-w);padding-top:8px}
     .centerPanel{
-      width:100%;height:100%;
+      flex:1 1 var(--main-max);
+      min-width:0;
+      max-width:var(--main-max);
       background:var(--page-gray);
-      overflow:hidden;
+      overflow:visible;
       box-sizing:border-box;
     }
 
@@ -124,8 +127,9 @@
     .adCol .deployerAd .cta{text-align:left}
 
     .toolFrame{
-      width:100%;height:100%;min-height:480px;
+      width:100%;min-height:480px;height:auto;
       border:0;display:block;background:var(--page-gray);
+      overflow:hidden;
     }
 
     @media(max-width:960px){
@@ -142,22 +146,12 @@
       .toolFrame{height:80vh;min-height:520px}
     }
     @media(min-width:961px){
-      .pageRow{
-        padding-left:calc(var(--ad-w) + var(--ad-gap) + var(--edge-pad-left));
-        padding-right:calc(var(--ad-w) + var(--ad-gap) + 12px);
+      .pageRowInner{
+        display:flex;align-items:flex-start;justify-content:center;
+        gap:var(--ad-gap);
+        max-width:calc(var(--main-max) + 2 * (var(--ad-w) + var(--ad-gap)) + 32px);
       }
-      .centerPanel{max-width:var(--main-max);margin:0 auto}
-      .pageRow .adCol{
-        position:fixed;top:49px;width:200px;z-index:40;padding-top:12px;
-        pointer-events:none;
-      }
-      .pageRow .adCol .deployerAd{pointer-events:auto}
-      .pageRow .adCol:first-child{
-        left:max(var(--edge-pad-left),calc(50% - min(calc((100vw - var(--side-rail) * 2 - var(--main-extra-pad)) / 2),calc(var(--main-max) / 2)) - var(--ad-gap) - var(--ad-w) + var(--layout-offset-x) + var(--ad-left-nudge)));
-      }
-      .pageRow .adCol:last-child{
-        right:max(12px,calc(50% - min(calc((100vw - var(--side-rail) * 2 - var(--main-extra-pad)) / 2),calc(var(--main-max) / 2)) - var(--ad-gap) - var(--ad-w) - var(--layout-offset-x) + var(--scroll-gutter) + var(--ad-right-nudge) - var(--ad-right-out)));
-      }
+      .pageRow .adCol{position:static;pointer-events:auto}
     }
   </style>
 </head>
@@ -188,7 +182,7 @@
       </aside>
 
       <div class="centerPanel">
-        <iframe class="toolFrame" src="scouter.html" title="Content Scouter" loading="lazy"></iframe>
+        <iframe class="toolFrame" src="scouter.html" title="Content Scouter" loading="lazy" scrolling="no"></iframe>
       </div>
 
       <aside class="adCol">
@@ -211,5 +205,24 @@
     </div>
   </section>
 
+  <script>
+    function fitToolFrame(){
+      var frame = document.querySelector('.toolFrame');
+      if(!frame || !frame.contentDocument) return;
+      var h = frame.contentDocument.documentElement.scrollHeight;
+      frame.style.height = Math.max(480, h) + 'px';
+    }
+    window.addEventListener('load', function(){
+      var frame = document.querySelector('.toolFrame');
+      if(!frame) return;
+      frame.addEventListener('load', function(){
+        fitToolFrame();
+        setTimeout(fitToolFrame, 800);
+        setTimeout(fitToolFrame, 2500);
+      });
+    });
+    window.addEventListener('resize', fitToolFrame);
+    window.fitToolFrame = fitToolFrame;
+  </script>
 </body>
 </html>

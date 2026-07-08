@@ -44,12 +44,12 @@
     --layout-offset-x:4px;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
-  html{background:var(--page-gray);overflow-x:hidden}
+  html{background:var(--page-gray);overflow-x:hidden;overflow-y:visible}
   body{
     background:var(--page-gray); color:var(--txt);
     font-family:"Pretendard","Noto Sans KR",-apple-system,BlinkMacSystemFont,sans-serif;
     line-height:1.5; padding:16px 0 48px; width:100%; margin:0;
-    overflow-x:hidden;
+    overflow-x:hidden;overflow-y:visible;
   }
   .scouterShell{
     width:100%;
@@ -74,8 +74,9 @@
   /* View buttons — always one row (iframe is ~900px; grid 2-col was causing stock-board layout) */
   .tabs{
     display:flex; flex-wrap:nowrap; gap:7px; margin:24px 0 8px;
-    overflow-x:auto; scrollbar-width:thin;
+    overflow-x:auto; scrollbar-width:none;
   }
+  .tabs::-webkit-scrollbar{display:none}
   .tab{
     flex:1 1 0; min-width:108px;
     background:var(--panel); border:1.5px solid var(--line); border-radius:14px;
@@ -109,7 +110,6 @@
   .grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; min-width:0}
   .cardArticle{min-width:0}
   .card{min-width:0}
-  @media(min-width:1100px){.grid{grid-template-columns:repeat(5,1fr); gap:18px;}}
   @media(max-width:700px){.grid{grid-template-columns:repeat(2,1fr);}}
   @media(max-width:640px){h1{font-size:28px;}}
   .card{background:var(--panel); border:1px solid var(--line); border-radius:14px; overflow:hidden; transition:.15s; text-decoration:none; color:inherit; display:flex; flex-direction:column;}
@@ -392,16 +392,16 @@ function escapeHtml(s){ return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&
 const fmtNum = (n)=> Number(n||0).toLocaleString('en-US');
 
 function videoReactionsShell(v){
+  if(reactionsApiOk === false) return '';
   const id = escapeHtml(v.video_id || '');
   if(!id) return '';
-  return `<div class="videoReactions" data-video-id="${id}"><p class="reactionsLoading">Loading audience reactions…</p></div>`;
+  return `<div class="videoReactions" data-video-id="${id}"><p class="reactionsLoading">Loading comments…</p></div>`;
 }
 
 function renderReactionsHTML(data){
   if(!data || !data.ok){
-    const msg = data?.error === 'YouTube API not configured'
-      ? 'Live comments will appear after YouTube API is connected.'
-      : (data?.error || 'Comments unavailable for this video.');
+    if(data?.error === 'YouTube API not configured') return '';
+    const msg = data?.error || 'Comments unavailable for this video.';
     return `<p class="reactionsEmpty">${escapeHtml(msg)}</p>`;
   }
   let html = '';
@@ -426,6 +426,7 @@ function renderReactionsHTML(data){
 
 const reactionsCache = new Map();
 let reactionsInflight = 0;
+let reactionsApiOk = null;
 const REACTIONS_MAX_PARALLEL = 4;
 
 async function fetchVideoReactions(videoId){
@@ -447,6 +448,8 @@ async function fetchVideoReactions(videoId){
       body:JSON.stringify({ videoId }), cache:'no-store'
     });
     const data = await res.json();
+    if(data?.error === 'YouTube API not configured') reactionsApiOk = false;
+    else if(data?.ok) reactionsApiOk = true;
     reactionsCache.set(videoId, data);
     return data;
   }catch(e){
@@ -469,7 +472,10 @@ function bindVideoReactions(root){
       if(!videoId || el.dataset.loaded) return;
       el.dataset.loaded = '1';
       fetchVideoReactions(videoId).then(data=>{
-        el.innerHTML = renderReactionsHTML(data);
+        const html = renderReactionsHTML(data);
+        if(!html){ el.remove(); notifyParentResize(); return; }
+        el.innerHTML = html;
+        notifyParentResize();
       });
     });
   }, { rootMargin:'120px' });
@@ -478,6 +484,10 @@ function bindVideoReactions(root){
 
 function renderGridWithReactions(rows, cardFn){
   return `<div class="grid">${rows.map((v,i)=>`<article class="cardArticle">${cardFn(v,i)}${videoReactionsShell(v)}</article>`).join('')}</div>`;
+}
+
+function notifyParentResize(){
+  try{ if(window.parent && window.parent.fitToolFrame) window.parent.fitToolFrame(); }catch(e){}
 }
 
 function viewIntroHTML(title, paragraphs){
@@ -515,6 +525,8 @@ async function renderRichVideoPage({ rows, cardFn, sectitle, countText, prefixHT
   }
   content.innerHTML = (prefixHTML||'') + renderGridWithReactions(rows, cardFn);
   bindVideoReactions(content);
+  notifyParentResize();
+  setTimeout(notifyParentResize, 400);
 }
 
 // Render sub-selection chips
@@ -1179,6 +1191,7 @@ async function render(){
     rows: vids.slice(0, filter.limit), cardFn: cardHTML,
     sectitle: title, countText: vids.length ? `${Math.min(vids.length, filter.limit)}` : ''
   });
+  notifyParentResize();
 }
 
 // Tab switching
