@@ -25,7 +25,8 @@
   window.HUMATECK_CONFIG = {
     SUPABASE_URL: 'https://ajvtyotblrtexcxuazqm.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_cmn9eVnnvaAjXVJWa6bRQA_qrb1xglQ',   // ← Put your public (anon/publishable) key here
-    KEYWORDS_URL: 'https://ajvtyotblrtexcxuazqm.supabase.co/functions/v1/keywords'
+    KEYWORDS_URL: 'https://ajvtyotblrtexcxuazqm.supabase.co/functions/v1/keywords',
+    VIDEO_REACTIONS_URL: 'https://ajvtyotblrtexcxuazqm.supabase.co/functions/v1/video-reactions'
   };
 </script>
 <!-- ============================================================= -->
@@ -162,13 +163,21 @@
   @keyframes sp{to{transform:rotate(360deg);}}
   .cardArticle{display:flex;flex-direction:column}
   .cardArticle .card{border-radius:14px 14px 0 0}
-  .videoInsight{
+  .videoReactions{
     font-size:12px;line-height:1.55;color:var(--hint);
     padding:10px 12px 13px;margin:0;
     background:var(--panel);border:1px solid var(--line);border-top:0;
     border-radius:0 0 14px 14px;
     word-break:break-word;overflow-wrap:anywhere;
   }
+  .videoReactions .videoDesc{color:var(--sub);margin:0 0 10px;font-size:12px;line-height:1.5}
+  .videoReactions .reactionsTitle{font-size:11px;font-weight:700;color:var(--accent2);margin:0 0 6px;text-transform:uppercase;letter-spacing:.04em}
+  .commentList{margin:0;padding:0;list-style:none}
+  .commentList li{margin:0 0 8px;padding:8px 10px;background:var(--panel2);border-radius:8px;border:1px solid var(--line)}
+  .commentList li strong{color:var(--txt);font-size:12px}
+  .commentList .commentText{display:block;margin-top:4px;color:var(--sub)}
+  .commentList .commentLikes{font-size:11px;color:var(--hint);margin-top:3px}
+  .reactionsLoading,.reactionsEmpty{margin:0;font-size:12px;color:var(--hint)}
   .viewIntro{
     background:var(--panel);border:1px solid var(--line);border-radius:14px;
     padding:18px 20px;margin-bottom:18px;font-size:14px;line-height:1.65;color:var(--sub);
@@ -381,42 +390,97 @@ function cardHTML(v, i){
 function escapeHtml(s){ return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 const fmtNum = (n)=> Number(n||0).toLocaleString('en-US');
 
-function videoInsightText(v, context){
-  const title = v.title || 'Untitled video';
-  const channel = v.channel || 'Unknown channel';
-  const views = fmtNum(v.view_count);
-  const likes = fmtNum(v.like_count||0);
-  const comments = fmtNum(v.comment_count||0);
-  const cat = CATEGORIES[v.category_key] || v.category_key || '';
-  const country = v.country_code && v.country_code!=='GLOBAL' ? (COUNTRY_NAMES[v.country_code]||v.country_code) : '';
-  const ago = agoText(v.published_at);
-  const pub = v.published_at ? new Date(v.published_at).toLocaleDateString('en-US') : '';
-  if(context==='cc' || v.license==='creativeCommon'){
-    return `"${title}" is a Creative Commons (reuse-allowed) ${cat?cat+' ':''}video by ${channel}, with ${views} views, ${likes} likes, and ${comments} comments${ago?` (uploaded ${ago})` : ''}. You may reuse it under CC BY if you credit the creator; verify music and clips in the YouTube description.`;
-  }
-  if(context==='rising' && v.delta!=null){
-    return `"${title}" by ${channel} gained ${fmtViews(v.delta)} views recently, reaching ${views} total${country?` among ${country} trending` : ''}. Engagement: ${likes} likes and ${comments} comments${pub?`; published ${pub}` : ''}.`;
-  }
-  if(context==='engagement'){
-    const pct = ((v.engagement||0)*100).toFixed(1);
-    return `"${title}" from ${channel} shows ${pct}% engagement (${likes} likes, ${comments} comments vs ${views} views)${country?` in ${country}` : ''}. High interaction often signals strong community discussion — read comments on YouTube for audience sentiment.`;
-  }
-  return `"${title}" by ${channel}${country?` (${country})` : ''} has ${views} views, ${likes} likes, and ${comments} comments${cat?`; category ${cat}` : ''}${ago?`; published ${ago}` : ''}. Open on YouTube for the full description and comment thread.`;
+function videoReactionsShell(v){
+  const id = escapeHtml(v.video_id || '');
+  if(!id) return '';
+  return `<div class="videoReactions" data-video-id="${id}"><p class="reactionsLoading">Loading audience reactions…</p></div>`;
 }
-function videoInsightHTML(v, context){
-  return `<p class="videoInsight">${escapeHtml(videoInsightText(v, context))}</p>`;
+
+function renderReactionsHTML(data){
+  if(!data || !data.ok){
+    const msg = data?.error === 'YouTube API not configured'
+      ? 'Live comments will appear after YouTube API is connected.'
+      : (data?.error || 'Comments unavailable for this video.');
+    return `<p class="reactionsEmpty">${escapeHtml(msg)}</p>`;
+  }
+  let html = '';
+  if(data.description){
+    html += `<p class="videoDesc">${escapeHtml(data.description)}</p>`;
+  }
+  if(data.comments && data.comments.length){
+    html += `<p class="reactionsTitle">Top comments</p><ul class="commentList">`;
+    html += data.comments.map(c=>`
+      <li><strong>${escapeHtml(c.author)}</strong>
+        <span class="commentText">${escapeHtml(c.text)}</span>
+        ${c.likes ? `<span class="commentLikes">👍 ${fmtNum(c.likes)}</span>` : ''}
+      </li>`).join('');
+    html += `</ul>`;
+  } else if(data.commentsDisabled){
+    html += `<p class="reactionsEmpty">Comments are turned off on this video.</p>`;
+  } else {
+    html += `<p class="reactionsEmpty">No top comments found yet.</p>`;
+  }
+  return html;
 }
+
+const reactionsCache = new Map();
+let reactionsInflight = 0;
+const REACTIONS_MAX_PARALLEL = 4;
+
+async function fetchVideoReactions(videoId){
+  if(reactionsCache.has(videoId)) return reactionsCache.get(videoId);
+  const url = window.HUMATECK_CONFIG.VIDEO_REACTIONS_URL
+    || `${window.HUMATECK_CONFIG.SUPABASE_URL}/functions/v1/video-reactions`;
+  while(reactionsInflight >= REACTIONS_MAX_PARALLEL){
+    await new Promise(r=>setTimeout(r, 120));
+  }
+  reactionsInflight++;
+  try{
+    const res = await fetch(url, {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'apikey': SUPABASE_ANON_KEY
+      },
+      body:JSON.stringify({ videoId }), cache:'no-store'
+    });
+    const data = await res.json();
+    reactionsCache.set(videoId, data);
+    return data;
+  }catch(e){
+    return { ok:false, error:'Could not load reactions' };
+  }finally{
+    reactionsInflight--;
+  }
+}
+
+function bindVideoReactions(root){
+  if(!root) return;
+  const boxes = root.querySelectorAll('.videoReactions[data-video-id]');
+  if(!boxes.length) return;
+  const observer = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(!entry.isIntersecting) return;
+      const el = entry.target;
+      observer.unobserve(el);
+      const videoId = el.dataset.videoId;
+      if(!videoId || el.dataset.loaded) return;
+      el.dataset.loaded = '1';
+      fetchVideoReactions(videoId).then(data=>{
+        el.innerHTML = renderReactionsHTML(data);
+      });
+    });
+  }, { rootMargin:'120px' });
+  boxes.forEach(el=>observer.observe(el));
+}
+
+function renderGridWithReactions(rows, cardFn){
+  return `<div class="grid">${rows.map((v,i)=>`<article class="cardArticle">${cardFn(v,i)}${videoReactionsShell(v)}</article>`).join('')}</div>`;
+}
+
 function viewIntroHTML(title, paragraphs){
   return `<section class="viewIntro"><h2 class="viewIntroTitle">${escapeHtml(title)}</h2>${(paragraphs||[]).map(p=>`<p>${p}</p>`).join('')}</section>`;
-}
-function renderRichGrid(rows, cardFn, context){
-  return `<div class="grid">${rows.map((v,i)=>`<article class="cardArticle">${cardFn(v,i)}${videoInsightHTML(v, context)}</article>`).join('')}</div>`;
-}
-function buildTextCatalog(rows, context, heading){
-  const items = rows.slice(0,40).map((v,i)=>
-    `<li><strong>#${i+1} ${escapeHtml(v.title||'')}</strong> — ${escapeHtml(videoInsightText(v, context))}</li>`
-  ).join('');
-  return `<section class="textCatalog"><h3>${escapeHtml(heading)} — searchable summaries</h3><p>Text index of listed videos for discovery and research. Full descriptions and comments are on YouTube.</p><ol>${items}</ol></section>`;
 }
 const TREND_THEME_BY_VIEW = { global:'shock', cc:'tips', rising:'controversy', engagement:'emotion', keyword:'tips' };
 async function loadTrendsPanel(themeId){
@@ -440,17 +504,16 @@ async function loadTrendsPanel(themeId){
     return `<aside class="trendsPanel"><h3>Google Trends · related US searches</h3><p>Pair these rising queries with the videos below to find timely short-form and long-form angles.</p><ul>${items}</ul><p class="trendsNote">Seed: ${escapeHtml(data.seedKeyword||themeId)} · Google Trends via DataForSEO · ${when}</p></aside>`;
   }catch(e){ console.warn('Trends panel', e); return ''; }
 }
-async function renderRichVideoPage({ rows, cardFn, context, introTitle, introParas, themeId, sectitle, countText, prefixHTML }){
+async function renderRichVideoPage({ rows, cardFn, sectitle, countText, prefixHTML }){
   $('#sectitle').firstChild.textContent = sectitle + ' ';
   $('#count').textContent = countText || '';
   const content = $('#content');
   if(!rows.length){
-    content.innerHTML = (prefixHTML||'') + viewIntroHTML(introTitle, introParas) + `<div class="state">No videos to display.</div>`;
+    content.innerHTML = (prefixHTML||'') + `<div class="state">No videos to display.</div>`;
     return;
   }
-  const trends = themeId ? await loadTrendsPanel(themeId) : '';
-  content.innerHTML = (prefixHTML||'') + viewIntroHTML(introTitle, introParas) + trends
-    + renderRichGrid(rows, cardFn, context) + buildTextCatalog(rows, context, introTitle);
+  content.innerHTML = (prefixHTML||'') + renderGridWithReactions(rows, cardFn);
+  bindVideoReactions(content);
 }
 
 // Render sub-selection chips
@@ -961,13 +1024,8 @@ async function render(){
       return;
     }
     await renderRichVideoPage({
-      rows: r.rows, cardFn: risingCardHTML, context: 'rising',
-      introTitle: 'Rising videos — view spike analysis',
-      introParas: [
-        'These videos gained the most views compared to the previous collection period. Each card includes channel stats and a text summary for research.',
-        'Cross-check spikes with Google Trends to see whether search interest is moving in the same direction.'
-      ],
-      themeId: TREND_THEME_BY_VIEW.rising, sectitle: `Rising · ${periodName}`, countText: $('#count').textContent
+      rows: r.rows, cardFn: risingCardHTML,
+      sectitle: `Rising · ${periodName}`, countText: $('#count').textContent
     });
     return;
   }
@@ -1123,33 +1181,23 @@ async function render(){
   if(state.view==='engagement'){
     const rows = await loadEngagement();
     await renderRichVideoPage({
-      rows, cardFn: engagementCardHTML, context: 'engagement',
-      introTitle: 'Top engagement trending videos',
-      introParas: [
-        'Videos with the highest ratio of likes and comments to views (10K+ views minimum).',
-        'Text summaries highlight channel, region, and discussion volume — open YouTube for full descriptions and comment threads.'
-      ],
-      themeId: TREND_THEME_BY_VIEW.engagement, sectitle: 'Top Engagement',
+      rows, cardFn: engagementCardHTML,
+      sectitle: 'Top Engagement',
       countText: rows.length ? `${rows.length} · videos with 10K+ views` : ''
     });
     return;
   }
 
-  let filter={}, title='', context='trending', themeId=TREND_THEME_BY_VIEW.global;
+  let filter={}, title='';
   if(state.view==='global'){ filter={country_code:'GLOBAL', limit:100}; title='Global Trending'; }
   else if(state.view==='continent'){ filter={continent:state.continent, dedupe:true, limit:200}; title=`${CONTINENTS[state.continent]} Trending`; }
   else if(state.view==='country'){ filter={country_code:state.country, limit:50}; title=`${COUNTRY_NAMES[state.country]} Trending`; }
-  else if(state.view==='category'){ filter={category_key:state.category, limit:50}; title=`${CATEGORIES[state.category]} Trending`; themeId='tips'; }
+  else if(state.view==='category'){ filter={category_key:state.category, limit:50}; title=`${CATEGORIES[state.category]} Trending`; }
 
   const vids = await loadVideos(filter);
   await renderRichVideoPage({
-    rows: vids.slice(0, filter.limit), cardFn: cardHTML, context,
-    introTitle: title,
-    introParas: [
-      'Popular videos from the latest daily collection, ranked by view count. Each listing includes a readable summary of title, channel, views, likes, and comments.',
-      'Pair these picks with Google Trends below to align uploads with what audiences are searching for right now.'
-    ],
-    themeId, sectitle: title, countText: vids.length ? `${Math.min(vids.length, filter.limit)}` : ''
+    rows: vids.slice(0, filter.limit), cardFn: cardHTML,
+    sectitle: title, countText: vids.length ? `${Math.min(vids.length, filter.limit)}` : ''
   });
 }
 
