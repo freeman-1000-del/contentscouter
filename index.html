@@ -3,7 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Content Scouter</title>
+  <title>Content Scouter — YouTube Trends, CC Video Finder &amp; Rising Keywords</title>
+  <meta name="description" content="Discover trending YouTube videos in 16 countries, search past Creative Commons reuse catalogs, track rising view spikes, and explore keyword trends for creators.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://contentscouter.com/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Content Scouter — YouTube Trends &amp; CC Finder">
+  <meta property="og:description" content="Global trending videos, Past CC Search catalog, rising spikes, and engagement analytics.">
+  <meta property="og:url" content="https://contentscouter.com/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Content Scouter">
+  <meta name="twitter:description" content="YouTube trend discovery and Creative Commons reuse catalog for creators.">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Content Scouter",
+    "url": "https://contentscouter.com/",
+    "description": "Discover trending YouTube videos worldwide, Creative Commons reuse catalogs, rising view analytics, and keyword trends.",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "Web",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
   <style>
     *{box-sizing:border-box}
     :root{
@@ -34,13 +56,14 @@
       color:#ff5436;text-transform:uppercase;
     }
 
-    .pageRow{position:relative;width:100%;padding:0;flex:1 1 auto;min-height:0}
+    .pageRow{position:relative;width:100%;padding:0;flex:1 1 auto;min-height:0;box-sizing:border-box}
     .pageRowInner{display:block;width:100%;height:100%;margin:0}
     .adCol{width:200px;flex:0 0 200px;padding-top:8px}
     .centerPanel{
       width:100%;height:100%;
       background:var(--page-gray);
       overflow:hidden;
+      box-sizing:border-box;
     }
 
     .deployerAd{
@@ -119,6 +142,11 @@
       .toolFrame{height:80vh;min-height:520px}
     }
     @media(min-width:961px){
+      .pageRow{
+        padding-left:calc(var(--ad-w) + var(--ad-gap) + var(--edge-pad-left));
+        padding-right:calc(var(--ad-w) + var(--ad-gap) + 12px);
+      }
+      .centerPanel{max-width:var(--main-max);margin:0 auto}
       .pageRow .adCol{
         position:fixed;top:49px;width:200px;z-index:40;padding-top:12px;
         pointer-events:none;
