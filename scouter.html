@@ -38,27 +38,23 @@
     --accent:#ff5436; --accent2:#ffb454; --accent3:#4ea1ff;
     --good:#46d39a;
     --page-gray:#505050;
-    --side-rail:240px;
-    --main-max:1160px;
-    --main-extra-pad:32px;
-    --layout-offset-x:4px;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   html{background:var(--page-gray);overflow-x:hidden;overflow-y:visible}
   body{
     background:var(--page-gray); color:var(--txt);
     font-family:"Pretendard","Noto Sans KR",-apple-system,BlinkMacSystemFont,sans-serif;
-    line-height:1.5; padding:16px 0 48px; width:100%; margin:0;
+    line-height:1.5; padding:0; width:100%; margin:0;
     overflow-x:hidden;overflow-y:visible;
   }
   .scouterShell{
     width:100%;
     max-width:100%;
-    margin:0 auto;
+    margin:0;
     background:var(--bg);
     border:2px solid #1e2433;
     border-radius:12px;
-    padding:24px 28px 60px;
+    padding:28px 28px 60px;
     box-shadow:0 8px 40px rgba(0,0,0,.45);
     overflow-x:hidden;
     box-sizing:border-box;
@@ -183,6 +179,13 @@
   .commentList .commentText{display:block;margin-top:4px;color:var(--sub)}
   .commentList .commentLikes{font-size:11px;color:var(--hint);margin-top:3px}
   .reactionsLoading,.reactionsEmpty{margin:0;font-size:12px;color:var(--hint)}
+  .commentsToggle{
+    margin:0;border:0;background:transparent;color:var(--accent2);
+    font-size:12px;font-weight:700;cursor:pointer;padding:0;text-align:left;
+  }
+  .commentsToggle:hover{color:#ffd08a;text-decoration:underline}
+  .commentsPanel{display:none;margin-top:10px}
+  .commentsPanel.open{display:block}
   .viewIntro{
     background:var(--panel);border:1px solid var(--line);border-radius:14px;
     padding:18px 20px;margin-bottom:18px;font-size:14px;line-height:1.65;color:var(--sub);
@@ -392,15 +395,24 @@ function escapeHtml(s){ return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&
 const fmtNum = (n)=> Number(n||0).toLocaleString('en-US');
 
 function videoReactionsShell(v){
-  if(reactionsApiOk === false) return '';
   const id = escapeHtml(v.video_id || '');
   if(!id) return '';
   return `<div class="videoReactions" data-video-id="${id}"><p class="reactionsLoading">Loading comments…</p></div>`;
 }
 
+function renderCommentItems(comments){
+  return `<ul class="commentList">${comments.map(c=>`
+    <li><strong>${escapeHtml(c.author)}</strong>
+      <span class="commentText">${escapeHtml(c.text)}</span>
+      ${c.likes ? `<span class="commentLikes">👍 ${fmtNum(c.likes)}</span>` : ''}
+    </li>`).join('')}</ul>`;
+}
+
 function renderReactionsHTML(data){
   if(!data || !data.ok){
-    if(data?.error === 'YouTube API not configured') return '';
+    if(data?.error === 'YouTube API not configured'){
+      return `<p class="reactionsEmpty">Top comments appear after YouTube API is connected.</p>`;
+    }
     const msg = data?.error || 'Comments unavailable for this video.';
     return `<p class="reactionsEmpty">${escapeHtml(msg)}</p>`;
   }
@@ -409,13 +421,15 @@ function renderReactionsHTML(data){
     html += `<p class="videoDesc">${escapeHtml(data.description)}</p>`;
   }
   if(data.comments && data.comments.length){
-    html += `<p class="reactionsTitle">Top comments</p><ul class="commentList">`;
-    html += data.comments.map(c=>`
-      <li><strong>${escapeHtml(c.author)}</strong>
-        <span class="commentText">${escapeHtml(c.text)}</span>
-        ${c.likes ? `<span class="commentLikes">👍 ${fmtNum(c.likes)}</span>` : ''}
-      </li>`).join('');
-    html += `</ul>`;
+    // Always show 2 hook comments; hide the rest behind a click.
+    const preview = data.comments.slice(0, 2);
+    const rest = data.comments.slice(2);
+    html += `<p class="reactionsTitle">Top comments</p>`;
+    html += renderCommentItems(preview);
+    if(rest.length){
+      html += `<button type="button" class="commentsToggle" data-action="more-comments">Show ${rest.length} more</button>`;
+      html += `<div class="commentsMore" hidden>${renderCommentItems(rest)}</div>`;
+    }
   } else if(data.commentsDisabled){
     html += `<p class="reactionsEmpty">Comments are turned off on this video.</p>`;
   } else {
@@ -459,35 +473,89 @@ async function fetchVideoReactions(videoId){
   }
 }
 
+function loadReactionBox(el){
+  const videoId = el.dataset.videoId;
+  if(!videoId || el.dataset.loaded) return;
+  el.dataset.loaded = '1';
+  fetchVideoReactions(videoId).then(data=>{
+    el.innerHTML = renderReactionsHTML(data) || '<p class="reactionsEmpty">Comments unavailable.</p>';
+    notifyParentResize();
+  });
+}
+
 function bindVideoReactions(root){
   if(!root) return;
-  const boxes = root.querySelectorAll('.videoReactions[data-video-id]');
+  const boxes = [...root.querySelectorAll('.videoReactions[data-video-id]')];
   if(!boxes.length) return;
-  const observer = new IntersectionObserver((entries)=>{
-    entries.forEach(entry=>{
-      if(!entry.isIntersecting) return;
-      const el = entry.target;
-      observer.unobserve(el);
-      const videoId = el.dataset.videoId;
-      if(!videoId || el.dataset.loaded) return;
-      el.dataset.loaded = '1';
-      fetchVideoReactions(videoId).then(data=>{
-        const html = renderReactionsHTML(data);
-        if(!html){ el.remove(); notifyParentResize(); return; }
-        el.innerHTML = html;
-        notifyParentResize();
+
+  // Auto-load first cards so the 2 hook comments are always visible.
+  boxes.slice(0, 24).forEach(loadReactionBox);
+  if(boxes.length > 24){
+    const observer = new IntersectionObserver((entries)=>{
+      entries.forEach(entry=>{
+        if(!entry.isIntersecting) return;
+        observer.unobserve(entry.target);
+        loadReactionBox(entry.target);
       });
-    });
-  }, { rootMargin:'120px' });
-  boxes.forEach(el=>observer.observe(el));
+    }, { rootMargin:'500px' });
+    boxes.slice(24).forEach(el=>observer.observe(el));
+  }
+
+  root.addEventListener('click', (e)=>{
+    const btn = e.target.closest('[data-action="more-comments"]');
+    if(!btn || !root.contains(btn)) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const box = btn.closest('.videoReactions');
+    const more = box && box.querySelector('.commentsMore');
+    if(more) more.hidden = false;
+    btn.remove();
+  });
 }
 
 function renderGridWithReactions(rows, cardFn){
   return `<div class="grid">${rows.map((v,i)=>`<article class="cardArticle">${cardFn(v,i)}${videoReactionsShell(v)}</article>`).join('')}</div>`;
 }
 
+function measureFrameHeight(){
+  const shell = document.querySelector('.scouterShell');
+  if(!shell) return 800;
+  const body = document.body;
+  const cs = getComputedStyle(body);
+  const pad = (parseFloat(cs.paddingTop)||0) + (parseFloat(cs.paddingBottom)||0);
+  return shell.offsetHeight + pad + 24;
+}
+
 function notifyParentResize(){
-  try{ if(window.parent && window.parent.fitToolFrame) window.parent.fitToolFrame(); }catch(e){}
+  try{
+    const h = measureFrameHeight();
+    if(window.parent && window.parent !== window){
+      if(window.parent.fitToolFrame) window.parent.fitToolFrame();
+      window.parent.postMessage({type:'scouter-height', height:h}, '*');
+    }
+  }catch(e){}
+}
+
+function watchFrameHeight(){
+  notifyParentResize();
+  if(typeof ResizeObserver !== 'undefined'){
+    const ro = new ResizeObserver(()=>notifyParentResize());
+    const shell = document.querySelector('.scouterShell');
+    const content = document.getElementById('content');
+    if(shell) ro.observe(shell);
+    if(content) ro.observe(content);
+    ro.observe(document.body);
+  }
+  const content = document.getElementById('content');
+  if(content && typeof MutationObserver !== 'undefined'){
+    const mo = new MutationObserver(()=>{
+      notifyParentResize();
+      setTimeout(notifyParentResize, 120);
+    });
+    mo.observe(content, {childList:true, subtree:true});
+  }
+  window.addEventListener('load', notifyParentResize, true);
+  [200, 600, 1500, 3000, 6000].forEach(ms=>setTimeout(notifyParentResize, ms));
 }
 
 function viewIntroHTML(title, paragraphs){
@@ -526,7 +594,8 @@ async function renderRichVideoPage({ rows, cardFn, sectitle, countText, prefixHT
   content.innerHTML = (prefixHTML||'') + renderGridWithReactions(rows, cardFn);
   bindVideoReactions(content);
   notifyParentResize();
-  setTimeout(notifyParentResize, 400);
+  setTimeout(notifyParentResize, 200);
+  setTimeout(notifyParentResize, 800);
 }
 
 // Render sub-selection chips
@@ -1204,6 +1273,7 @@ document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
 
 // Init
 (async ()=>{
+  if(window.self !== window.top) document.documentElement.classList.add('in-iframe');
   latestSnapshot = await loadLatestSnapshot();
   if(latestSnapshot){
     const d = new Date(latestSnapshot.collected_at);
@@ -1212,6 +1282,7 @@ document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
     $('#content').innerHTML = `<div class="state">No data has been collected yet. Please run the collector first.</div>`;
     return;
   }
+  watchFrameHeight();
   renderChips();
   render();
 })();
