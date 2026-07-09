@@ -563,7 +563,9 @@ function thumbnailDedupeKey(url){
 
 function similarVideoKey(v){
   const titleKey = normalizeTitleDedupeKey(v.title);
-  if(titleKey.length >= 10) return `t:${titleKey}`;
+  const tokens = titleKey.split(' ').filter(Boolean);
+  // Language variants often share the same opening title but differ in credits after that.
+  if(tokens.length >= 3) return `p:${tokens.slice(0, 5).join(' ')}`;
   const thumb = thumbnailDedupeKey(v.thumbnail_url);
   if(thumb) return `i:${thumb}`;
   return `id:${v.video_id}`;
