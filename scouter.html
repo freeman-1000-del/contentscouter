@@ -417,26 +417,21 @@ function renderReactionsHTML(data){
     const msg = data?.error || 'Comments unavailable for this video.';
     return `<p class="reactionsEmpty">${escapeHtml(msg)}</p>`;
   }
-  let html = '';
-  if(data.description){
-    html += `<p class="videoDesc">${escapeHtml(data.description)}</p>`;
-  }
   if(data.comments && data.comments.length){
-    // Always show 2 hook comments; hide the rest behind a click.
-    const preview = data.comments.slice(0, 2);
-    const rest = data.comments.slice(2);
-    html += `<p class="reactionsTitle">Top comments</p>`;
-    html += renderCommentItems(preview);
-    if(rest.length){
-      html += `<button type="button" class="commentsToggle" data-action="more-comments">Show ${rest.length} more</button>`;
-      html += `<div class="commentsMore" hidden>${renderCommentItems(rest)}</div>`;
-    }
-  } else if(data.commentsDisabled){
-    html += `<p class="reactionsEmpty">Comments are turned off on this video.</p>`;
-  } else {
-    html += `<p class="reactionsEmpty">No top comments found yet.</p>`;
+    const count = data.comments.length;
+    return `
+      <button type="button" class="commentsToggle" data-action="toggle-comments" aria-expanded="false">
+        댓글 보기 (${count})
+      </button>
+      <div class="commentsPanel" data-role="comments-panel">
+        <p class="reactionsTitle">Top comments</p>
+        ${renderCommentItems(data.comments)}
+      </div>`;
   }
-  return html;
+  if(data.commentsDisabled){
+    return `<p class="reactionsEmpty">Comments are turned off on this video.</p>`;
+  }
+  return `<p class="reactionsEmpty">No top comments found yet.</p>`;
 }
 
 const reactionsCache = new Map();
@@ -489,7 +484,7 @@ function bindVideoReactions(root){
   const boxes = [...root.querySelectorAll('.videoReactions[data-video-id]')];
   if(!boxes.length) return;
 
-  // Auto-load first cards so the 2 hook comments are always visible.
+  // Auto-load first cards so the 댓글 보기 button is ready when scrolled in.
   boxes.slice(0, 24).forEach(loadReactionBox);
   if(boxes.length > 24){
     const observer = new IntersectionObserver((entries)=>{
@@ -503,14 +498,18 @@ function bindVideoReactions(root){
   }
 
   root.addEventListener('click', (e)=>{
-    const btn = e.target.closest('[data-action="more-comments"]');
+    const btn = e.target.closest('[data-action="toggle-comments"]');
     if(!btn || !root.contains(btn)) return;
     e.preventDefault();
     e.stopPropagation();
     const box = btn.closest('.videoReactions');
-    const more = box && box.querySelector('.commentsMore');
-    if(more) more.hidden = false;
-    btn.remove();
+    const panel = box && box.querySelector('[data-role="comments-panel"]');
+    if(!panel) return;
+    const open = panel.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    const count = panel.querySelectorAll('.commentList li').length;
+    btn.textContent = open ? `댓글 숨기기 (${count})` : `댓글 보기 (${count})`;
+    if(open) notifyParentResize();
   });
 }
 
