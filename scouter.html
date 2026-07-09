@@ -328,9 +328,58 @@ async function loadVideos(filter){
   const { data, error } = await q;
   if(error){ console.error(error); return []; }
   if(filter.dedupe){
-    const seen=new Set(); return (data||[]).filter(v=>{ if(seen.has(v.video_id)) return false; seen.add(v.video_id); return true; });
+    const byId = [];
+    const seenId = new Set();
+    for(const v of (data||[])){
+      if(seenId.has(v.video_id)) continue;
+      seenId.add(v.video_id);
+      byId.push(v);
+    }
+    return dedupeSimilarVideos(byId);
   }
   return data||[];
+}
+
+/** Collapse language variants of the same clip (e.g. Hindi vs Kannada upload). */
+function normalizeTitleDedupeKey(title){
+  return (title||'')
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/\([^)]*\)/g, ' ')
+    .replace(/\[[^\]]*\]/g, ' ')
+    .replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}]/gu, '')
+    .replace(/\b(hindi|kannada|tamil|telugu|malayalam|punjabi|bengali|english|official|lyrical|lyrics)\b/gi, ' ')
+    .replace(/[^a-z0-9\u3131-\uD79D\u3040-\u30ff\u4e00-\u9fff]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function thumbnailDedupeKey(url){
+  if(!url) return '';
+  const m = String(url).match(/\/vi\/([a-zA-Z0-9_-]{11})/);
+  return m ? m[1] : String(url).split('?')[0];
+}
+
+function similarVideoKey(v){
+  const titleKey = normalizeTitleDedupeKey(v.title);
+  if(titleKey.length >= 10) return `t:${titleKey}`;
+  const thumb = thumbnailDedupeKey(v.thumbnail_url);
+  if(thumb) return `i:${thumb}`;
+  return `id:${v.video_id}`;
+}
+
+function dedupeSimilarVideos(rows){
+  const seen = new Set();
+  const out = [];
+  for(const v of rows||[]){
+    if(seen.has(v.video_id)) continue;
+    const key = similarVideoKey(v);
+    if(seen.has(key)) continue;
+    seen.add(v.video_id);
+    seen.add(key);
+    out.push(v);
+  }
+  return out;
 }
 
 // Category view: if the same video spans multiple categories, use the category where it has the highest rank as its representative
@@ -1250,7 +1299,7 @@ async function render(){
   }
 
   let filter={}, title='';
-  if(state.view==='global'){ filter={country_code:'GLOBAL', limit:100}; title='Global Trending'; }
+  if(state.view==='global'){ filter={country_code:'GLOBAL', dedupe:true, limit:100}; title='Global Trending'; }
   else if(state.view==='continent'){ filter={continent:state.continent, dedupe:true, limit:200}; title=`${CONTINENTS[state.continent]} Trending`; }
   else if(state.view==='country'){ filter={country_code:state.country, limit:50}; title=`${COUNTRY_NAMES[state.country]} Trending`; }
   else if(state.view==='category'){ filter={category_key:state.category, limit:50}; title=`${CATEGORIES[state.category]} Trending`; }
