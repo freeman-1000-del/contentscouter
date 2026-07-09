@@ -541,7 +541,7 @@ async function loadVideos(filter){
   return data||[];
 }
 
-/** Collapse language variants of the same clip (e.g. Hindi vs Kannada upload). */
+/** Collapse language / regional re-uploads of the same clip. Channel name is never part of the key. */
 function normalizeTitleDedupeKey(title){
   return (title||'')
     .toLowerCase()
@@ -549,7 +549,7 @@ function normalizeTitleDedupeKey(title){
     .replace(/\([^)]*\)/g, ' ')
     .replace(/\[[^\]]*\]/g, ' ')
     .replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}]/gu, '')
-    .replace(/\b(hindi|kannada|tamil|telugu|malayalam|punjabi|bengali|english|official|lyrical|lyrics)\b/gi, ' ')
+    .replace(/\b(hindi|kannada|tamil|telugu|malayalam|punjabi|bengali|english|official|lyrical|lyrics|mv|m\/v)\b/gi, ' ')
     .replace(/[^a-z0-9\u3131-\uD79D\u3040-\u30ff\u4e00-\u9fff]+/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
@@ -561,11 +561,11 @@ function thumbnailDedupeKey(url){
   return m ? m[1] : String(url).split('?')[0];
 }
 
+/** Title-only fingerprint — Zee Music Company vs Zee Music South still match. */
 function similarVideoKey(v){
   const titleKey = normalizeTitleDedupeKey(v.title);
-  const tokens = titleKey.split(' ').filter(Boolean);
-  // Language variants often share the same opening title but differ in credits after that.
-  if(tokens.length >= 3) return `p:${tokens.slice(0, 5).join(' ')}`;
+  const tokens = titleKey.split(' ').filter(w => w.length > 1);
+  if(tokens.length >= 2) return `t:${tokens.slice(0, 4).join(' ')}`;
   const thumb = thumbnailDedupeKey(v.thumbnail_url);
   if(thumb) return `i:${thumb}`;
   return `id:${v.video_id}`;
