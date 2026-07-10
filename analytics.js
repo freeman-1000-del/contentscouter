@@ -1,8 +1,6 @@
 /**
  * Content Scouter — Google Analytics 4
- * 1) Open https://analytics.google.com → Admin → Create property for contentscouter.com
- * 2) Create a Web data stream → copy Measurement ID (G-XXXXXXXX)
- * 3) Paste it below, then upload this file with index.html
+ * Custom: deployer_ad_click on .deployerAd links
  */
 window.CS_GA_MEASUREMENT_ID = "G-02PN0TZF9M";
 
@@ -17,6 +15,43 @@ window.CS_GA_MEASUREMENT_ID = "G-02PN0TZF9M";
   window.gtag = gtag;
   gtag("js", new Date());
   gtag("config", id, { anonymize_ip: true });
+
+  window.csTrackEvent = function (eventName, params) {
+    try {
+      gtag("event", eventName, params || {});
+    } catch (e) {}
+  };
+
+  function adPlacementFromLink(ad) {
+    var fromAttr = ad.getAttribute("data-ad-placement");
+    if (fromAttr) return fromAttr;
+    var col = ad.closest("aside.adCol, .adCol");
+    var row = ad.closest(".pageRowInner");
+    if (!col || !row) return "unknown";
+    var cols = row.querySelectorAll("aside.adCol, .adCol");
+    if (cols.length < 2) return "single";
+    return col === cols[0] ? "left" : "right";
+  }
+
+  document.addEventListener(
+    "click",
+    function (e) {
+      var ad = e.target.closest && e.target.closest("a.deployerAd");
+      if (!ad) return;
+      var ctaEl = ad.querySelector(".cta");
+      window.csTrackEvent("deployer_ad_click", {
+        event_category: "outbound_ad",
+        event_label: "humateck_deployer",
+        ad_placement: adPlacementFromLink(ad),
+        link_url: ad.getAttribute("href") || "",
+        cta_text: (ctaEl && ctaEl.textContent.trim()) || "deployer_ad",
+        page_path: window.location.pathname || "",
+        page_title: document.title || "",
+        transport_type: "beacon",
+      });
+    },
+    true
+  );
 
   var s = document.createElement("script");
   s.async = true;

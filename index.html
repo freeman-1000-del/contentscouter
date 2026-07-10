@@ -372,7 +372,7 @@
   <section id="scouter" class="pageRow">
     <div class="pageRowInner">
       <aside class="adCol">
-        <a class="deployerAd" href="https://humateck.com/deployer.html" target="_blank" rel="noopener">
+        <a class="deployerAd" data-ad-placement="left" href="https://humateck.com/deployer.html" target="_blank" rel="noopener">
           <span class="headline">High-Speed Multilingual Content Deployer</span>
           <div class="adIcons">
             <div class="globe"></div>
@@ -444,7 +444,7 @@
       </div>
 
       <aside class="adCol">
-        <a class="deployerAd" href="https://humateck.com/deployer.html" target="_blank" rel="noopener">
+        <a class="deployerAd" data-ad-placement="right" href="https://humateck.com/deployer.html" target="_blank" rel="noopener">
           <span class="headline">High-Speed Multilingual Content Deployer</span>
           <div class="adIcons">
             <div class="globe"></div>
@@ -673,7 +673,7 @@ function renderReactionsHTML(data){
     const count = data.comments.length;
     return `
       <button type="button" class="commentsToggle" data-action="toggle-comments" aria-expanded="false">
-        댓글 보기 (${count})
+        View comments (${count})
       </button>
       <div class="commentsPanel" data-role="comments-panel">
         <p class="reactionsTitle">Top comments</p>
@@ -760,7 +760,7 @@ function bindVideoReactions(root){
     const open = panel.classList.toggle('open');
     btn.setAttribute('aria-expanded', open ? 'true' : 'false');
     const count = panel.querySelectorAll('.commentList li').length;
-    btn.textContent = open ? `댓글 숨기기 (${count})` : `댓글 보기 (${count})`;
+    btn.textContent = open ? `Hide comments (${count})` : `View comments (${count})`;
     if(open) notifyParentResize();
   });
 }
