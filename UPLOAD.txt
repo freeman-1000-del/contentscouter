@@ -1,0 +1,37 @@
+Content Scouter — GitHub upload bundle
+======================================
+Repo: github.com/freeman-1000-del/contentscouter
+Domain: contentscouter.com
+
+Official URL: https://contentscouter.com/  (English only)
+
+!! ONLY upload files from THIS folder !!
+
+Upload ALL of these to the repo ROOT (drag & drop on GitHub web):
+
+  index.html
+  about.html
+  scouter.html
+  rising-keyword.html
+  terms.html
+  privacy.html
+  contact.html
+  contact_en.html
+  analytics.js
+  robots.txt
+  sitemap.xml
+  CNAME
+  deployer-ad.png
+  ko/index.html          (redirect to / — legacy /ko/ bookmarks)
+
+Steps:
+  1. Open github.com/freeman-1000-del/contentscouter
+  2. Upload files from:
+     g:\Global_Shorts_Factory\humateck-site\contentscouter-upload\
+  3. Wait 1–3 minutes, hard refresh: Ctrl+F5
+
+After editing scouter.html or index-shell.html, rebuild index.html:
+  python g:\Global_Shorts_Factory\scripts\merge-contentscouter-index.py
+
+Local path:
+  g:\Global_Shorts_Factory\humateck-site\contentscouter-upload\

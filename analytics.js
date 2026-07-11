@@ -8,13 +8,18 @@ window.CS_GA_MEASUREMENT_ID = "G-02PN0TZF9M";
   var id = String(window.CS_GA_MEASUREMENT_ID || "").trim();
   if (!id || id === "G-XXXXXXXXXX" || id.indexOf("G-") !== 0) return;
 
+  var path = window.location.pathname || "";
+
   window.dataLayer = window.dataLayer || [];
   function gtag() {
     window.dataLayer.push(arguments);
   }
   window.gtag = gtag;
   gtag("js", new Date());
-  gtag("config", id, { anonymize_ip: true });
+  gtag("config", id, {
+    anonymize_ip: true,
+    product: "content_scouter",
+  });
 
   window.csTrackEvent = function (eventName, params) {
     try {
@@ -42,6 +47,7 @@ window.CS_GA_MEASUREMENT_ID = "G-02PN0TZF9M";
       window.csTrackEvent("deployer_ad_click", {
         event_category: "outbound_ad",
         event_label: "humateck_deployer",
+        product: "content_scouter",
         ad_placement: adPlacementFromLink(ad),
         link_url: ad.getAttribute("href") || "",
         cta_text: (ctaEl && ctaEl.textContent.trim()) || "deployer_ad",
