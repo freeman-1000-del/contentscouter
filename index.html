@@ -314,6 +314,11 @@
   .cccount-num{font-size:14px; font-weight:800; color:#7ee787;}
   .cccount.zero{opacity:.45;}
   .cccount.zero .cccount-num{color:var(--hint);}
+  .cccount-pick{cursor:pointer;font:inherit;text-align:left;}
+  .cccount-pick.on{border-color:#7ee787;box-shadow:0 0 0 1px rgba(126,231,135,.35);}
+  .cccount-pick:disabled{cursor:default;}
+  .ccTimerSlot.hidden{display:none;}
+  .ccTimerSlot{margin:-6px 0 10px;}
   .spin{display:inline-block; width:22px; height:22px; border:3px solid var(--line); border-top-color:var(--accent); border-radius:50%; animation:sp .8s linear infinite; margin-bottom:12px;}
   @keyframes sp{to{transform:rotate(360deg);}}
   .cardArticle{display:flex;flex-direction:column}
@@ -454,6 +459,7 @@
   <div class="chips" id="chips"></div>
 
   <div class="sectitle" id="sectitle">Global Trending <span class="count" id="count"></span></div>
+  <div id="ccTimerSlot" class="ccTimerSlot hidden"></div>
   <div id="content">
     <div class="state"><div class="spin"></div><div>Loading data...</div></div>
   </div>
@@ -603,6 +609,32 @@ function ccTimerHTML(){
     <span class="refreshBannerClock" id="ccRefreshBannerClock">--:--:--</span>
     <span class="refreshBannerSub" id="ccRefreshBannerSub"></span>
   </div>`;
+}
+
+function clearCcTimerSlot(){
+  const slot = $('#ccTimerSlot');
+  if(!slot) return;
+  slot.innerHTML = '';
+  slot.classList.add('hidden');
+}
+
+function mountCcTimer(){
+  const slot = $('#ccTimerSlot');
+  if(!slot) return;
+  slot.innerHTML = ccTimerHTML();
+  slot.classList.remove('hidden');
+  updateCcRefreshBanner();
+}
+
+function bindCcTallyPick(){
+  document.querySelectorAll('[data-cc-cat]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      if(btn.disabled) return;
+      state.ccCategory = btn.dataset.ccCat;
+      state.ccMode = 'popular';
+      render();
+    });
+  });
 }
 
 function updateCcRefreshBanner(){
@@ -1114,15 +1146,7 @@ function renderChips(){
     box.innerHTML = modes.map(([m,name])=>
       `<button class="chip ${state.keywordMode===m?'on':''}" data-type="keyword" data-val="${m}">${name}</button>`).join('');
   } else if(state.view==='cc'){
-    const modes = [['popular','Popular'],['reaction','Top Engagement']];
-    const modeHtml = modes.map(([m,name])=>
-      `<button class="chip ${state.ccMode===m?'on':''}" data-type="cc" data-val="${m}">${name}</button>`).join('');
-    const tally = ccTallyCache || Object.keys(CATEGORIES).map(k=>({ key:k, name:CATEGORIES[k], count:0 }));
-    const catHtml = tally.map(t=>{
-      const n = t.count||0;
-      return `<button class="chip ${state.ccCategory===t.key?'on':''}" data-type="cccat" data-val="${t.key}">${t.name}<span class="chipCount">${n}</span></button>`;
-    }).join('');
-    box.innerHTML = modeHtml + `<div class="ccCatRow">${catHtml}</div>`;
+    box.innerHTML = '';
   } else {
     box.innerHTML = '';
   }
@@ -1381,6 +1405,7 @@ function bindKeywordCopy(words){
 
 async function render(){
   const content = $('#content');
+  if(state.view !== 'cc') clearCcTimerSlot();
   content.innerHTML = `<div class="state"><div class="spin"></div><div>Loading...</div></div>`;
 
   // The rising view is handled separately
@@ -1421,53 +1446,44 @@ async function render(){
   if(state.view==='cc'){
     updateRefreshLabels();
     if(!latestCcSnapshot) latestCcSnapshot = await loadLatestCCSnapshot();
+    mountCcTimer();
     const noticeHTML = ccNoticeHTML();
     const { tally, totalCollected } = await loadCCCurrentWeek();
     ccTallyCache = tally;
-    const timerHTML = ccTimerHTML();
     if(tally.length && !tally.some(t=>t.key===state.ccCategory && t.count>0)){
       const first = tally.find(t=>t.count>0);
       if(first) state.ccCategory = first.key;
     }
     renderChips();
-    if(!latestCcSnapshot){
-      $('#sectitle').firstChild.textContent = 'Reuse Allowed ';
-      $('#count').textContent = '';
-      content.innerHTML = timerHTML + noticeHTML + `<div class="state">No CC data yet. It will appear after the first 3-day CC collection run.</div>`;
-      updateCcRefreshBanner();
-      return;
-    }
     function tallyHTML(tally, total){
       return `<div class="cctally">
-        <div class="cctally-title"><b style="color:#7ee787;">${total}</b> CC videos collected · by category</div>
+        <div class="cctally-title"><b style="color:#7ee787;">${total}</b> CC videos collected · tap a category</div>
         <div class="cctally-grid">
           ${tally.map(t=>`
-            <div class="cccount ${t.count===0?'zero':''}">
+            <button type="button" class="cccount cccount-pick ${state.ccCategory===t.key?'on':''} ${t.count===0?'zero':''}" data-cc-cat="${t.key}" ${t.count===0?'disabled':''}>
               <span class="cccount-name">${t.name}</span>
               <span class="cccount-num">${t.count}</span>
-            </div>`).join('')}
+            </button>`).join('')}
         </div>
       </div>`;
     }
-    if(state.ccMode==='reaction'){
-      const rows = await loadCCReaction();
-      $('#sectitle').firstChild.textContent = 'Reuse Allowed · Top Engagement ';
-      $('#count').textContent = rows.length ? `${rows.length} · ${CATEGORIES[state.ccCategory]||''}` : '';
-      if(!rows.length){ content.innerHTML = timerHTML + noticeHTML + `<div class="state">No videos to display.</div>`; updateCcRefreshBanner(); return; }
-      content.innerHTML = timerHTML + noticeHTML + tallyHTML(tally, totalCollected) + `<div class="grid">${rows.map((v,i)=>ccReactionCardHTML(v,i)).join('')}</div>`;
-      updateCcRefreshBanner();
+    if(!latestCcSnapshot){
+      $('#sectitle').firstChild.textContent = 'Reuse Allowed ';
+      $('#count').textContent = '';
+      content.innerHTML = noticeHTML + `<div class="state">No CC data yet. It will appear after the first 3-day CC collection run.</div>`;
       return;
     }
+    state.ccMode = 'popular';
     const videos = await loadCCCategoryVideos(state.ccCategory, CC_PER_CATEGORY);
     $('#sectitle').firstChild.textContent = 'Reuse Allowed ';
     $('#count').textContent = videos.length ? `${videos.length} · ${CATEGORIES[state.ccCategory]||''}` : '';
     if(!videos.length){
-      content.innerHTML = timerHTML + noticeHTML + tallyHTML(tally, totalCollected) + `<div class="state">No CC videos in this category.</div>`;
-      updateCcRefreshBanner();
+      content.innerHTML = noticeHTML + tallyHTML(tally, totalCollected) + `<div class="state">No CC videos in this category.</div>`;
+      bindCcTallyPick();
       return;
     }
-    content.innerHTML = timerHTML + noticeHTML + tallyHTML(tally, totalCollected) + `<div class="grid">${videos.map((v,i)=>ccCardHTML(v,i)).join('')}</div>`;
-    updateCcRefreshBanner();
+    content.innerHTML = noticeHTML + tallyHTML(tally, totalCollected) + `<div class="grid">${videos.map((v,i)=>ccCardHTML(v,i)).join('')}</div>`;
+    bindCcTallyPick();
     return;
   }
 
