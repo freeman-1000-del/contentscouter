@@ -582,6 +582,7 @@ function ccCardHTML(v, i){
       <div class="cmeta">
         <span class="views">${fmtViews(v.view_count)} views</span>
         <span>· 👍${fmtViews(v.like_count)}</span>
+        ${v.comment_count ? `<span>· 💬${fmtViews(v.comment_count)}</span>` : ''}
       </div>
       <div class="cmeta"><span class="cchan">${escapeHtml(v.channel||'')}</span></div>
     </div>
@@ -1312,8 +1313,10 @@ async function render(){
       bindCcTallyPick();
       return;
     }
-    content.innerHTML = noticeHTML + tallyHTML(tally) + `<div class="grid">${videos.map((v,i)=>ccCardHTML(v,i)).join('')}</div>`;
+    content.innerHTML = noticeHTML + tallyHTML(tally) + renderGridWithReactions(videos, ccCardHTML);
     bindCcTallyPick();
+    bindVideoReactions(content);
+    notifyParentResize();
     return;
   }
 
