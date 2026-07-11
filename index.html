@@ -765,7 +765,7 @@ async function loadCCReaction(){
 
 function ccNoticeHTML(){
   return `<div class="ccnotice">
-    These videos are marked "Creative Commons (CC BY)" on YouTube. Attribution to the original creator is required. Some elements (music, clips, etc.) may have separate copyrights — please check the video description.
+    <b>[Note]</b> These videos are marked "Creative Commons (CC BY)" on YouTube. Attribution to the original creator is required. Some elements (music, clips, etc.) may have separate copyrights — please check the video description.
   </div>`;
 }
 
@@ -1451,9 +1451,8 @@ async function render(){
       if(first) state.ccCategory = first.key;
     }
     renderChips();
-    function tallyHTML(tally, total){
+    function tallyHTML(tally){
       return `<div class="cctally">
-        <div class="cctally-title"><b style="color:#7ee787;">${total}</b> CC videos collected · tap a category</div>
         <div class="cctally-grid">
           ${tally.map(t=>`
             <button type="button" class="cccount cccount-pick ${state.ccCategory===t.key?'on':''} ${t.count===0?'zero':''}" data-cc-cat="${t.key}" ${t.count===0?'disabled':''}>
@@ -1472,13 +1471,13 @@ async function render(){
     state.ccMode = 'popular';
     const videos = await loadCCCategoryVideos(state.ccCategory, CC_PER_CATEGORY);
     $('#sectitle').firstChild.textContent = 'Reuse Allowed ';
-    $('#count').textContent = videos.length ? `${videos.length} · ${CATEGORIES[state.ccCategory]||''}` : '';
+    $('#count').textContent = totalCollected ? `${totalCollected} CC videos collected` : '';
     if(!videos.length){
-      content.innerHTML = noticeHTML + tallyHTML(tally, totalCollected) + `<div class="state">No CC videos in this category.</div>`;
+      content.innerHTML = noticeHTML + tallyHTML(tally) + `<div class="state">No CC videos in this category.</div>`;
       bindCcTallyPick();
       return;
     }
-    content.innerHTML = noticeHTML + tallyHTML(tally, totalCollected) + `<div class="grid">${videos.map((v,i)=>ccCardHTML(v,i)).join('')}</div>`;
+    content.innerHTML = noticeHTML + tallyHTML(tally) + `<div class="grid">${videos.map((v,i)=>ccCardHTML(v,i)).join('')}</div>`;
     bindCcTallyPick();
     return;
   }
