@@ -68,17 +68,17 @@
   .lead{color:var(--sub); font-size:14px;}
   .lead .upd{color:var(--hint); font-size:12px; margin-left:6px;}
   .refreshBanner{
-    text-align:center; margin:18px auto 6px; max-width:520px;
-    background:var(--panel2); border:1px solid var(--line); border-radius:16px;
-    padding:16px 20px 14px;
+    text-align:left; margin:4px 0 8px; max-width:100%;
+    background:var(--panel); border:1px solid var(--line); border-radius:6px;
+    padding:4px 10px; font-size:10px; line-height:1.4; color:var(--hint);
   }
-  .refreshBanner.cc{border-color:rgba(126,231,135,.35); background:linear-gradient(145deg,#16302a,var(--panel2));}
-  .refreshBannerLabel{display:block;font-size:12px;color:var(--hint);margin-bottom:6px;letter-spacing:.02em;}
-  .refreshBannerClock{display:block;font-size:34px;font-weight:800;color:var(--accent2);font-variant-numeric:tabular-nums;line-height:1.1;}
+  .refreshBanner.cc{border-color:rgba(126,231,135,.28); background:rgba(22,48,42,.45);}
+  .refreshBannerLabel{font-size:10px;color:var(--hint);}
+  .refreshBannerClock{font-size:11px;font-weight:700;color:var(--accent2);font-variant-numeric:tabular-nums;margin:0 5px;}
   .refreshBanner.cc .refreshBannerClock{color:#7ee787;}
-  .refreshBannerSub{display:block;margin-top:8px;font-size:11px;color:var(--hint);}
-  .ccRefreshBanner{display:none;margin-top:10px;}
-  .ccRefreshBanner.on{display:block;}
+  .refreshBannerSub{font-size:10px;color:var(--hint);}
+  .refreshBanner.hidden{display:none;}
+  .ccTimerInline{margin-bottom:14px;}
   .ccCatRow{display:flex;flex-wrap:wrap;gap:8px;width:100%;margin-top:12px;}
   .chipCount{font-size:10px;opacity:.85;margin-left:4px;}
 
@@ -239,12 +239,6 @@
     <span class="refreshBannerSub" id="refreshBannerSub"></span>
   </div>
 
-  <div class="refreshBanner cc ccRefreshBanner" id="ccRefreshBanner">
-    <span class="refreshBannerLabel" id="ccRefreshBannerLabel">Next CC collection</span>
-    <span class="refreshBannerClock" id="ccRefreshBannerClock">--:--:--</span>
-    <span class="refreshBannerSub" id="ccRefreshBannerSub"></span>
-  </div>
-
   <div class="tabs">
     <button class="tab on" data-view="global">
       <div class="t"><span class="dot" style="background:var(--accent)"></span>Global Trending</div>
@@ -384,55 +378,53 @@ function updateTrendRefreshBanner(){
   const clock = $('#refreshBannerClock');
   const sub = $('#refreshBannerSub');
   if(!banner || !clock) return;
+  banner.classList.toggle('hidden', state.view === 'cc');
+  if(state.view === 'cc') return;
   const snap = latestSnapshot;
   const interval = COLLECTION_INTERVAL_MS;
   if(!snap?.collected_at){
     if(el) el.textContent = '';
-    label.textContent = 'Next trend refresh in';
+    label.textContent = 'Next trend refresh';
     clock.textContent = '--:--:--';
-    if(sub) sub.textContent = 'Trending data · updated daily';
+    if(sub) sub.textContent = '· daily';
     return;
   }
   const d = new Date(snap.collected_at);
-  if(el && state.view !== 'cc'){
-    el.textContent = `Updated ${d.toLocaleString(LOCALE)}`;
-  }
+  if(el) el.textContent = `Updated ${d.toLocaleString(LOCALE)}`;
   const remain = Math.max(0, new Date(snap.collected_at).getTime() + interval - Date.now());
-  label.textContent = 'Next trend refresh in';
+  label.textContent = 'Next trend refresh';
   clock.textContent = formatCountdownClock(remain);
-  if(sub){
-    sub.textContent = `Last trend update ${d.toLocaleString(LOCALE)} · refreshed daily`;
-  }
+  if(sub) sub.textContent = `· last ${d.toLocaleDateString(LOCALE)}`;
+}
+
+function ccTimerHTML(){
+  return `<div class="refreshBanner cc ccTimerInline" id="ccRefreshBanner">
+    <span class="refreshBannerLabel" id="ccRefreshBannerLabel">Next CC collection</span>
+    <span class="refreshBannerClock" id="ccRefreshBannerClock">--:--:--</span>
+    <span class="refreshBannerSub" id="ccRefreshBannerSub"></span>
+  </div>`;
 }
 
 function updateCcRefreshBanner(){
-  const banner = $('#ccRefreshBanner');
   const label = $('#ccRefreshBannerLabel');
   const clock = $('#ccRefreshBannerClock');
   const sub = $('#ccRefreshBannerSub');
   const el = $('#updated');
-  if(!banner || !clock) return;
-  const onCc = state.view === 'cc';
-  banner.classList.toggle('on', onCc);
-  if(!onCc) return;
+  if(!clock) return;
   const snap = latestCcSnapshot;
   if(!snap?.collected_at){
     if(el) el.textContent = 'No CC data yet';
-    label.textContent = 'Next CC collection in';
+    if(label) label.textContent = 'Next CC collection';
     clock.textContent = '--:--:--';
-    if(sub) sub.textContent = 'Every 3 days · latest batch only; no past catalog stored';
+    if(sub) sub.textContent = '· every 3 days';
     return;
   }
   const d = new Date(snap.collected_at);
-  if(el){
-    el.textContent = `CC updated ${d.toLocaleString(LOCALE)}`;
-  }
+  if(el) el.textContent = `CC updated ${d.toLocaleString(LOCALE)}`;
   const remain = Math.max(0, new Date(snap.collected_at).getTime() + CC_COLLECTION_INTERVAL_MS - Date.now());
-  label.textContent = 'Next CC collection in';
+  if(label) label.textContent = 'Next CC collection';
   clock.textContent = formatCountdownClock(remain);
-  if(sub){
-    sub.textContent = `Last CC update ${d.toLocaleString(LOCALE)} · 3-day cycle`;
-  }
+  if(sub) sub.textContent = `· last ${d.toLocaleDateString(LOCALE)} · 3-day cycle`;
 }
 
 function updateRefreshLabels(){
@@ -512,9 +504,9 @@ async function loadCCCurrentWeek(){
     .eq('snapshot_id', snap.id).eq('license','creativeCommon')
     .order('view_count',{ascending:false}).limit(800);
   const videos = dedupeCCVideos(data||[]).sort((a,b)=>(b.view_count||0)-(a.view_count||0));
-  const tally = buildCCTally(videos);
+  const tally = buildCCTally(data||[]);
   ccTallyCache = tally;
-  return { tally, videos };
+  return { tally, videos, totalCollected: (data||[]).length };
 }
 
 async function loadCCCategoryVideos(categoryKey, limit = CC_PER_CATEGORY){
@@ -962,7 +954,7 @@ function renderChips(){
       `<button class="chip ${state.ccMode===m?'on':''}" data-type="cc" data-val="${m}">${name}</button>`).join('');
     const tally = ccTallyCache || Object.keys(CATEGORIES).map(k=>({ key:k, name:CATEGORIES[k], count:0 }));
     const catHtml = tally.map(t=>{
-      const n = Math.min(t.count||0, CC_PER_CATEGORY);
+      const n = t.count||0;
       return `<button class="chip ${state.ccCategory===t.key?'on':''}" data-type="cccat" data-val="${t.key}">${t.name}<span class="chipCount">${n}</span></button>`;
     }).join('');
     box.innerHTML = modeHtml + `<div class="ccCatRow">${catHtml}</div>`;
@@ -1265,8 +1257,9 @@ async function render(){
     updateRefreshLabels();
     if(!latestCcSnapshot) latestCcSnapshot = await loadLatestCCSnapshot();
     const noticeHTML = ccNoticeHTML();
-    const { tally } = await loadCCCurrentWeek();
+    const { tally, totalCollected } = await loadCCCurrentWeek();
     ccTallyCache = tally;
+    const timerHTML = ccTimerHTML();
     if(tally.length && !tally.some(t=>t.key===state.ccCategory && t.count>0)){
       const first = tally.find(t=>t.count>0);
       if(first) state.ccCategory = first.key;
@@ -1275,17 +1268,18 @@ async function render(){
     if(!latestCcSnapshot){
       $('#sectitle').firstChild.textContent = 'Reuse Allowed ';
       $('#count').textContent = '';
-      content.innerHTML = noticeHTML + `<div class="state">No CC data yet. It will appear after the first 3-day CC collection run.</div>`;
+      content.innerHTML = timerHTML + noticeHTML + `<div class="state">No CC data yet. It will appear after the first 3-day CC collection run.</div>`;
+      updateCcRefreshBanner();
       return;
     }
-    function tallyHTML(tally){
+    function tallyHTML(tally, total){
       return `<div class="cctally">
-        <div class="cctally-title">CC videos by category (up to 50 each)</div>
+        <div class="cctally-title"><b style="color:#7ee787;">${total}</b> CC videos collected · by category</div>
         <div class="cctally-grid">
           ${tally.map(t=>`
             <div class="cccount ${t.count===0?'zero':''}">
               <span class="cccount-name">${t.name}</span>
-              <span class="cccount-num">${Math.min(t.count, CC_PER_CATEGORY)}</span>
+              <span class="cccount-num">${t.count}</span>
             </div>`).join('')}
         </div>
       </div>`;
@@ -1294,18 +1288,21 @@ async function render(){
       const rows = await loadCCReaction();
       $('#sectitle').firstChild.textContent = 'Reuse Allowed · Top Engagement ';
       $('#count').textContent = rows.length ? `${rows.length} · ${CATEGORIES[state.ccCategory]||''}` : '';
-      if(!rows.length){ content.innerHTML = noticeHTML + `<div class="state">No videos to display.</div>`; return; }
-      content.innerHTML = noticeHTML + `<div class="grid">${rows.map((v,i)=>ccReactionCardHTML(v,i)).join('')}</div>`;
+      if(!rows.length){ content.innerHTML = timerHTML + noticeHTML + `<div class="state">No videos to display.</div>`; updateCcRefreshBanner(); return; }
+      content.innerHTML = timerHTML + noticeHTML + tallyHTML(tally, totalCollected) + `<div class="grid">${rows.map((v,i)=>ccReactionCardHTML(v,i)).join('')}</div>`;
+      updateCcRefreshBanner();
       return;
     }
     const videos = await loadCCCategoryVideos(state.ccCategory, CC_PER_CATEGORY);
     $('#sectitle').firstChild.textContent = 'Reuse Allowed ';
     $('#count').textContent = videos.length ? `${videos.length} · ${CATEGORIES[state.ccCategory]||''}` : '';
     if(!videos.length){
-      content.innerHTML = noticeHTML + tallyHTML(tally) + `<div class="state">No CC videos in this category.</div>`;
+      content.innerHTML = timerHTML + noticeHTML + tallyHTML(tally, totalCollected) + `<div class="state">No CC videos in this category.</div>`;
+      updateCcRefreshBanner();
       return;
     }
-    content.innerHTML = noticeHTML + tallyHTML(tally) + `<div class="grid">${videos.map((v,i)=>ccCardHTML(v,i)).join('')}</div>`;
+    content.innerHTML = timerHTML + noticeHTML + tallyHTML(tally, totalCollected) + `<div class="grid">${videos.map((v,i)=>ccCardHTML(v,i)).join('')}</div>`;
+    updateCcRefreshBanner();
     return;
   }
 
