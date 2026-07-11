@@ -564,12 +564,8 @@ async function loadCCReaction(){
 }
 
 function ccNoticeHTML(){
-  const ccDate = latestCcSnapshot?.collected_at
-    ? new Date(latestCcSnapshot.collected_at).toLocaleDateString(LOCALE) : '';
   return `<div class="ccnotice">
-    ⚠️ These are videos YouTube has marked as <b>'Reuse Allowed (CC BY)'</b>.
-    Credit the original creator; music or clips inside a video may have separate rights — <b>check each description</b>.
-    <div style="margin-top:8px;color:#9aa;font-size:12px;"><b style="color:#7ee787;">Refreshed every 3 days</b> — latest batch only; we do not store a past CC catalog.${ccDate ? ` · Collected ${ccDate}` : ''}</div>
+    These videos are marked "Creative Commons (CC BY)" on YouTube. Attribution to the original creator is required. Some elements (music, clips, etc.) may have separate copyrights — please check the video description.
   </div>`;
 }
 
