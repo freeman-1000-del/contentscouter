@@ -555,9 +555,18 @@ function getNextCollectionAt(){
   return new Date(latestSnapshot.collected_at).getTime() + COLLECTION_INTERVAL_MS;
 }
 
+/** Always show remaining time to the next interval tick (never swap to a status phrase). */
+function remainUntilNextCycle(collectedAt, intervalMs){
+  const start = new Date(collectedAt).getTime();
+  if(!Number.isFinite(start) || !intervalMs) return 0;
+  const elapsed = Date.now() - start;
+  if(elapsed < 0) return intervalMs;
+  const into = elapsed % intervalMs;
+  return into === 0 ? intervalMs : (intervalMs - into);
+}
+
 function formatCountdown(ms){
-  if(ms <= 0) return 'Refreshing soon';
-  const sec = Math.floor(ms / 1000);
+  const sec = Math.floor(Math.max(0, ms) / 1000);
   const h = Math.floor(sec / 3600);
   const m = Math.floor((sec % 3600) / 60);
   const s = sec % 60;
@@ -567,8 +576,7 @@ function formatCountdown(ms){
 }
 
 function formatCountdownClock(ms){
-  if(ms <= 0) return 'Refreshing soon';
-  const sec = Math.floor(ms / 1000);
+  const sec = Math.floor(Math.max(0, ms) / 1000);
   const h = Math.floor(sec / 3600);
   const m = Math.floor((sec % 3600) / 60);
   const s = sec % 60;
@@ -597,7 +605,7 @@ function updateTrendRefreshBanner(){
   }
   const d = new Date(snap.collected_at);
   if(el) el.textContent = `Updated ${d.toLocaleString(LOCALE)}`;
-  const remain = Math.max(0, new Date(snap.collected_at).getTime() + interval - Date.now());
+  const remain = remainUntilNextCycle(snap.collected_at, interval);
   label.textContent = 'Next trend refresh';
   clock.textContent = formatCountdownClock(remain);
   if(sub) sub.textContent = `· last ${d.toLocaleDateString(LOCALE)}`;
