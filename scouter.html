@@ -381,8 +381,7 @@ function formatCountdownClock(ms){
   const m = Math.floor((sec % 3600) / 60);
   const s = sec % 60;
   const pad = (n)=> String(n).padStart(2,'0');
-  if(h > 0) return `${pad(h)}:${pad(m)}:${pad(s)}`;
-  return `${pad(m)}:${pad(s)}`;
+  return `${pad(h)}:${pad(m)}:${pad(s)}`;
 }
 
 function updateTrendRefreshBanner(){

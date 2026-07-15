@@ -581,8 +581,7 @@ function formatCountdownClock(ms){
   const m = Math.floor((sec % 3600) / 60);
   const s = sec % 60;
   const pad = (n)=> String(n).padStart(2,'0');
-  if(h > 0) return `${pad(h)}:${pad(m)}:${pad(s)}`;
-  return `${pad(m)}:${pad(s)}`;
+  return `${pad(h)}:${pad(m)}:${pad(s)}`;
 }
 
 function updateTrendRefreshBanner(){
@@ -661,7 +660,7 @@ function updateCcRefreshBanner(){
   }
   const d = new Date(snap.collected_at);
   if(el) el.textContent = `CC updated ${d.toLocaleString(LOCALE)}`;
-  const remain = Math.max(0, new Date(snap.collected_at).getTime() + CC_COLLECTION_INTERVAL_MS - Date.now());
+  const remain = remainUntilNextCycle(snap.collected_at, CC_COLLECTION_INTERVAL_MS);
   if(label) label.textContent = 'Next CC collection';
   clock.textContent = formatCountdownClock(remain);
   if(sub) sub.textContent = `· last ${d.toLocaleDateString(LOCALE)} · 3-day cycle`;
