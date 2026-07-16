@@ -59,6 +59,23 @@ window.CS_GA_MEASUREMENT_ID = "G-02PN0TZF9M";
     true
   );
 
+  document.addEventListener(
+    "click",
+    function (e) {
+      var link = e.target.closest && e.target.closest("a.risingKeywordsLink");
+      if (!link) return;
+      window.csTrackEvent("tteok_vending_click", {
+        event_category: "outbound_product",
+        event_label: "떡상자판기",
+        product: "tteok_vending",
+        link_url: link.getAttribute("href") || "",
+        page_path: window.location.pathname || "",
+        transport_type: "beacon",
+      });
+    },
+    true
+  );
+
   var s = document.createElement("script");
   s.async = true;
   s.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(id);
