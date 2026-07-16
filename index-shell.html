@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Content Scouter — YouTube Trends &amp; Rising Keywords</title>
+  <meta name="description" content="Discover trending YouTube videos in 16 countries, track rising view spikes, explore engagement leaders, and keyword trends for creators.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://contentscouter.com/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Content Scouter — YouTube Trends &amp; Keywords">
+  <meta property="og:description" content="Global trending videos, rising spikes, and engagement analytics.">
+  <meta property="og:url" content="https://contentscouter.com/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Content Scouter">
+  <meta name="twitter:description" content="YouTube trend discovery, rising analytics, and keyword trends for creators.">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Content Scouter",
+    "url": "https://contentscouter.com/",
+    "description": "Discover trending YouTube videos worldwide, rising view analytics, and keyword trends.",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "Web",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <script defer src="analytics.js"></script>
+  <style>
+    /* Exact page frame — no fixed ads, no calc guesswork */
+    *{box-sizing:border-box}
+    :root{
+      --ad-w:200px;
+      --ad-gap:24px;
+      --main-w:1100px;
+      --frame-w:calc(var(--ad-w) + var(--ad-gap) + var(--main-w) + var(--ad-gap) + var(--ad-w)); /* 1548px */
+      --page-pad:20px;
+      --frame-nudge:11px; /* whole frame shift; was 16px, moved 5px left */
+      --page-gray:#505050;
+    }
+    html,body{margin:0;padding:0;background:var(--page-gray);color:#eef1f6;font-family:Arial,"Segoe UI",sans-serif}
+    html{overflow-x:hidden;overflow-y:scroll}
+    body{min-height:100vh}
+
+    .siteHead{
+      display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+      background:#0d0f14;border-bottom:1px solid #2a2f3c;
+      padding:12px 24px;
+    }
+    .siteLogo{
+      font-size:15px;font-weight:800;letter-spacing:.06em;
+      color:#ff5436;text-transform:uppercase;
+    }
+    .siteLegal{
+      display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;
+      color:#a8b0bc;font-size:12px;line-height:1.4;margin-left:auto;
+    }
+    .siteLegal a{color:#c8d4e0;text-decoration:none;white-space:nowrap}
+    .siteLegal a:hover{color:#fff;text-decoration:underline}
+    .siteLegal .sep{color:#6a7380;user-select:none}
+    .siteLegal .copy{color:#9aa3b0;white-space:nowrap}
+
+    a{color:inherit;text-decoration:none}
+
+    .pageRow{width:100%;padding:0}
+    .pageRowInner{
+      display:grid;
+      grid-template-columns:var(--ad-w) var(--main-w) var(--ad-w);
+      column-gap:var(--ad-gap);
+      width:var(--frame-w);
+      max-width:calc(100% - 2 * var(--page-pad));
+      margin:0 auto;
+      padding:20px var(--page-pad) 48px;
+      align-items:start;
+      position:relative;
+      left:var(--frame-nudge); /* nudge without transform (transform breaks sticky ads) */
+    }
+    .adCol{
+      width:var(--ad-w);
+      min-width:0;
+      position:sticky;
+      top:20px;
+      align-self:start;
+      z-index:4;
+    }
+    .centerPanel{width:var(--main-w);min-width:0;max-width:100%}
+
+    /* When the viewport is narrower than the frame, keep ad columns fixed and shrink only the center */
+    @media(max-width:1588px){
+      .pageRowInner{
+        width:100%;
+        grid-template-columns:var(--ad-w) minmax(0,1fr) var(--ad-w);
+      }
+      .centerPanel{width:auto}
+    }
+
+    .deployerAd{
+      display:flex;flex-direction:column;width:100%;min-height:640px;
+      padding:16px 14px 18px;
+      background:linear-gradient(165deg,#122240 0%,#0a1628 55%,#061018 100%);
+      border:2px solid rgba(90,150,255,.55);border-radius:12px;color:#dbe9ff;
+      box-shadow:0 12px 40px rgba(0,0,0,.45),0 0 0 1px rgba(120,180,255,.12);
+      transition:transform .18s, box-shadow .18s;
+    }
+    .deployerAd:hover{
+      transform:translateY(-4px);
+      box-shadow:0 16px 48px rgba(0,0,0,.55),0 0 24px rgba(70,144,255,.18);
+      border-color:rgba(108,166,255,.75);
+    }
+    .deployerAd .headline{
+      display:block;font-size:13px;line-height:1.45;color:#ffd95a;font-weight:400;
+      margin-bottom:8px;letter-spacing:.02em;
+    }
+    .deployerAd .adBody{display:block;margin-top:4px}
+    .deployerAd .adIcons{
+      display:flex;flex-direction:column;align-items:center;
+      margin:0 auto 10px;width:100%;
+    }
+    .deployerAd .globe{
+      width:60px;height:60px;border-radius:50%;margin:0 0 10px;
+      border:2px solid rgba(93,160,255,.65);
+      background:radial-gradient(circle at 50% 50%,rgba(58,126,255,.4),rgba(4,18,45,.92) 68%);
+      box-shadow:0 0 18px rgba(70,144,255,.3);
+    }
+    .deployerAd .play{
+      width:40px;height:28px;border-radius:8px;margin:-22px 0 0;
+      background:linear-gradient(145deg,#ffe070,#b98217);
+      box-shadow:0 0 12px rgba(235,180,62,.45);position:relative;
+    }
+    .deployerAd .play:after{
+      content:"";position:absolute;left:15px;top:6px;
+      border-left:13px solid #1a1307;border-top:8px solid transparent;border-bottom:8px solid transparent;
+    }
+    .deployerAd .title{
+      display:block;font-size:14px;line-height:1.45;color:#ffd95a;font-weight:800;margin:0 0 10px;
+    }
+    .deployerAd .line{
+      display:block;font-size:13px;line-height:1.5;color:#c8d8ef;font-weight:400;margin-bottom:7px;
+    }
+    .deployerAd .cta{
+      display:block;margin:12px 0;padding-top:10px;
+      font-size:13px;font-weight:400;color:#ffd95a;
+      border-top:1px solid rgba(108,166,255,.25);
+    }
+    .deployerAd .adPhoto{
+      display:block;width:100%;min-height:100px;margin-top:auto;border-radius:8px;
+      border:1px solid rgba(108,166,255,.35);object-fit:cover;background:#0a1424;
+    }
+
+    .adCol .deployerAd .headline,
+    .adCol .deployerAd .adBody,
+    .adCol .deployerAd .cta{text-align:left}
+
+    @media(max-width:960px){
+      .siteHead{padding:12px 14px}
+      .siteLegal{font-size:11px;gap:4px 8px;justify-content:flex-end;width:100%;margin-left:0}
+      .pageRowInner{
+        display:flex;flex-direction:column;align-items:center;gap:16px;
+        width:100%;max-width:100%;padding:16px;
+      }
+      .adCol{width:100%;max-width:480px;position:static}
+      .centerPanel{width:100%;max-width:100%}
+      .deployerAd{min-height:auto;display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:flex-start;gap:10px;padding:14px;text-align:left}
+      .deployerAd .globe,.deployerAd .play{margin:0}
+      .deployerAd .play{margin-left:10px;margin-top:-22px}
+      .deployerAd .cta{margin:0;border-top:0;padding-top:0}
+      .deployerAd .adPhoto{max-width:120px;margin-top:0}
+      .centerPanel{border-radius:12px;border:2px solid #1e2433}
+    }
+  </style>
+  <!--SCOUTER_ASSETS-->
+</head>
+<body>
+
+  <header class="siteHead">
+    <span class="siteLogo">Content Scouter</span>
+    <nav class="siteLegal" aria-label="Legal">
+      <a href="about.html">About</a>
+      <span class="sep">|</span>
+      <a href="terms.html">Terms</a>
+      <span class="sep">|</span>
+      <a href="privacy.html">Privacy</a>
+      <span class="sep">|</span>
+      <a href="contact.html">Contact Us</a>
+      <span class="sep">|</span>
+      <span class="copy">Copyright © 2026 contentscouter.com</span>
+    </nav>
+  </header>
+
+  <section id="scouter" class="pageRow">
+    <div class="pageRowInner">
+      <aside class="adCol">
+        <a class="deployerAd" data-ad-placement="left" href="https://humateck.com/deployer-en.html" target="_blank" rel="noopener">
+          <span class="headline">High-Speed Multilingual Content Deployer</span>
+          <div class="adIcons">
+            <div class="globe"></div>
+            <div class="play"></div>
+          </div>
+          <div class="adBody">
+            <span class="title">Launch videos in 70 countries simultaneously</span>
+            <span class="line">High-quality, context-aware chat translation</span>
+            <span class="line">Google authentication &amp; security</span>
+            <span class="line">Transmission in seconds — saves labor</span>
+          </div>
+          <span class="cta">Explore Deployer →</span>
+          <img class="adPhoto" src="deployer-ad.png" alt="Creators reviewing Deployer on PC" loading="lazy">
+        </a>
+      </aside>
+
+      <div class="centerPanel">
+        <!--SCOUTER_MOUNT-->
+      </div>
+
+      <aside class="adCol">
+        <a class="deployerAd" data-ad-placement="right" href="https://humateck.com/deployer-en.html" target="_blank" rel="noopener">
+          <span class="headline">High-Speed Multilingual Content Deployer</span>
+          <div class="adIcons">
+            <div class="globe"></div>
+            <div class="play"></div>
+          </div>
+          <div class="adBody">
+            <span class="title">Launch videos in 70 countries simultaneously</span>
+            <span class="line">High-quality, context-aware chat translation</span>
+            <span class="line">Google authentication &amp; security</span>
+            <span class="line">Transmission in seconds — saves labor</span>
+          </div>
+          <span class="cta">Explore Deployer →</span>
+          <img class="adPhoto" src="deployer-ad.png" alt="Creators reviewing Deployer on PC" loading="lazy">
+        </a>
+      </aside>
+    </div>
+  </section>
+
+  <!--SCOUTER_SCRIPT-->
+</body>
+</html>
