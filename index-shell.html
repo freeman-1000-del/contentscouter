@@ -49,8 +49,13 @@
       padding:12px 24px;
     }
     .siteLogo{
-      font-size:15px;font-weight:800;letter-spacing:.06em;
-      color:#ff5436;text-transform:uppercase;
+      display:inline-flex;align-items:center;line-height:0;text-decoration:none;
+    }
+    .siteLogoImg{
+      display:block;height:44px;width:auto;object-fit:contain;
+    }
+    @media(min-width:700px){
+      .siteLogoImg{height:52px}
     }
     .siteLegal{
       display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;
@@ -174,7 +179,9 @@
 <body>
 
   <header class="siteHead">
-    <span class="siteLogo">Content Scouter</span>
+    <a class="siteLogo" href="index.html" aria-label="Content Scouter">
+      <img class="siteLogoImg" src="content-scouter-logo.png" alt="Content Scouter" width="220" height="72" />
+    </a>
     <nav class="siteLegal" aria-label="Legal">
       <a href="about.html">About</a>
       <span class="sep">|</span>

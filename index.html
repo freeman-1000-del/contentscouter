@@ -69,8 +69,13 @@
     }
     .vendingCta a:hover{filter:brightness(1.08)}
     .siteLogo{
-      font-size:15px;font-weight:800;letter-spacing:.06em;
-      color:#ff5436;text-transform:uppercase;
+      display:inline-flex;align-items:center;line-height:0;
+    }
+    .siteLogoImg{
+      display:block;height:44px;width:auto;object-fit:contain;
+    }
+    @media(min-width:700px){
+      .siteLogoImg{height:52px}
     }
     .siteLegal{
       display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;
@@ -414,7 +419,9 @@
 
   <header class="siteHead">
     <div class="siteBrand">
-      <span class="siteLogo">Content Scouter</span>
+      <a class="siteLogo" href="index.html" aria-label="Content Scouter">
+        <img class="siteLogoImg" src="content-scouter-logo.png" alt="Content Scouter" width="220" height="72" />
+      </a>
       <a class="risingKeywordsLink" href="https://getkeypro.com/vending/" target="_blank" rel="noopener">Rising Keywords (Free)</a>
     </div>
     <nav class="siteLegal" aria-label="Legal">

@@ -14,7 +14,9 @@ a{color:#8ec8ff;text-decoration:none}
 a:hover{text-decoration:underline}
 .wrap{width:780px;max-width:calc(100vw - 40px);margin:0 auto;padding:28px 0 48px}
 .siteHead{background:#0d0f14;border-bottom:1px solid #2a2f3c;padding:14px 24px;text-align:center;margin:0 0 24px}
-.siteLogo{font-size:15px;font-weight:800;letter-spacing:.06em;color:#ff5436;text-transform:uppercase;text-decoration:none}
+.siteLogo{display:inline-flex;align-items:center;justify-content:center;line-height:0;text-decoration:none}
+.siteLogoImg{display:block;height:44px;width:auto;margin:0 auto;object-fit:contain}
+@media(min-width:700px){.siteLogoImg{height:52px}}
 .card{background:#2a2d35;border:1px solid #3a3f4a;border-radius:14px;padding:28px 26px}
 .card h1{margin:0 0 8px;font-size:26px;color:#fff}
 .card h2{margin:22px 0 8px;font-size:17px;color:#ffd95a}
@@ -27,7 +29,7 @@ a:hover{text-decoration:underline}
 </style>
 </head>
 <body>
-<header class="siteHead"><a class="siteLogo" href="index.html">Content Scouter</a></header>
+<header class="siteHead"><a class="siteLogo" href="index.html" aria-label="Content Scouter"><img class="siteLogoImg" src="content-scouter-logo.png" alt="Content Scouter" width="220" height="72" /></a></header>
 <div class="wrap">
   <section class="card">
     <h1>Terms of Service</h1>
