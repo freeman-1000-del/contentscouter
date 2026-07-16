@@ -50,13 +50,13 @@
     }
 
     .siteBrand{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
-    .tabKeywordCol{
-      flex:1 1 0; min-width:108px; display:flex; flex-direction:column; gap:6px; align-items:stretch;
+    .risingKeywordsRow{
+      display:flex;justify-content:flex-end;align-items:center;
+      margin:8px 0 0;
     }
-    .tabKeywordCol .tab{flex:none; width:100%; min-width:0}
     .risingKeywordsLink{
-      display:inline-flex;align-items:center;justify-content:center;align-self:center;
-      gap:6px;padding:5px 10px;border-radius:999px;width:auto;max-width:100%;
+      display:inline-flex;align-items:center;justify-content:center;
+      gap:6px;padding:5px 10px;border-radius:999px;width:auto;
       border:1px solid rgba(70,211,154,.45);background:rgba(70,211,154,.12);
       color:#7ee787;font-size:11px;font-weight:800;text-decoration:none;white-space:nowrap;
       line-height:1.2;
@@ -518,13 +518,13 @@
       <div class="t"><span class="dot" style="background:#ff7eb6"></span>Top Engagement</div>
       <div class="d">Videos with the hottest engagement relative to views</div>
     </button>
-    <div class="tabKeywordCol">
-      <button class="tab" data-view="keyword">
-        <div class="t"><span class="dot" style="background:#5ad1c8"></span>Keyword Trends</div>
-        <div class="d">Popular keywords frequently found in titles</div>
-      </button>
-      <a class="risingKeywordsLink" href="https://getkeypro.com/vending/" target="_blank" rel="noopener">Rising Keywords (Free) <span class="risingHot">Hot!</span></a>
-    </div>
+    <button class="tab" data-view="keyword">
+      <div class="t"><span class="dot" style="background:#5ad1c8"></span>Keyword Trends</div>
+      <div class="d">Popular keywords frequently found in titles</div>
+    </button>
+  </div>
+  <div class="risingKeywordsRow">
+    <a class="risingKeywordsLink" href="https://getkeypro.com/vending/" target="_blank" rel="noopener"><span class="risingHot">Hot!</span> Rising Keywords (Free)</a>
   </div>
 
   <div class="chips" id="chips"></div>
