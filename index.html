@@ -48,6 +48,26 @@
       background:#0d0f14;border-bottom:1px solid #2a2f3c;
       padding:12px 24px;
     }
+
+    .siteBrand{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+    .risingKeywordsLink{
+      display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;
+      border:1px solid rgba(70,211,154,.45);background:rgba(70,211,154,.12);
+      color:#7ee787;font-size:12px;font-weight:800;text-decoration:none;white-space:nowrap;
+    }
+    .risingKeywordsLink:hover{background:rgba(70,211,154,.22);border-color:rgba(70,211,154,.7);color:#b6f5c7}
+    .vendingCta{
+      display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;
+      margin:0 0 16px;padding:14px 16px;border-radius:12px;
+      border:1px solid rgba(70,211,154,.35);background:linear-gradient(135deg,rgba(22,48,42,.55),rgba(15,26,46,.65));
+    }
+    .vendingCta strong{display:block;color:#eef1f6;font-size:14px;margin-bottom:4px}
+    .vendingCta span{display:block;color:var(--hint);font-size:12px;line-height:1.45}
+    .vendingCta a{
+      display:inline-flex;align-items:center;padding:9px 14px;border-radius:10px;
+      background:#46d39a;color:#0d0f14;font-size:12px;font-weight:800;text-decoration:none;white-space:nowrap;
+    }
+    .vendingCta a:hover{filter:brightness(1.08)}
     .siteLogo{
       font-size:15px;font-weight:800;letter-spacing:.06em;
       color:#ff5436;text-transform:uppercase;
@@ -393,7 +413,10 @@
 <body>
 
   <header class="siteHead">
-    <span class="siteLogo">Content Scouter</span>
+    <div class="siteBrand">
+      <span class="siteLogo">Content Scouter</span>
+      <a class="risingKeywordsLink" href="https://getkeypro.com/vending/" target="_blank" rel="noopener">Rising Keywords (Free)</a>
+    </div>
     <nav class="siteLegal" aria-label="Legal">
       <a href="about.html">About</a>
       <span class="sep">|</span>
@@ -1366,6 +1389,11 @@ async function loadKeywordsSurge(){
 }
 
 // Keyword list HTML (copy-all button + click-to-copy for each keyword)
+
+function vendingCtaHTML(){
+  return `<div class="vendingCta"><div><strong>Rising Keywords board (free)</strong><span>Category hooks · TOP 2 previews · full detail popup — free keyword vending board.</span></div><a href="https://getkeypro.com/vending/" target="_blank" rel="noopener">Open Rising Keywords →</a></div>`;
+}
+
 function keywordListHTML(items, isSurge){
   const bar = `<div class="kwbar">
     <button class="copyall" id="copyAllBtn">Copy All Keywords</button>
@@ -1448,18 +1476,19 @@ async function render(){
           About ${have} days have accumulated so far.<br>
           <b style="color:var(--accent)">In about ${left} more day(s)</b>, ${periodName.toLowerCase()} rising will start showing.`;
       }
-      content.innerHTML = `<div class="state">${msg}</div>`;
+      content.innerHTML = vendingCtaHTML() + `<div class="state">${msg}</div>`;
       return;
     }
     $('#count').textContent = r.rows.length ? `${r.rows.length} · change over the last ${r.spanDays} days` : '';
     if(!r.rows.length){
-      content.innerHTML = `<div class="state">No videos with rising view counts were found for this period.</div>`;
+      content.innerHTML = vendingCtaHTML() + `<div class="state">No videos with rising view counts were found for this period.</div>`;
       return;
     }
     await renderRichVideoPage({
       rows: r.rows, cardFn: risingCardHTML,
       sectitle: `Rising · ${periodName}`, countText: $('#count').textContent
     });
+    content.innerHTML = vendingCtaHTML() + content.innerHTML;
     return;
   }
 
@@ -1523,7 +1552,7 @@ async function render(){
       ]);
       const kwHtml = keywordListHTML(kws.map(k=>({word:k.word, count:k.count})), false);
       const kwText = `<section class="textCatalog"><h3>Keyword text index</h3><ol>${kws.slice(0,40).map((k,i)=>`<li><strong>#${i+1} ${escapeHtml(k.word)}</strong> — appears in ${k.count} trending title${k.count===1?'':'s'} today.</li>`).join('')}</ol></section>`;
-      content.innerHTML = intro + trends + kwHtml + kwText;
+      content.innerHTML = vendingCtaHTML() + intro + trends + kwHtml + kwText;
       bindKeywordCopy(kws.map(k=>k.word));
       return;
     } else {
@@ -1540,7 +1569,7 @@ async function render(){
       }
       $('#count').textContent = r.rows.length ? `Top ${r.rows.length}` : '';
       if(!r.rows.length){ content.innerHTML = `<div class="state">No keywords rose during this period.</div>`; return; }
-      content.innerHTML = keywordListHTML(r.rows, true);
+      content.innerHTML = vendingCtaHTML() + keywordListHTML(r.rows, true);
       bindKeywordCopy(r.rows.map(k=>k.word));
       return;
     }
