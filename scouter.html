@@ -414,7 +414,7 @@
   <div class="tabs">
     <button class="tab on" data-view="long">
       <div class="t"><span class="dot" style="background:var(--accent)"></span>롱폼 인기</div>
-      <div class="d">일본 mostPopular · 60초 초과</div>
+      <div class="d">일본 mostPopular · 주간 누적 100+</div>
     </button>
     <button class="tab" data-view="shorts">
       <div class="t"><span class="dot" style="background:var(--accent2)"></span>쇼츠 인기</div>
@@ -794,6 +794,35 @@ function ccReactionCardHTML(v, i){
       <div class="cmeta"><span class="cchan">${escapeHtml(v.channel||'')}</span></div>
     </div>
   </a>`;
+}
+
+/** 롱폼: 최근 ~7일 jp_long 스냅샷을 합쳐 100+ 유니크 목록 */
+async function loadLongformWeek(limit = 120){
+  const { data: snaps, error: sErr } = await sb.from('scout_snapshots')
+    .select('id,collected_at')
+    .eq('kind', KIND_LONG)
+    .order('collected_at', { ascending:false })
+    .limit(14);
+  if(sErr || !snaps?.length) return [];
+  const cutoff = Date.now() - 7 * 86400000;
+  const weekIds = snaps
+    .filter(s => new Date(s.collected_at).getTime() >= cutoff)
+    .map(s => s.id);
+  const ids = weekIds.length ? weekIds : snaps.slice(0, 7).map(s => s.id);
+  const { data, error } = await sb.from('scout_videos').select('*')
+    .in('snapshot_id', ids)
+    .eq('country_code', 'JP')
+    .eq('category_key', 'all')
+    .order('view_count', { ascending:false })
+    .limit(800);
+  if(error){ console.error(error); return []; }
+  const best = new Map();
+  for(const v of (data||[])){
+    const prev = best.get(v.video_id);
+    if(!prev || (v.view_count||0) > (prev.view_count||0)) best.set(v.video_id, v);
+  }
+  const rows = [...best.values()].sort((a,b)=>(b.view_count||0)-(a.view_count||0));
+  return dedupeSimilarVideos(rows).slice(0, limit);
 }
 
 // Fetch videos (based on the latest snapshot)
@@ -1608,10 +1637,19 @@ async function render(){
   }
 
   const title = state.view==='shorts' ? '쇼츠 인기' : '롱폼 인기';
-  const vids = await loadVideos({ country_code:'JP', limit:50 });
+  let vids;
+  if(state.view === 'long'){
+    vids = await loadLongformWeek(120);
+  } else {
+    vids = await loadVideos({ country_code:'JP', limit:100 });
+  }
+  const show = state.view === 'long' ? vids : vids.slice(0, 100);
   await renderRichVideoPage({
-    rows: vids.slice(0, 50), cardFn: cardHTML,
-    sectitle: title, countText: vids.length ? `${Math.min(vids.length, 50)}` : ''
+    rows: show, cardFn: cardHTML,
+    sectitle: title,
+    countText: show.length
+      ? (state.view==='long' ? `${show.length} · 최근 7일 누적` : `${show.length}`)
+      : ''
   });
   notifyParentResize();
 }
