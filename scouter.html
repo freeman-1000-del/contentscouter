@@ -439,7 +439,7 @@
   <div class="tabs">
     <button class="tab on" data-view="long">
       <div class="t"><span class="dot" style="background:var(--accent)"></span>롱폼 인기</div>
-      <div class="d">일본 mostPopular · 주간 누적 100+</div>
+      <div class="d">기간 칩 · 7·30일 누적 / 1년</div>
     </button>
     <button class="tab" data-view="shorts">
       <div class="t"><span class="dot" style="background:var(--accent2)"></span>쇼츠 인기</div>
@@ -527,7 +527,7 @@ let latestSnapshot = null;
 let latestCcSnapshot = null;
 let trackedSnapshotId = null;
 let trackedCcSnapshotId = null;
-let state = { view:'long', country:'JP', category:'music', continent:'asia', risingPeriod:1, risingFormat:'long', keywordMode:'surge', nicheId:'challenge', ccCategory:'comedy', ccMode:'popular' };
+let state = { view:'long', country:'JP', category:'music', continent:'asia', risingPeriod:1, risingFormat:'long', keywordMode:'surge', nicheId:'challenge', periodDays:7, ccCategory:'comedy', ccMode:'popular' };
 const LOCALE = (window.HUMATECK_CONFIG.MARKET && window.HUMATECK_CONFIG.MARKET.locale) || 'ko-KR';
 const COLLECTION_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const CC_COLLECTION_INTERVAL_MS = 3 * 24 * 60 * 60 * 1000;
@@ -835,33 +835,64 @@ function ccReactionCardHTML(v, i){
   </a>`;
 }
 
-/** 롱폼: 최근 ~7일 jp_long 스냅샷을 합쳐 100+ 유니크 목록 */
-async function loadLongformWeek(limit = 120){
+/**
+ * 기간별 인기: 우리 일일 스냅샷 누적 (API 0).
+ * days=1 → 최신 스냅샷만.
+ * YouTube엔 '한달/1년 차트' API가 없어, 스냅샷이 부족하면 null 반환 → 호출측에서 기간검색 안내.
+ */
+async function loadPeriodPopular(kind, days = 7, limit = 120){
+  const snapLimit = days <= 1 ? 1 : Math.min(400, Math.max(14, days + 5));
   const { data: snaps, error: sErr } = await sb.from('scout_snapshots')
     .select('id,collected_at')
-    .eq('kind', KIND_LONG)
+    .eq('kind', kind)
     .order('collected_at', { ascending:false })
-    .limit(14);
-  if(sErr || !snaps?.length) return [];
-  const cutoff = Date.now() - 7 * 86400000;
-  const weekIds = snaps
-    .filter(s => new Date(s.collected_at).getTime() >= cutoff)
-    .map(s => s.id);
-  const ids = weekIds.length ? weekIds : snaps.slice(0, 7).map(s => s.id);
+    .limit(snapLimit);
+  if(sErr || !snaps?.length) return { rows:[], mode:'empty', spanDays:0, snapCount:0 };
+
+  if(days <= 1){
+    const { data, error } = await sb.from('scout_videos').select('*')
+      .eq('snapshot_id', snaps[0].id)
+      .eq('country_code', 'JP')
+      .eq('category_key', 'all')
+      .order('view_count', { ascending:false })
+      .limit(limit);
+    if(error){ console.error(error); return { rows:[], mode:'empty', spanDays:0, snapCount:0 }; }
+    return { rows: dedupeSimilarVideos(data||[]).slice(0, limit), mode:'latest', spanDays:0, snapCount:1 };
+  }
+
+  const cutoff = Date.now() - days * 86400000;
+  const inWindow = snaps.filter(s => new Date(s.collected_at).getTime() >= cutoff);
+  const ids = (inWindow.length ? inWindow : snaps).map(s => s.id);
+  const oldest = ids.length
+    ? Math.min(...(inWindow.length?inWindow:snaps).map(s => new Date(s.collected_at).getTime()))
+    : Date.now();
+  const spanDays = Math.max(0, Math.round((Date.now() - oldest) / 86400000));
+
   const { data, error } = await sb.from('scout_videos').select('*')
     .in('snapshot_id', ids)
     .eq('country_code', 'JP')
     .eq('category_key', 'all')
     .order('view_count', { ascending:false })
-    .limit(800);
-  if(error){ console.error(error); return []; }
+    .limit(1200);
+  if(error){ console.error(error); return { rows:[], mode:'empty', spanDays, snapCount:ids.length }; }
+
   const best = new Map();
   for(const v of (data||[])){
     const prev = best.get(v.video_id);
     if(!prev || (v.view_count||0) > (prev.view_count||0)) best.set(v.video_id, v);
   }
-  const rows = [...best.values()].sort((a,b)=>(b.view_count||0)-(a.view_count||0));
-  return dedupeSimilarVideos(rows).slice(0, limit);
+  const rows = dedupeSimilarVideos(
+    [...best.values()].sort((a,b)=>(b.view_count||0)-(a.view_count||0))
+  ).slice(0, limit);
+
+  // 요청 기간의 절반 미만만 쌓였으면 '부분' — UI에서 기간검색 보완 가능 안내
+  const mode = spanDays >= days * 0.5 ? 'accum' : 'partial';
+  return { rows, mode, spanDays, snapCount: ids.length };
+}
+
+async function loadLongformWeek(limit = 120){
+  const r = await loadPeriodPopular(KIND_LONG, 7, limit);
+  return r.rows;
 }
 
 // Fetch videos (based on the latest snapshot)
@@ -1234,12 +1265,32 @@ async function runYtSearch(format){
     setSearchApiNote(`<span style="color:#ff8b8b">검색어를 2자 이상 입력하세요. ${label} 검색은 실행하지 않았습니다 (0 units).</span>`);
     return;
   }
+  return runYtSearchRequest({ format, q, periodDays: 0 });
+}
+
+/** 기간 인기 보완: publishedAfter + 조회수순 (검색어 선택) */
+async function runPeriodYtSearch(format, periodDays){
+  const q = (document.getElementById('searchInput')?.value || '').trim();
+  return runYtSearchRequest({ format, q, periodDays });
+}
+
+async function runYtSearchRequest({ format, q, periodDays }){
+  const label = format === 'shorts' ? '쇼츠' : '롱폼';
+  const periodLabel = periodDays >= 365 ? '1년' : periodDays >= 30 ? '30일' : periodDays >= 7 ? '7일' : '';
   const url = window.HUMATECK_CONFIG.JP_SEARCH_URL
     || `${SUPABASE_URL}/functions/v1/jp-search`;
-  setSearchApiNote(`${label} YouTube 검색 중… (예상 <b>${YT_SEARCH_UNITS} units</b>)`);
+  const expect = YT_SEARCH_UNITS;
+  setSearchApiNote(
+    periodDays
+      ? `${label} ${periodLabel} 기간검색 중… (예상 <b>${expect} units</b>)`
+      : `${label} YouTube 검색 중… (예상 <b>${expect} units</b>)`
+  );
   const content = $('#content');
-  content.innerHTML = `<div class="state"><div class="spin"></div><div>${label} YouTube 검색 중…</div></div>`;
+  content.innerHTML = `<div class="state"><div class="spin"></div><div>${label}${periodLabel?` ${periodLabel}`:''} 검색 중…</div></div>`;
   try{
+    const body = { pin: ACCESS_PIN, format, maxResults: 25 };
+    if(q) body.q = q;
+    if(periodDays > 0) body.periodDays = periodDays;
     const res = await fetch(url, {
       method:'POST',
       headers:{
@@ -1247,22 +1298,24 @@ async function runYtSearch(format){
         'apikey': SUPABASE_ANON_KEY,
         'x-scouter-pin': ACCESS_PIN
       },
-      body: JSON.stringify({ q, pin: ACCESS_PIN, format, maxResults: 25 }),
+      body: JSON.stringify(body),
       cache:'no-store'
     });
     const data = await res.json();
     if(!res.ok || !data.ok){
-      content.innerHTML = `<div class="state">${label} 검색 실패: ${escapeHtml(data.error||res.statusText)}</div>`;
-      setSearchApiNote(`실패 · ${label} 검색 units ~100일 수 있음. ${escapeHtml(data.error||'')}`);
+      content.innerHTML = `<div class="state">검색 실패: ${escapeHtml(data.error||res.statusText)}</div>`;
+      setSearchApiNote(`실패 · units ~100일 수 있음. ${escapeHtml(data.error||'')}`);
       return;
     }
-    const units = data.apiUnits || YT_SEARCH_UNITS;
+    const units = data.apiUnits || expect;
     setSearchApiNote(
-      `<span class="searchApiUsed">${label} 검색 소모: 약 ${units} units</span> · ${escapeHtml(data.apiNote||'')} · 결과 ${(data.results||[]).length}건`
+      `<span class="searchApiUsed">소모: 약 ${units} units</span> · ${escapeHtml(data.apiNote||'')} · 결과 ${(data.results||[]).length}건`
     );
     lastVideoRows = data.results || [];
     lastVideoCardFn = cardHTML;
-    lastVideoSectitle = `${label} YouTube 검색 · ${q}`;
+    lastVideoSectitle = periodDays
+      ? `${label} · ${periodLabel} YouTube 기간`
+      : `${label} YouTube 검색 · ${q}`;
     await renderRichVideoPage({
       rows: lastVideoRows,
       cardFn: cardHTML,
@@ -1272,7 +1325,7 @@ async function runYtSearch(format){
     });
   }catch(e){
     content.innerHTML = `<div class="state">네트워크 오류: ${escapeHtml(e.message||String(e))}</div>`;
-    setSearchApiNote('네트워크 오류 — units 소모 여부는 서버 로그 확인');
+    setSearchApiNote('네트워크 오류');
   }
 }
 
@@ -1322,7 +1375,22 @@ async function renderRichVideoPage({ rows, cardFn, sectitle, countText, prefixHT
 // Render sub-selection chips
 function renderChips(){
   const box = $('#chips');
-  if(state.view==='rising'){
+  if(state.view==='long' || state.view==='shorts'){
+    const periods = [
+      [1,'오늘(최신)'],
+      [7,'7일 누적'],
+      [30,'30일 누적'],
+      [365,'1년']
+    ];
+    box.innerHTML = periods.map(([d,name])=>
+      `<button class="chip ${state.periodDays===d?'on':''}" data-type="period" data-val="${d}">${name}</button>`
+    ).join('') +
+    `<div class="catnote" style="width:100%;margin-top:6px">
+      7·30일: 우리 일일 수집 누적 <b>API 0</b>.
+      1년: 스냅샷이 부족하면 YouTube 기간검색(약 <b>101 units</b>)으로 보완 가능.
+      ※ YouTube에 ‘한달/1년 공식 차트’ API는 없음.
+    </div>`;
+  } else if(state.view==='rising'){
     const formats = [['long','ロング'],['shorts','ショート']];
     const periods = [[1,'日間'],[7,'週間'],[30,'月間']];
     box.innerHTML =
@@ -1352,6 +1420,7 @@ function renderChips(){
     if(typ==='risingFormat') state.risingFormat=val;
     if(typ==='keyword') state.keywordMode=val;
     if(typ==='niche') state.nicheId=val;
+    if(typ==='period') state.periodDays=parseInt(val,10);
     renderChips(); render();
   }));
 }
@@ -1765,7 +1834,7 @@ async function render(){
       $('#count').textContent = r.rows.length ? `Top ${r.rows.length}` : '';
       if(!r.rows.length){ content.innerHTML = `<div class="state">No keywords rose during this period.</div>`; return; }
       content.innerHTML = keywordListHTML(r.rows, true);
-      bindKeywordコピー(r.rows.map(k=>k.word));
+      bindKeywordCopy(r.rows.map(k=>k.word));
       return;
     }
   }
@@ -1782,28 +1851,68 @@ async function render(){
   }
 
   await ensureSnapshotForView();
-  if(!latestSnapshot){
+  if(!latestSnapshot && state.periodDays <= 30){
     $('#sectitle').firstChild.textContent = state.view==='shorts' ? '쇼츠 인기 ' : '롱폼 인기 ';
     $('#count').textContent = '';
-    content.innerHTML = `<div class="state">일본 데이터가 아직 없습니다.<br><b>첫 수집</b>이 필요합니다. GitHub Actions → <b>Japan Daily Scout Collect</b> 실행, 또는 로컬에서 <b>node fetch.mjs</b>.</div>`;
+    content.innerHTML = `<div class="state">일본 데이터가 아직 없습니다.<br><b>첫 수집</b>이 필요합니다.</div>`;
     return;
   }
 
-  const title = state.view==='shorts' ? '쇼츠 인기' : '롱폼 인기';
-  let vids;
-  if(state.view === 'long'){
-    vids = await loadLongformWeek(120);
+  const isShorts = state.view === 'shorts';
+  const kind = isShorts ? KIND_SHORTS : KIND_LONG;
+  const format = isShorts ? 'shorts' : 'long';
+  const baseTitle = isShorts ? '쇼츠 인기' : '롱폼 인기';
+  const periodLabel = ({1:'오늘',7:'7일',30:'30일',365:'1년'})[state.periodDays] || `${state.periodDays}일`;
+
+  const packed = await loadPeriodPopular(kind, state.periodDays, 120);
+  let vids = packed.rows || [];
+  let countText = '';
+  let prefixHTML = '';
+
+  if(state.periodDays >= 365 && (packed.mode === 'partial' || packed.mode === 'empty' || vids.length < 30)){
+    // 1년: 스냅샷 부족 시 YouTube 기간검색 버튼 제공 (자동 과금 방지)
+    prefixHTML = `<div class="ccnotice" style="margin-bottom:12px">
+      <b>1년 인기</b> — YouTube에 공식 연간 차트 API는 없습니다.<br>
+      현재 스냅샷 누적: 약 <b>${packed.spanDays||0}일</b> · ${vids.length}건 (API 0).<br>
+      부족분을 <b>게시일 최근 1년 + 조회수순</b> YouTube 검색으로 채울 수 있습니다
+      (약 <b>101 units</b> / 회 · 검색어 없이 기간만).
+      <div style="margin-top:10px">
+        <button type="button" class="btnYt" id="btnPeriodYtFill" style="padding:10px 14px;border:0;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;cursor:pointer">
+          1년 YouTube 기간검색 실행 (~101 units)
+        </button>
+      </div>
+    </div>`;
+    countText = vids.length ? `${vids.length} · 스냅샷 부분` : '스냅샷 부족';
+  } else if(state.periodDays >= 30 && packed.mode === 'partial'){
+    prefixHTML = `<div class="ccnotice" style="margin-bottom:12px">
+      <b>${periodLabel} 누적</b> — 아직 일일 수집이 약 <b>${packed.spanDays}일</b>분만 있습니다 (목표 ${state.periodDays}일).
+      API 0 · 날이 쌓일수록 목록이 두꺼워집니다.
+      ${state.periodDays>=30 ? `<br>당장 필요하면 아래 기간검색(~101 units)을 쓸 수 있습니다.
+      <div style="margin-top:10px">
+        <button type="button" class="btnYt" id="btnPeriodYtFill" style="padding:10px 14px;border:0;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;cursor:pointer">
+          ${periodLabel} YouTube 기간검색 (~101 units)
+        </button>
+      </div>` : ''}
+    </div>`;
+    countText = `${vids.length} · ${packed.spanDays}일분 누적`;
+  } else if(state.periodDays <= 1){
+    countText = vids.length ? `${vids.length} · 최신 스냅샷` : '';
   } else {
-    vids = await loadVideos({ country_code:'JP', limit:100 });
+    countText = vids.length ? `${vids.length} · ${periodLabel} 누적 · API 0` : '';
   }
-  const show = state.view === 'long' ? vids : vids.slice(0, 100);
+
   await renderRichVideoPage({
-    rows: show, cardFn: cardHTML,
-    sectitle: title,
-    countText: show.length
-      ? (state.view==='long' ? `${show.length} · 최근 7일 누적` : `${show.length}`)
-      : ''
+    rows: vids,
+    cardFn: cardHTML,
+    sectitle: `${baseTitle} · ${periodLabel}`,
+    countText,
+    prefixHTML
   });
+
+  const fillBtn = document.getElementById('btnPeriodYtFill');
+  if(fillBtn){
+    fillBtn.addEventListener('click', ()=> runPeriodYtSearch(format, state.periodDays));
+  }
   notifyParentResize();
 }
 
