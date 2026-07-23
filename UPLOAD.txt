@@ -3,7 +3,7 @@ Content Scouter — GitHub upload bundle
 Repo: github.com/freeman-1000-del/contentscouter
 Domain: contentscouter.com
 
-Official URL: https://contentscouter.com/  (English only)
+Official: https://contentscouter.com/  (日本コンテンツスカウター · 会員ログイン必須)
 
 !! ONLY upload files from THIS folder !!
 

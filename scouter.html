@@ -1,21 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Content Scouter — Global YouTube Trends &amp; Rising Keywords</title>
-<meta name="description" content="Discover trending YouTube videos across 16 countries, rising view spikes, engagement leaders, and keyword trends. Updated daily.">
+<title>일본 유튜브트랜드 — 롱폼·쇼츠 · 급상승 · 니치</title>
+<meta name="description" content="일본 YouTube 트렌드 — 롱폼·쇼츠 인기, 급상승, 니치 카테고리 Google Trends. 관리자 PIN 전용.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://contentscouter.com/scouter.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Content Scouter — YouTube Trends &amp; Keywords">
-<meta property="og:description" content="Global trending videos, rising spikes, engagement analytics, and keyword trends for creators.">
+<meta property="og:title" content="일본 유튜브트랜드">
+<meta property="og:description" content="日本のロング・쇼츠 인기、급상승 영상・キーワード。">
 <meta property="og:url" content="https://contentscouter.com/scouter.html">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Content Scouter">
-<meta name="twitter:description" content="YouTube trending discovery, rising analytics, and keyword trends.">
+<meta name="twitter:title" content="일본 유튜브트랜드">
+<meta name="twitter:description" content="日本YouTube人気・急上昇リサーチ。">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebApplication","name":"Content Scouter","url":"https://contentscouter.com/scouter.html","description":"Trending YouTube videos, rising analytics, and keyword trends.","applicationCategory":"MultimediaApplication","operatingSystem":"Web"}
+{"@context":"https://schema.org","@type":"WebApplication","name":"일본 유튜브트랜드","url":"https://contentscouter.com/scouter.html","description":"日本YouTubeのロング・쇼츠 인기と급상승 키워드。会員ログイン必須。","applicationCategory":"MultimediaApplication","operatingSystem":"Web"}
 </script>
 <script defer src="analytics.js"></script>
 
@@ -25,9 +25,125 @@
 <script>
   window.HUMATECK_CONFIG = {
     SUPABASE_URL: 'https://ajvtyotblrtexcxuazqm.supabase.co',
-    SUPABASE_ANON_KEY: 'sb_publishable_cmn9eVnnvaAjXVJWa6bRQA_qrb1xglQ',   // ← Put your public (anon/publishable) key here
+    SUPABASE_ANON_KEY: 'sb_publishable_cmn9eVnnvaAjXVJWa6bRQA_qrb1xglQ',
     KEYWORDS_URL: 'https://ajvtyotblrtexcxuazqm.supabase.co/functions/v1/keywords',
-    VIDEO_REACTIONS_URL: 'https://ajvtyotblrtexcxuazqm.supabase.co/functions/v1/video-reactions'
+    VIDEO_REACTIONS_URL: 'https://ajvtyotblrtexcxuazqm.supabase.co/functions/v1/video-reactions',
+    // ★ 테스트용 4자리 PIN — 여기만 바꾸면 됨
+    ACCESS_PIN: '4826',
+    MARKET: {
+  "id": "jp",
+  "regionCode": "JP",
+  "languageCode": "ja",
+  "locale": "ko-KR",
+  "title": "일본 유튜브트랜드",
+  "accessPin": "4826",
+  "kinds": {
+    "long": "jp_long",
+    "shorts": "jp_shorts"
+  },
+  "niches": [
+    {
+      "id": "challenge",
+      "label": "챌린지/리액션",
+      "seed": "チャレンジ リアクション ISSEI"
+    },
+    {
+      "id": "comedy",
+      "label": "코미디/개그",
+      "seed": "コント ドッキリ おもしろ"
+    },
+    {
+      "id": "asmr_food",
+      "label": "ASMR(음식)",
+      "seed": "ASMR 料理 切る音"
+    },
+    {
+      "id": "mukbang",
+      "label": "먹방/대식",
+      "seed": "大食い モッパン チャレンジ"
+    },
+    {
+      "id": "anime_meme",
+      "label": "애니 밈/짤",
+      "seed": "アニメ 切り抜き あるある"
+    },
+    {
+      "id": "horror_game",
+      "label": "호러 게임 실황",
+      "seed": "ホラーゲーム 実況 切り抜き"
+    },
+    {
+      "id": "kids",
+      "label": "아동/패밀리",
+      "seed": "キッズ 家族 子供向け"
+    },
+    {
+      "id": "beauty",
+      "label": "뷰티/변신",
+      "seed": "メイク ビフォーアフター 変身"
+    },
+    {
+      "id": "pets",
+      "label": "반려동물",
+      "seed": "猫 犬 かわいい ペット"
+    },
+    {
+      "id": "jpop",
+      "label": "J-POP",
+      "seed": "J-POP カバー 踊ってみた"
+    },
+    {
+      "id": "fashion",
+      "label": "패션 코디",
+      "seed": "今日のコーデ ファッション"
+    },
+    {
+      "id": "unboxing",
+      "label": "리뷰/언박싱",
+      "seed": "開封 レビュー 買ってよかった"
+    },
+    {
+      "id": "anime_review",
+      "label": "애니 리뷰/기대작",
+      "seed": "アニメ 感想 期待作"
+    },
+    {
+      "id": "vlog",
+      "label": "일상 브이로그",
+      "seed": "ミニvlog 日常 ルーティン"
+    },
+    {
+      "id": "prank",
+      "label": "프랭크/몰카",
+      "seed": "ドッキリ いたずら Prank"
+    },
+    {
+      "id": "satisfying",
+      "label": "오디 새티스파잉",
+      "seed": "掃除 整理 切断 気持ちいい"
+    },
+    {
+      "id": "live_clip",
+      "label": "라이브 하이라이트",
+      "seed": "配信切り抜き ライブ配信"
+    },
+    {
+      "id": "diy",
+      "label": "DIY/생활팁",
+      "seed": "ライフハック DIY 便利"
+    },
+    {
+      "id": "sports",
+      "label": "스포츠 하이라이트",
+      "seed": "野球 ハイライト 格闘技"
+    },
+    {
+      "id": "cosplay",
+      "label": "성우/코스프레",
+      "seed": "声優 コスプレ アニメ"
+    }
+  ]
+}
   };
 </script>
 <!-- ============================================================= -->
@@ -44,7 +160,7 @@
   html{background:var(--page-gray);overflow-x:hidden;overflow-y:visible}
   body{
     background:var(--page-gray); color:var(--txt);
-    font-family:"Pretendard","Noto Sans KR",-apple-system,BlinkMacSystemFont,sans-serif;
+    font-family:"Pretendard","Noto Sans JP","Noto Sans KR",-apple-system,BlinkMacSystemFont,sans-serif;
     line-height:1.5; padding:0; width:100%; margin:0;
     overflow-x:hidden;overflow-y:visible;
   }
@@ -227,64 +343,103 @@
   .textCatalog h3{font-size:16px;color:var(--accent2);margin:0 0 10px}
   .textCatalog ol{margin:12px 0 0;padding-left:22px}
   .textCatalog li{margin:0 0 12px}
+
+  .authGate{
+    max-width:420px;margin:40px auto;padding:28px 24px;
+    background:var(--panel);border:1px solid var(--line);border-radius:16px;
+  }
+  .authGate h2{font-size:20px;margin:0 0 8px;color:var(--txt)}
+  .authGate .authLead{color:var(--sub);font-size:13px;margin:0 0 18px;line-height:1.55}
+  .authGate label{display:block;font-size:12px;color:var(--hint);margin:0 0 6px}
+  .authGate input{
+    width:100%;padding:11px 12px;margin:0 0 14px;border-radius:10px;
+    border:1px solid var(--line);background:var(--panel2);color:var(--txt);font-size:14px;
+  }
+  .authGate .authRow{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+  .authGate button{
+    flex:1;min-width:120px;padding:11px 14px;border:0;border-radius:10px;
+    font-weight:800;cursor:pointer;font-size:14px;
+  }
+  .authGate .btnPrimary{background:var(--accent);color:#fff}
+  .authGate .btnGhost{background:var(--panel2);color:var(--txt);border:1px solid var(--line)}
+  .authGate .authErr{color:#ff8b8b;font-size:13px;min-height:1.2em;margin:8px 0 0}
+  .authGate .authOk{color:var(--good);font-size:13px;margin:8px 0 0}
+  .userBar{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    margin:0 0 16px;padding:10px 12px;border-radius:12px;
+    background:var(--panel);border:1px solid var(--line);font-size:13px;color:var(--sub);
+  }
+  .userBar b{color:var(--txt)}
+  .userBar button{
+    padding:7px 12px;border-radius:8px;border:1px solid var(--line);
+    background:var(--panel2);color:var(--txt);cursor:pointer;font-weight:700;
+  }
+  .scouterShell[hidden], .authGate[hidden]{display:none!important}
 </style>
 </head>
 <body>
 <!-- scouter-dedupe-v3: same clip merges by title prefix; channel name ignored -->
 
-<div class="scouterShell">
 
-  <div class="eyebrow"><b>Content Scouter</b></div>
-  <h1>Discover Trending YouTube Videos Worldwide</h1>
-  <div class="lead">Surfacing trending videos across 16 countries.<span class="upd" id="updated"></span></div>
+<div id="authGate" class="authGate">
+  <h2>일본 유튜브트랜드</h2>
+  <p class="authLead">테스트용 · 관리자 4자리 PIN만 입력하세요.</p>
+  <label for="authPin">PIN (4자리)</label>
+  <input id="authPin" type="password" inputmode="numeric" maxlength="4" pattern="[0-9]*" autocomplete="off" placeholder="••••" />
+  <div class="authRow">
+    <button type="button" class="btnPrimary" id="authLoginBtn">입장</button>
+  </div>
+  <div class="authErr" id="authErr"></div>
+  <div class="authOk" id="authOk"></div>
+</div>
+
+<div class="scouterShell" id="scouterApp" hidden>
+
+  <div class="userBar" id="userBar">
+    <span>관리자 모드 · <b id="userEmail">PIN</b></span>
+    <button type="button" id="authLogoutBtn">나가기</button>
+  </div>
+
+
+  <div class="eyebrow"><b>일본 유튜브트랜드</b></div>
+  <h1>일본 롱폼 · 쇼츠 · 급상승 · 니치</h1>
+  <div class="lead">regionCode=JP · 직접 골라 만드는 리서치 · 테스트용<span class="upd" id="updated"></span></div>
 
   <div class="refreshBanner" id="refreshBanner">
-    <span class="refreshBannerLabel" id="refreshBannerLabel">Next refresh</span>
+    <span class="refreshBannerLabel" id="refreshBannerLabel">다음 갱신</span>
     <span class="refreshBannerClock" id="refreshBannerClock">--:--:--</span>
     <span class="refreshBannerSub" id="refreshBannerSub"></span>
   </div>
 
   <div class="tabs">
-    <button class="tab on" data-view="global">
-      <div class="t"><span class="dot" style="background:var(--accent)"></span>Global Trending</div>
-      <div class="d">Combined across 16 countries, by view count</div>
+    <button class="tab on" data-view="long">
+      <div class="t"><span class="dot" style="background:var(--accent)"></span>롱폼 인기</div>
+      <div class="d">일본 mostPopular · 60초 초과</div>
     </button>
-    <button class="tab kill" data-view="cc">
-      <div class="t"><span class="dot" style="background:#7ee787"></span>Reuse Allowed <span style="font-size:10px;color:#0d0f14;background:#7ee787;border-radius:8px;padding:1px 7px;margin-left:4px;font-weight:800;">CC</span></div>
-      <div class="d">Reuse-allowed picks · refreshed every 3 days</div>
-    </button>
-    <button class="tab" data-view="continent">
-      <div class="t"><span class="dot" style="background:var(--good)"></span>By Continent</div>
-      <div class="d">North America · Europe · Asia · South America · Oceania</div>
-    </button>
-    <button class="tab" data-view="country">
-      <div class="t"><span class="dot" style="background:var(--accent3)"></span>By Country</div>
-      <div class="d">Pick a country to see its trending videos</div>
-    </button>
-    <button class="tab" data-view="category">
-      <div class="t"><span class="dot" style="background:var(--accent2)"></span>By Category</div>
-      <div class="d">Music, gaming, sports, news, and more</div>
+    <button class="tab" data-view="shorts">
+      <div class="t"><span class="dot" style="background:var(--accent2)"></span>쇼츠 인기</div>
+      <div class="d">일본 Shorts · 조회수순</div>
     </button>
     <button class="tab" data-view="rising">
-      <div class="t"><span class="dot" style="background:#c77dff"></span>Rising <span style="font-size:10px;color:var(--accent);border:1px solid var(--accent);border-radius:8px;padding:1px 6px;margin-left:4px;">BETA</span></div>
-      <div class="d">Videos whose views spiked in a day</div>
-    </button>
-    <button class="tab" data-view="engagement">
-      <div class="t"><span class="dot" style="background:#ff7eb6"></span>Top Engagement</div>
-      <div class="d">Videos with the hottest engagement relative to views</div>
+      <div class="t"><span class="dot" style="background:#c77dff"></span>급상승 영상</div>
+      <div class="d">스냅샷 간 조회수 증가</div>
     </button>
     <button class="tab" data-view="keyword">
-      <div class="t"><span class="dot" style="background:#5ad1c8"></span>Keyword Trends</div>
-      <div class="d">Popular keywords frequently found in titles</div>
+      <div class="t"><span class="dot" style="background:#5ad1c8"></span>급상승 키워드</div>
+      <div class="d">제목 키워드 · 일본 Trends</div>
+    </button>
+    <button class="tab" data-view="niches">
+      <div class="t"><span class="dot" style="background:#ffb454"></span>니치 (Google)</div>
+      <div class="d">챌린지·ASMR·먹방 등 · Trends만</div>
     </button>
   </div>
 
   <div class="chips" id="chips"></div>
 
-  <div class="sectitle" id="sectitle">Global Trending <span class="count" id="count"></span></div>
+  <div class="sectitle" id="sectitle">롱폼 인기 <span class="count" id="count"></span></div>
   <div id="ccTimerSlot" class="ccTimerSlot hidden"></div>
   <div id="content">
-    <div class="state"><div class="spin"></div><div>Loading data...</div></div>
+    <div class="state"><div class="spin"></div><div>読み込み中...</div></div>
   </div>
 
 </div>
@@ -296,6 +451,10 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 // ===== The key settings are in HUMATECK_CONFIG at the top of this file's <head> =====
 const SUPABASE_URL = window.HUMATECK_CONFIG.SUPABASE_URL;
 const SUPABASE_ANON_KEY = window.HUMATECK_CONFIG.SUPABASE_ANON_KEY;
+const MARKET = window.HUMATECK_CONFIG.MARKET || { id:'jp', regionCode:'JP', kinds:{long:'jp_long',shorts:'jp_shorts'}, niches:[], title:'일본 유튜브트랜드' };
+const ACCESS_PIN = String(window.HUMATECK_CONFIG.ACCESS_PIN || MARKET.accessPin || '').trim();
+const PIN_STORAGE_KEY = 'yt_trend_pin_' + (MARKET.id || 'jp');
+let authSession = null;
 // ====================================================
 
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -315,12 +474,22 @@ const CATEGORIES = {
   travel:"Travel & Events", autos:"Autos & Vehicles"
 };
 
+const KIND_LONG = 'jp_long';
+const KIND_SHORTS = 'jp_shorts';
+function kindForView(view, risingFormat){
+  if(view === 'shorts') return KIND_SHORTS;
+  if(view === 'rising') return risingFormat === 'shorts' ? KIND_SHORTS : KIND_LONG;
+  if(view === 'keyword') return risingFormat === 'shorts' ? KIND_SHORTS : KIND_LONG;
+  if(view === 'niches') return KIND_LONG;
+  return KIND_LONG;
+}
+
 let latestSnapshot = null;
 let latestCcSnapshot = null;
 let trackedSnapshotId = null;
 let trackedCcSnapshotId = null;
-let state = { view:'global', country:'US', category:'music', continent:'asia', risingPeriod:1, keywordMode:'popular', ccCategory:'comedy', ccMode:'popular' };
-const LOCALE = 'en-US';
+let state = { view:'long', country:'JP', category:'music', continent:'asia', risingPeriod:1, risingFormat:'long', keywordMode:'surge', nicheId:'challenge', ccCategory:'comedy', ccMode:'popular' };
+const LOCALE = (window.HUMATECK_CONFIG.MARKET && window.HUMATECK_CONFIG.MARKET.locale) || 'ko-KR';
 const COLLECTION_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const CC_COLLECTION_INTERVAL_MS = 3 * 24 * 60 * 60 * 1000;
 const CC_PER_CATEGORY = 50;
@@ -335,19 +504,28 @@ const agoText = (iso)=>{ if(!iso) return ""; const d=new Date(iso); if(isNaN(d))
   if(days<30) return Math.floor(days/7)+"w ago"; if(days<365) return Math.floor(days/30)+"mo ago";
   return Math.floor(days/365)+"y ago"; };
 
-// Find the latest collection snapshot
-async function loadLatestSnapshot(){
+// Find the latest collection snapshot （日本ロング/ショート）
+async function loadLatestSnapshot(kind = KIND_LONG){
   const { data, error } = await sb.from('scout_snapshots')
-    .select('*').eq('kind','popular').order('collected_at',{ascending:false}).limit(1);
+    .select('*').eq('kind', kind).order('collected_at',{ascending:false}).limit(1);
   if(error || !data || !data.length) return null;
   return data[0];
 }
 
-async function peekLatestSnapshot(){
+async function peekLatestSnapshot(kind = KIND_LONG){
   const { data, error } = await sb.from('scout_snapshots')
-    .select('id,collected_at').eq('kind','popular').order('collected_at',{ascending:false}).limit(1);
+    .select('id,collected_at').eq('kind', kind).order('collected_at',{ascending:false}).limit(1);
   if(error || !data || !data.length) return null;
   return data[0];
+}
+
+async function ensureSnapshotForView(){
+  const kind = kindForView(state.view, state.risingFormat);
+  if(!latestSnapshot || latestSnapshot.kind !== kind){
+    latestSnapshot = await loadLatestSnapshot(kind);
+    if(latestSnapshot) trackedSnapshotId = latestSnapshot.id;
+  }
+  return latestSnapshot;
 }
 
 function getNextCollectionAt(){
@@ -397,17 +575,17 @@ function updateTrendRefreshBanner(){
   const interval = COLLECTION_INTERVAL_MS;
   if(!snap?.collected_at){
     if(el) el.textContent = '';
-    label.textContent = 'Next trend refresh';
+    label.textContent = '다음 갱신';
     clock.textContent = '--:--:--';
-    if(sub) sub.textContent = '· daily';
+    if(sub) sub.textContent = '· 毎日 · JP';
     return;
   }
   const d = new Date(snap.collected_at);
-  if(el) el.textContent = `Updated ${d.toLocaleString(LOCALE)}`;
+  if(el) el.textContent = `更新 ${d.toLocaleString(LOCALE)}`;
   const remain = remainUntilNextCycle(snap.collected_at, interval);
-  label.textContent = 'Next trend refresh';
+  label.textContent = '다음 갱신';
   clock.textContent = formatCountdownClock(remain);
-  if(sub) sub.textContent = `· last ${d.toLocaleDateString(LOCALE)}`;
+  if(sub) sub.textContent = `· ${d.toLocaleDateString(LOCALE)} · 日本`;
 }
 
 function ccTimerHTML(){
@@ -472,10 +650,11 @@ function updateRefreshLabels(){
 }
 
 async function pollForFreshSnapshot(){
-  const peek = await peekLatestSnapshot();
+  const kind = kindForView(state.view, state.risingFormat);
+  const peek = await peekLatestSnapshot(kind);
   if(peek){
     if(trackedSnapshotId && peek.id !== trackedSnapshotId){
-      latestSnapshot = await loadLatestSnapshot();
+      latestSnapshot = await loadLatestSnapshot(kind);
       trackedSnapshotId = latestSnapshot?.id || peek.id;
       if(state.view !== 'cc'){
         updateRefreshLabels();
@@ -842,7 +1021,7 @@ function bindVideoReactions(root){
   const boxes = [...root.querySelectorAll('.videoReactions[data-video-id]')];
   if(!boxes.length) return;
 
-  // Auto-load first cards so the 댓글 보기 button is ready when scrolled in.
+  // Auto-load first cards so the コメントを見る button is ready when scrolled in.
   boxes.slice(0, 24).forEach(loadReactionBox);
   if(boxes.length > 24){
     const observer = new IntersectionObserver((entries)=>{
@@ -919,14 +1098,16 @@ function watchFrameHeight(){
 function viewIntroHTML(title, paragraphs){
   return `<section class="viewIntro"><h2 class="viewIntroTitle">${escapeHtml(title)}</h2>${(paragraphs||[]).map(p=>`<p>${p}</p>`).join('')}</section>`;
 }
-const TREND_THEME_BY_VIEW = { global:'shock', cc:'tips', rising:'controversy', engagement:'emotion', keyword:'tips' };
+const TREND_THEME_BY_VIEW = { long:'tips', shorts:'tips', rising:'controversy', keyword:'tips' };
 async function loadTrendsPanel(themeId){
   const url = window.HUMATECK_CONFIG.KEYWORDS_URL
     || `${window.HUMATECK_CONFIG.SUPABASE_URL}/functions/v1/keywords`;
   try{
+    const headers = {'Content-Type':'application/json', 'apikey': SUPABASE_ANON_KEY};
+    if(authSession?.access_token) headers['Authorization'] = 'Bearer ' + authSession.access_token;
     const res = await fetch(url,{
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({ themeId: themeId||'tips' }), cache:'no-store'
+      method:'POST', headers,
+      body:JSON.stringify({ themeId: themeId||'tips', email: authSession?.user?.email || '' }), cache:'no-store'
     });
     if(!res.ok) return '';
     const data = await res.json();
@@ -937,8 +1118,8 @@ async function loadTrendsPanel(themeId){
       const score = r.score!=null ? ` (score ${r.score})` : '';
       return `<li><strong>${kw}</strong>${sug}${score}</li>`;
     }).join('');
-    const when = data.fetchedAt ? new Date(data.fetchedAt).toLocaleDateString('en-US') : 'today';
-    return `<aside class="trendsPanel"><h3>Google Trends · related US searches</h3><p>Pair these rising queries with the videos below to find timely short-form and long-form angles.</p><ul>${items}</ul><p class="trendsNote">Seed: ${escapeHtml(data.seedKeyword||themeId)} · Google Trends via DataForSEO · ${when}</p></aside>`;
+    const when = data.fetchedAt ? new Date(data.fetchedAt).toLocaleDateString(LOCALE) : '今日';
+    return `<aside class="trendsPanel"><h3>Google Trends · 日本の関連検索</h3><p>下の動画と合わせてショート・ロングの切り口を決める参考に。</p><ul>${items}</ul><p class="trendsNote">Seed: ${escapeHtml(data.seedKeyword||themeId)} · DataForSEO · ${when} · JP</p></aside>`;
   }catch(e){ console.warn('Trends panel', e); return ''; }
 }
 async function renderRichVideoPage({ rows, cardFn, sectitle, countText, prefixHTML }){
@@ -946,7 +1127,7 @@ async function renderRichVideoPage({ rows, cardFn, sectitle, countText, prefixHT
   $('#count').textContent = countText || '';
   const content = $('#content');
   if(!rows.length){
-    content.innerHTML = (prefixHTML||'') + `<div class="state">No videos to display.</div>`;
+    content.innerHTML = (prefixHTML||'') + `<div class="state">表示する動画がありません。</div>`;
     return;
   }
   content.innerHTML = (prefixHTML||'') + renderGridWithReactions(rows, cardFn);
@@ -959,45 +1140,36 @@ async function renderRichVideoPage({ rows, cardFn, sectitle, countText, prefixHT
 // Render sub-selection chips
 function renderChips(){
   const box = $('#chips');
-  if(state.view==='country'){
-    box.innerHTML = Object.entries(COUNTRY_NAMES).map(([code,name])=>
-      `<button class="chip ${state.country===code?'on':''}" data-type="country" data-val="${code}">${name}</button>`).join('');
-  } else if(state.view==='category'){
-    // Exclude categories YouTube's mostPopular doesn't support per-country category charts for (collection itself yields 0).
-    // This applies to education and travel/events. → Hide them from chips to avoid a confusing "no videos" state.
-    // (travel does return results in CC search, so it's still used as-is in the CC tab)
-    const CATEGORY_UNSUPPORTED = ['education','travel'];
-    box.innerHTML = Object.entries(CATEGORIES)
-      .filter(([key])=> !CATEGORY_UNSUPPORTED.includes(key))
-      .map(([key,name])=>
-      `<button class="chip ${state.category===key?'on':''}" data-type="category" data-val="${key}">${name}</button>`).join('')
-      + `<div class="catnote">※ 'Education' and 'Travel & Events' aren't shown because YouTube doesn't provide a per-country trending chart for these categories.</div>`;
-  } else if(state.view==='continent'){
-    box.innerHTML = Object.entries(CONTINENTS).map(([key,name])=>
-      `<button class="chip ${state.continent===key?'on':''}" data-type="continent" data-val="${key}">${name}</button>`).join('');
-  } else if(state.view==='rising'){
-    // For monthly, once 30 days of data have accumulated, re-enable the [30,'Monthly'] line (currently hidden)
-    const periods = [[1,'Daily'],[7,'Weekly']];
-    box.innerHTML = periods.map(([d,name])=>
-      `<button class="chip ${state.risingPeriod===d?'on':''}" data-type="rising" data-val="${d}">${name}</button>`).join('');
+  if(state.view==='rising'){
+    const formats = [['long','ロング'],['shorts','ショート']];
+    const periods = [[1,'日間'],[7,'週間'],[30,'月間']];
+    box.innerHTML =
+      formats.map(([d,name])=>
+        `<button class="chip ${state.risingFormat===d?'on':''}" data-type="risingFormat" data-val="${d}">${name}</button>`).join('') +
+      periods.map(([d,name])=>
+        `<button class="chip ${state.risingPeriod===d?'on':''}" data-type="rising" data-val="${d}">${name}</button>`).join('');
   } else if(state.view==='keyword'){
-    const modes = [['popular','Popular Keywords'],['surge','Rising Keywords']];
-    box.innerHTML = modes.map(([m,name])=>
-      `<button class="chip ${state.keywordMode===m?'on':''}" data-type="keyword" data-val="${m}">${name}</button>`).join('');
-  } else if(state.view==='cc'){
-    box.innerHTML = '';
+    const modes = [['surge','급상승 키워드'],['popular','인기 키워드']];
+    const formats = [['long','롱폼 제목'],['shorts','쇼츠 제목']];
+    box.innerHTML =
+      modes.map(([m,name])=>
+        `<button class="chip ${state.keywordMode===m?'on':''}" data-type="keyword" data-val="${m}">${name}</button>`).join('') +
+      formats.map(([d,name])=>
+        `<button class="chip ${state.risingFormat===d?'on':''}" data-type="risingFormat" data-val="${d}">${name}</button>`).join('');
+  } else if(state.view==='niches'){
+    const list = (MARKET.niches || []);
+    if(list.length && !list.some(n=>n.id===state.nicheId)) state.nicheId = list[0].id;
+    box.innerHTML = list.map(n=>
+      `<button class="chip ${state.nicheId===n.id?'on':''}" data-type="niche" data-val="${n.id}">${n.label}</button>`).join('');
   } else {
     box.innerHTML = '';
   }
   box.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>{
-    const t=c.dataset.type, val=c.dataset.val;
-    if(t==='country') state.country=val;
-    if(t==='category') state.category=val;
-    if(t==='continent') state.continent=val;
-    if(t==='rising') state.risingPeriod=parseInt(val,10);
-    if(t==='keyword') state.keywordMode=val;
-    if(t==='cc') state.ccMode=val;
-    if(t==='cccat') state.ccCategory=val;
+    const typ=c.dataset.type, val=c.dataset.val;
+    if(typ==='rising') state.risingPeriod=parseInt(val,10);
+    if(typ==='risingFormat') state.risingFormat=val;
+    if(typ==='keyword') state.keywordMode=val;
+    if(typ==='niche') state.nicheId=val;
     renderChips(); render();
   }));
 }
@@ -1006,7 +1178,7 @@ function renderChips(){
 async function loadRising(periodDays){
   // Fetch enough snapshots, newest first
   const { data: snaps } = await sb.from('scout_snapshots')
-    .select('*').eq('kind','popular').order('collected_at',{ascending:false}).limit(40);
+    .select('*').eq('kind', kindForView('rising', state.risingFormat)).order('collected_at',{ascending:false}).limit(40);
   if(!snaps || snaps.length < 2){
     return { notReady:true, reason:'firstrun' };
   }
@@ -1029,9 +1201,9 @@ async function loadRising(periodDays){
   }
 
   const { data: curV } = await sb.from('scout_videos').select('video_id,title,channel,thumbnail_url,view_count,like_count,comment_count,published_at,country_code,youtube_url')
-    .eq('snapshot_id', cur.id).eq('category_key','all').neq('country_code','GLOBAL');
+    .eq('snapshot_id', cur.id).eq('category_key','all').eq('country_code','JP');
   const { data: prevV } = await sb.from('scout_videos').select('video_id,view_count')
-    .eq('snapshot_id', prev.id).eq('category_key','all').neq('country_code','GLOBAL');
+    .eq('snapshot_id', prev.id).eq('category_key','all').eq('country_code','JP');
 
   const prevMap = {};
   (prevV||[]).forEach(v=>{ if(prevMap[v.video_id]==null || v.view_count>prevMap[v.video_id]) prevMap[v.video_id]=v.view_count; });
@@ -1116,11 +1288,11 @@ const STOPWORDS = new Set([
   // Common English
   "the","a","an","of","to","in","on","for","and","or","with","by","at","from","is","are","be","my","your","you","i","it","we","this","that","new","official","video","mv","feat","ft","full","hd","4k","vs","x","ep","part","season","live","audio","lyrics","lyric","music","song","remix","cover","trailer","teaser","show","tv","ver","version","prod",
   // Common Korean
-  "그리고","그런데","하지만","그래서","오늘","영상","공식","뮤직","노래","최신","현재","우리","너무","정말","진짜","이것","그것","feat",
+  "そして","でも","しかし","今日","公式","動画","最新","本当","これ","それ","feat",
   // Symbols/numeric
   "|","-","–","—","ft.","feat.","x","&","·",
   // Common Japanese/other boilerplate words
-  "公式","ミュージック","ビデオ","최初","オフィシャル"
+  "公式","ミュージック","ビデオ","初","オフィシャル"
 ]);
 
 // Split a title into words (Korean/English/Japanese/numeric, 2+ characters)
@@ -1144,9 +1316,10 @@ function tokenize(title){
 
 // Popular keywords: tally word frequency across titles in the latest snapshot's 'all' (per-country) set
 async function loadKeywordsPopular(){
+  await ensureSnapshotForView();
   if(!latestSnapshot) return [];
   const { data } = await sb.from('scout_videos').select('video_id,title')
-    .eq('snapshot_id', latestSnapshot.id).eq('category_key','all').neq('country_code','GLOBAL')
+    .eq('snapshot_id', latestSnapshot.id).eq('category_key','all').eq('country_code','JP')
     .limit(800);
   const seen=new Set(); const titles=[];
   (data||[]).forEach(r=>{ if(!seen.has(r.video_id)){ seen.add(r.video_id); titles.push(r.title); } });
@@ -1161,12 +1334,13 @@ async function loadKeywordsPopular(){
 
 // Rising keywords: word frequency increase between the latest snapshot and the previous one
 async function loadKeywordsSurge(){
+  const kind = kindForView('keyword', state.risingFormat);
   const { data: snaps } = await sb.from('scout_snapshots')
-    .select('*').eq('kind','popular').order('collected_at',{ascending:false}).limit(2);
+    .select('*').eq('kind', kind).order('collected_at',{ascending:false}).limit(2);
   if(!snaps || snaps.length < 2) return { notReady:true };
   const freqOf = async (snapId)=>{
     const { data } = await sb.from('scout_videos').select('video_id,title')
-      .eq('snapshot_id', snapId).eq('category_key','all').neq('country_code','GLOBAL').limit(800);
+      .eq('snapshot_id', snapId).eq('category_key','all').eq('country_code','JP').limit(800);
     const seen=new Set(); const f={};
     (data||[]).forEach(r=>{ if(!seen.has(r.video_id)){ seen.add(r.video_id); tokenize(r.title).forEach(w=>{ f[w]=(f[w]||0)+1; }); } });
     return f;
@@ -1186,8 +1360,8 @@ async function loadKeywordsSurge(){
 // Keyword list HTML (copy-all button + click-to-copy for each keyword)
 function keywordListHTML(items, isSurge){
   const bar = `<div class="kwbar">
-    <button class="copyall" id="copyAllBtn">Copy All Keywords</button>
-    <span class="kwtip">Click a keyword to copy just that one</span>
+    <button class="copyall" id="copyAllBtn">キーワードをすべてコピー</button>
+    <span class="kwtip">キーワードをクリックで個別コピー</span>
   </div>`;
   const grid = `<div class="kwgrid">${items.map((k,i)=>
     `<div class="kw" data-word="${escapeHtml(k.word)}">
@@ -1195,7 +1369,7 @@ function keywordListHTML(items, isSurge){
       <span class="word">${escapeHtml(k.word)}</span>
       ${isSurge?`<span class="up">▲ ${k.delta}</span>`:''}
       <span class="cnt">${k.count}${isSurge?' occurrences':' videos'}</span>
-      <span class="copyhint">Copy</span>
+      <span class="copyhint">コピー</span>
     </div>`
   ).join('')}</div>`;
   return bar + grid;
@@ -1213,7 +1387,7 @@ async function copyText(text){
   }
 }
 
-function bindKeywordCopy(words){
+function bindKeywordコピー(words){
   // Click-to-copy for each keyword
   document.querySelectorAll('.kw').forEach(el=>{
     el.addEventListener('click', async ()=>{
@@ -1223,11 +1397,11 @@ function bindKeywordCopy(words){
         el.classList.add('copied');
         const hint = el.querySelector('.copyhint');
         if(hint) hint.textContent = 'Copied!';
-        setTimeout(()=>{ el.classList.remove('copied'); if(hint) hint.textContent='Copy'; }, 1200);
+        setTimeout(()=>{ el.classList.remove('copied'); if(hint) hint.textContent='コピー'; }, 1200);
       }
     });
   });
-  // Copy all
+  // コピー all
   const btn = document.getElementById('copyAllBtn');
   if(btn){
     btn.addEventListener('click', async ()=>{
@@ -1235,7 +1409,7 @@ function bindKeywordCopy(words){
       if(ok){
         btn.classList.add('done');
         const orig = btn.textContent;
-        btn.textContent = `${words.length} keywords copied!`;
+        btn.textContent = `${words.length} 件コピーしました`;
         setTimeout(()=>{ btn.classList.remove('done'); btn.textContent = orig; }, 1500);
       }
     });
@@ -1245,44 +1419,49 @@ function bindKeywordCopy(words){
 async function render(){
   const content = $('#content');
   if(state.view !== 'cc') clearCcTimerSlot();
-  content.innerHTML = `<div class="state"><div class="spin"></div><div>Loading...</div></div>`;
+  content.innerHTML = `<div class="state"><div class="spin"></div><div>読み込み中...</div></div>`;
 
   // The rising view is handled separately
   if(state.view==='rising'){
-    const periodName = {1:'Daily',7:'Weekly',30:'Monthly'}[state.risingPeriod] || '';
+    await ensureSnapshotForView();
+    const periodName = {1:'日間',7:'週間',30:'月間'}[state.risingPeriod] || '';
     const r = await loadRising(state.risingPeriod);
-    $('#sectitle').firstChild.textContent = `Rising · ${periodName} `;
+    $('#sectitle').firstChild.textContent = `급상승 영상 · ${periodName} `;
     if(r.notReady){
       $('#count').textContent = '';
       let msg;
       if(r.reason==='firstrun'){
-        msg = `Rising is calculated by <b style="color:var(--txt)">comparing changes over a time period</b>.<br><br>
-          There's only 1 collection snapshot so far, so there's no earlier data to compare against.<br>
-          <b style="color:var(--accent)">Once tomorrow's automatic collection runs</b>, daily rising will start showing.`;
+        msg = `急上昇は <b style="color:var(--txt)">スナップショット間の再生数変化</b>で計算します。<br><br>
+          日本収集がまだ1回なので比較データがありません。<br>
+          <b style="color:var(--accent)">明日の自動収集後</b>、日間急上昇が表示されます。`;
       } else {
         const need = r.needDays, have = r.haveDays||0;
         const left = Math.max(1, need - have);
-        msg = `${periodName} rising needs <b style="color:var(--txt)">about ${need} days of data</b>.<br><br>
-          About ${have} days have accumulated so far.<br>
-          <b style="color:var(--accent)">In about ${left} more day(s)</b>, ${periodName.toLowerCase()} rising will start showing.`;
+        msg = `${periodName} 急上昇には <b style="color:var(--txt)">約 ${need}日分のデータ</b>が必要です。<br><br>
+          現在約 ${have}日分です。<br>
+          <b style="color:var(--accent)">約 ${left}日後</b>に ${periodName} 急上昇が表示されます。`;
       }
       content.innerHTML = `<div class="state">${msg}</div>`;
       return;
     }
-    $('#count').textContent = r.rows.length ? `${r.rows.length} · change over the last ${r.spanDays} days` : '';
+    $('#count').textContent = r.rows.length ? `${r.rows.length} · 直近 ${r.spanDays}日の変化` : '';
     if(!r.rows.length){
-      content.innerHTML = `<div class="state">No videos with rising view counts were found for this period.</div>`;
+      content.innerHTML = `<div class="state">この期間に再生数が伸びた動画はありません。</div>`;
       return;
     }
     await renderRichVideoPage({
       rows: r.rows, cardFn: risingCardHTML,
-      sectitle: `Rising · ${periodName}`, countText: $('#count').textContent
+      sectitle: `급상승 영상 · ${periodName}`, countText: $('#count').textContent
     });
     return;
   }
 
-  // Reuse Allowed (CC) — same DB row for EN and KO
-  if(state.view==='cc'){
+  // CC / engagement / multi-country — 日本スカウターでは無効
+  if(state.view==='cc' || state.view==='engagement' || state.view==='global' || state.view==='continent' || state.view==='country' || state.view==='category'){
+    content.innerHTML = `<div class="state">このタブは停止しました。ロング・ショート・急上昇を使ってください。</div>`;
+    return;
+  }
+  if(false && state.view==='cc'){
     updateRefreshLabels();
     if(!latestCcSnapshot) latestCcSnapshot = await loadLatestCCSnapshot();
     mountCcTimer();
@@ -1328,16 +1507,61 @@ async function render(){
   }
 
   // Keyword trends view
+
+  if(state.view==='niches'){
+    const list = MARKET.niches || [];
+    const niche = list.find(n=>n.id===state.nicheId) || list[0];
+    if(!niche){
+      content.innerHTML = `<div class="state">니치 시드가 없습니다. markets/jp.mjs 를 확인하세요.</div>`;
+      return;
+    }
+    $('#sectitle').firstChild.textContent = `니치 · ${niche.label} `;
+    $('#count').textContent = 'Google Trends';
+    content.innerHTML = `<div class="state"><div class="spin"></div><div>일본 Google Trends 수집 중…</div></div>`;
+    try{
+      const headers = {'Content-Type':'application/json', 'apikey': SUPABASE_ANON_KEY};
+      const res = await fetch(window.HUMATECK_CONFIG.KEYWORDS_URL, {
+        method:'POST', headers,
+        body: JSON.stringify({ seedKeyword: niche.seed, themeId: 'tips', email: 'support@humateck.com' }),
+        cache:'no-store'
+      });
+      const data = await res.json();
+      if(!res.ok || !data.ok){
+        content.innerHTML = `<div class="state">Trends 실패: ${escapeHtml(data.error||res.statusText||'error')}<br><br>시드: <b>${escapeHtml(niche.seed)}</b></div>`;
+        return;
+      }
+      const rows = (data.results||[]).map(r=>({
+        word: r.keyword,
+        count: r.score||0,
+        delta: r.score||0,
+        title: r.suggestedTitle||''
+      }));
+      const intro = viewIntroHTML(`${niche.label} · Google Trends (일본)`, [
+        `시드: ${niche.seed}`,
+        'YouTube API가 아니라 Google Trends(DataForSEO)로만 수집합니다. 국가별로 markets/*.mjs 시드만 바꾸면 복제됩니다.'
+      ]);
+      const panel = `<aside class="trendsPanel"><h3>관련 급상승 · ${escapeHtml(niche.label)}</h3><ul>${
+        rows.map(r=>`<li><strong>${escapeHtml(r.word)}</strong>${r.title?` — ${escapeHtml(r.title)}`:''} (score ${r.count})</li>`).join('')
+      }</ul><p class="trendsNote">${escapeHtml(data.region||'Japan')} · ${escapeHtml(data.languageCode||'ja')} · seed ${escapeHtml(data.seedKeyword||niche.seed)}</p></aside>`;
+      content.innerHTML = intro + panel + (rows.length ? keywordListHTML(rows, true) : '<div class="state">결과 없음</div>');
+      if(rows.length) bindKeywordCopy(rows.map(r=>r.word));
+    }catch(e){
+      content.innerHTML = `<div class="state">네트워크 오류: ${escapeHtml(e.message||String(e))}</div>`;
+    }
+    return;
+  }
+
   if(state.view==='keyword'){
+    await ensureSnapshotForView();
     if(state.keywordMode==='popular'){
       const kws = await loadKeywordsPopular();
-      $('#sectitle').firstChild.textContent = 'Popular Keywords ';
+      $('#sectitle').firstChild.textContent = '人気キーワード ';
       $('#count').textContent = kws.length ? `Top ${kws.length}` : '';
       if(!kws.length){ content.innerHTML = `<div class="state">No data available to extract keywords from.</div>`; return; }
       const trends = await loadTrendsPanel(TREND_THEME_BY_VIEW.keyword);
-      const intro = viewIntroHTML('Popular keywords from trending titles', [
-        'Frequently occurring words extracted from today\'s trending video titles across collected countries.',
-        'Use these alongside Google Trends below to validate search demand before scripting shorts or long-form videos.'
+      const intro = viewIntroHTML('日本の人気タイトル語', [
+        '今日の日本人気動画タイトルから抽出した頻出語です。',
+        '下の Google Trends（日本）と合わせてショート・ロングのテーマ選びに使ってください。'
       ]);
       const kwHtml = keywordListHTML(kws.map(k=>({word:k.word, count:k.count})), false);
       const kwText = `<section class="textCatalog"><h3>Keyword text index</h3><ol>${kws.slice(0,40).map((k,i)=>`<li><strong>#${i+1} ${escapeHtml(k.word)}</strong> — appears in ${k.count} trending title${k.count===1?'':'s'} today.</li>`).join('')}</ol></section>`;
@@ -1346,20 +1570,20 @@ async function render(){
       return;
     } else {
       const r = await loadKeywordsSurge();
-      $('#sectitle').firstChild.textContent = 'Rising Keywords ';
+      $('#sectitle').firstChild.textContent = '급상승 키워드 ';
       if(r.notReady){
         $('#count').textContent = '';
         content.innerHTML = `<div class="state">
-          Rising keywords are calculated by <b style="color:var(--txt)">comparing yesterday's and today's keywords</b>.<br><br>
-          There's only 1 collection snapshot so far, so there's no earlier data to compare against.<br>
-          <b style="color:var(--accent)">Once tomorrow's automatic collection runs</b>, rising keywords will start showing.
+          급상승 키워드は <b style="color:var(--txt)">昨日と今日のタイトル語頻度</b>を比較します。<br><br>
+          日本収集が1回だけだと比較データがありません。<br>
+          <b style="color:var(--accent)">明日の自動収集後</b>に表示されます。
         </div>`;
         return;
       }
       $('#count').textContent = r.rows.length ? `Top ${r.rows.length}` : '';
       if(!r.rows.length){ content.innerHTML = `<div class="state">No keywords rose during this period.</div>`; return; }
       content.innerHTML = keywordListHTML(r.rows, true);
-      bindKeywordCopy(r.rows.map(k=>k.word));
+      bindKeywordコピー(r.rows.map(k=>k.word));
       return;
     }
   }
@@ -1375,47 +1599,111 @@ async function render(){
     return;
   }
 
-  let filter={}, title='';
-  if(state.view==='global'){ filter={country_code:'GLOBAL', dedupe:true, limit:100}; title='Global Trending'; }
-  else if(state.view==='continent'){ filter={continent:state.continent, dedupe:true, limit:200}; title=`${CONTINENTS[state.continent]} Trending`; }
-  else if(state.view==='country'){ filter={country_code:state.country, limit:50}; title=`${COUNTRY_NAMES[state.country]} Trending`; }
-  else if(state.view==='category'){ filter={category_key:state.category, limit:50}; title=`${CATEGORIES[state.category]} Trending`; }
+  await ensureSnapshotForView();
+  if(!latestSnapshot){
+    $('#sectitle').firstChild.textContent = state.view==='shorts' ? '쇼츠 인기 ' : '롱폼 인기 ';
+    $('#count').textContent = '';
+    content.innerHTML = `<div class="state">日本データがまだありません. <b>fetch.mjs</b> 収集を先に実行してください.</div>`;
+    return;
+  }
 
-  const vids = await loadVideos(filter);
+  const title = state.view==='shorts' ? '쇼츠 인기' : '롱폼 인기';
+  const vids = await loadVideos({ country_code:'JP', limit:50 });
   await renderRichVideoPage({
-    rows: vids.slice(0, filter.limit), cardFn: cardHTML,
-    sectitle: title, countText: vids.length ? `${Math.min(vids.length, filter.limit)}` : ''
+    rows: vids.slice(0, 50), cardFn: cardHTML,
+    sectitle: title, countText: vids.length ? `${Math.min(vids.length, 50)}` : ''
   });
   notifyParentResize();
 }
 
 // Tab switching
-document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click', async ()=>{
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
   t.classList.add('on');
   state.view = t.dataset.view;
+  await ensureSnapshotForView();
   updateRefreshLabels();
   renderChips(); render();
 }));
 
-// Init
-(async ()=>{
+
+
+function setAuthMessage(err, ok){
+  const e = document.getElementById('authErr');
+  const o = document.getElementById('authOk');
+  if(e) e.textContent = err || '';
+  if(o) o.textContent = ok || '';
+}
+
+function showLoggedOut(){
+  authSession = null;
+  try{ sessionStorage.removeItem(PIN_STORAGE_KEY); }catch(_){}
+  const gate = document.getElementById('authGate');
+  const app = document.getElementById('scouterApp');
+  if(gate) gate.hidden = false;
+  if(app) app.hidden = true;
+}
+
+function showLoggedIn(){
+  authSession = { ok:true };
+  try{ sessionStorage.setItem(PIN_STORAGE_KEY, '1'); }catch(_){}
+  const gate = document.getElementById('authGate');
+  const app = document.getElementById('scouterApp');
+  if(gate) gate.hidden = true;
+  if(app) app.hidden = false;
+}
+
+async function authLogin(){
+  setAuthMessage('','');
+  const pin = (document.getElementById('authPin')?.value || '').trim();
+  if(!/^\d{4}$/.test(pin)){ setAuthMessage('4자리 숫자 PIN을 입력하세요'); return; }
+  if(!ACCESS_PIN){ setAuthMessage('ACCESS_PIN이 설정되지 않았습니다'); return; }
+  if(pin !== ACCESS_PIN){ setAuthMessage('PIN이 틀렸습니다'); return; }
+  showLoggedIn();
+  await bootScouter();
+}
+
+async function authLogout(){
+  showLoggedOut();
+  setAuthMessage('','나갔습니다');
+}
+
+function bindAuthUi(){
+  document.getElementById('authLoginBtn')?.addEventListener('click', authLogin);
+  document.getElementById('authLogoutBtn')?.addEventListener('click', authLogout);
+  document.getElementById('authPin')?.addEventListener('keydown', (ev)=>{
+    if(ev.key === 'Enter') authLogin();
+  });
+}
+
+
+async function bootScouter(){
   if(window.self !== window.top) document.documentElement.classList.add('in-iframe');
-  latestSnapshot = await loadLatestSnapshot();
-  latestCcSnapshot = await loadLatestCCSnapshot();
+  latestSnapshot = await loadLatestSnapshot(KIND_LONG);
   if(latestSnapshot){
     trackedSnapshotId = latestSnapshot.id;
-    if(latestCcSnapshot) trackedCcSnapshotId = latestCcSnapshot.id;
     updateRefreshLabels();
     setInterval(updateRefreshLabels, 1000);
     setInterval(pollForFreshSnapshot, 60000);
   } else {
-    $('#content').innerHTML = `<div class="state">No data has been collected yet. Please run the collector first.</div>`;
-    return;
+    $('#content').innerHTML = `<div class="state">日本データがまだありません。<b>node fetch.mjs</b> または Japan Daily Scout を実行してください。</div>`;
   }
   watchFrameHeight();
   renderChips();
   render();
+}
+
+// Init — PIN 필수
+(async ()=>{
+  bindAuthUi();
+  let unlocked = false;
+  try{ unlocked = sessionStorage.getItem(PIN_STORAGE_KEY) === '1'; }catch(_){}
+  if(!unlocked){
+    showLoggedOut();
+    return;
+  }
+  showLoggedIn();
+  await bootScouter();
 })();
 </script>
 </body>
