@@ -29,7 +29,7 @@
     KEYWORDS_URL: 'https://ajvtyotblrtexcxuazqm.supabase.co/functions/v1/keywords',
     VIDEO_REACTIONS_URL: 'https://ajvtyotblrtexcxuazqm.supabase.co/functions/v1/video-reactions',
     JP_SEARCH_URL: 'https://ajvtyotblrtexcxuazqm.supabase.co/functions/v1/jp-search',
-    // ★ 테스트용 4자리 PIN — 여기만 바꾸면 됨
+    // 초기 PIN(DB 시드). 변경은 로그인 후 「PIN 변경」에서.
     ACCESS_PIN: '4826',
     MARKET: {
   "id": "jp",
@@ -399,6 +399,32 @@
     padding:7px 12px;border-radius:8px;border:1px solid var(--line);
     background:var(--panel2);color:var(--txt);cursor:pointer;font-weight:700;
   }
+  .userBar .userBarActions{display:flex;gap:8px;flex-wrap:wrap}
+  .pinModalBackdrop{
+    position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.55);
+    display:flex;align-items:center;justify-content:center;padding:16px;
+  }
+  .pinModalBackdrop[hidden]{display:none!important}
+  .pinModal{
+    width:100%;max-width:400px;padding:22px 20px;border-radius:14px;
+    background:var(--panel);border:1px solid var(--line);
+  }
+  .pinModal h3{margin:0 0 8px;font-size:17px;color:var(--txt)}
+  .pinModal p{margin:0 0 14px;font-size:13px;color:var(--sub);line-height:1.5}
+  .pinModal label{display:block;font-size:12px;color:var(--hint);margin:0 0 6px}
+  .pinModal input{
+    width:100%;padding:10px 12px;margin:0 0 12px;border-radius:10px;
+    border:1px solid var(--line);background:var(--panel2);color:var(--txt);font-size:14px;
+  }
+  .pinModal .authRow{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+  .pinModal button{
+    flex:1;min-width:110px;padding:10px 12px;border:0;border-radius:10px;
+    font-weight:800;cursor:pointer;font-size:14px;
+  }
+  .pinModal .btnPrimary{background:var(--accent);color:#fff}
+  .pinModal .btnGhost{background:var(--panel2);color:var(--txt);border:1px solid var(--line)}
+  .pinModal .authErr{color:#ff8b8b;font-size:13px;min-height:1.2em;margin:8px 0 0}
+  .pinModal .authOk{color:var(--good);font-size:13px;margin:8px 0 0}
   .scouterShell[hidden], .authGate[hidden]{display:none!important}
 </style>
 </head>
@@ -422,7 +448,29 @@
 
   <div class="userBar" id="userBar">
     <span>관리자 모드 · <b id="userEmail">PIN</b></span>
-    <button type="button" id="authLogoutBtn">나가기</button>
+    <div class="userBarActions">
+      <button type="button" id="authChangePinBtn">PIN 변경</button>
+      <button type="button" id="authLogoutBtn">나가기</button>
+    </div>
+  </div>
+
+  <div id="pinChangeModal" class="pinModalBackdrop" hidden>
+    <div class="pinModal" role="dialog" aria-labelledby="pinChangeTitle">
+      <h3 id="pinChangeTitle">PIN 변경</h3>
+      <p>현재 PIN 확인 후 새 4자리 숫자로 바꿉니다. 모든 기기에서 즉시 적용됩니다.</p>
+      <label for="pinCurrent">현재 PIN</label>
+      <input id="pinCurrent" type="password" inputmode="numeric" maxlength="4" pattern="[0-9]*" autocomplete="off" placeholder="••••" />
+      <label for="pinNew">새 PIN</label>
+      <input id="pinNew" type="password" inputmode="numeric" maxlength="4" pattern="[0-9]*" autocomplete="off" placeholder="••••" />
+      <label for="pinNew2">새 PIN 확인</label>
+      <input id="pinNew2" type="password" inputmode="numeric" maxlength="4" pattern="[0-9]*" autocomplete="off" placeholder="••••" />
+      <div class="authRow">
+        <button type="button" class="btnGhost" id="pinChangeCancelBtn">취소</button>
+        <button type="button" class="btnPrimary" id="pinChangeSaveBtn">저장</button>
+      </div>
+      <div class="authErr" id="pinChangeErr"></div>
+      <div class="authOk" id="pinChangeOk"></div>
+    </div>
   </div>
 
 
@@ -491,9 +539,34 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const SUPABASE_URL = window.HUMATECK_CONFIG.SUPABASE_URL;
 const SUPABASE_ANON_KEY = window.HUMATECK_CONFIG.SUPABASE_ANON_KEY;
 const MARKET = window.HUMATECK_CONFIG.MARKET || { id:'jp', regionCode:'JP', kinds:{long:'jp_long',shorts:'jp_shorts'}, niches:[], title:'일본 유튜브트랜드' };
-const ACCESS_PIN = String(window.HUMATECK_CONFIG.ACCESS_PIN || MARKET.accessPin || '').trim();
 const PIN_STORAGE_KEY = 'yt_trend_pin_' + (MARKET.id || 'jp');
+const PIN_VALUE_KEY = 'yt_trend_pin_val_' + (MARKET.id || 'jp');
 let authSession = null;
+
+function getSessionPin(){
+  try{ return (sessionStorage.getItem(PIN_VALUE_KEY) || '').trim(); }catch(_){ return ''; }
+}
+function setSessionPin(pin){
+  try{
+    if(pin) sessionStorage.setItem(PIN_VALUE_KEY, pin);
+    else sessionStorage.removeItem(PIN_VALUE_KEY);
+  }catch(_){}
+}
+async function callJpPin(body){
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/jp-pin`, {
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
+    },
+    body: JSON.stringify(body),
+    cache:'no-store'
+  });
+  let data = null;
+  try{ data = await res.json(); }catch(_){ data = null; }
+  return { res, data };
+}
 // ====================================================
 
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -1288,7 +1361,12 @@ async function runYtSearchRequest({ format, q, periodDays }){
   const content = $('#content');
   content.innerHTML = `<div class="state"><div class="spin"></div><div>${label}${periodLabel?` ${periodLabel}`:''} 검색 중…</div></div>`;
   try{
-    const body = { pin: ACCESS_PIN, format, maxResults: 25 };
+    const sessionPin = getSessionPin();
+    if(!sessionPin){
+      content.innerHTML = `<div class="state">세션 PIN이 없습니다. 다시 로그인해 주세요.</div>`;
+      return;
+    }
+    const body = { pin: sessionPin, format, maxResults: 25 };
     if(q) body.q = q;
     if(periodDays > 0) body.periodDays = periodDays;
     const res = await fetch(url, {
@@ -1296,7 +1374,7 @@ async function runYtSearchRequest({ format, q, periodDays }){
       headers:{
         'Content-Type':'application/json',
         'apikey': SUPABASE_ANON_KEY,
-        'x-scouter-pin': ACCESS_PIN
+        'x-scouter-pin': sessionPin
       },
       body: JSON.stringify(body),
       cache:'no-store'
@@ -1935,9 +2013,35 @@ function setAuthMessage(err, ok){
   if(o) o.textContent = ok || '';
 }
 
+function setPinChangeMessage(err, ok){
+  const e = document.getElementById('pinChangeErr');
+  const o = document.getElementById('pinChangeOk');
+  if(e) e.textContent = err || '';
+  if(o) o.textContent = ok || '';
+}
+
+function openPinChangeModal(){
+  setPinChangeMessage('','');
+  ['pinCurrent','pinNew','pinNew2'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.value = '';
+  });
+  const modal = document.getElementById('pinChangeModal');
+  if(modal) modal.hidden = false;
+  document.getElementById('pinCurrent')?.focus();
+}
+
+function closePinChangeModal(){
+  const modal = document.getElementById('pinChangeModal');
+  if(modal) modal.hidden = true;
+  setPinChangeMessage('','');
+}
+
 function showLoggedOut(){
   authSession = null;
+  setSessionPin('');
   try{ sessionStorage.removeItem(PIN_STORAGE_KEY); }catch(_){}
+  closePinChangeModal();
   const gate = document.getElementById('authGate');
   const app = document.getElementById('scouterApp');
   if(gate) gate.hidden = false;
@@ -1957,10 +2061,50 @@ async function authLogin(){
   setAuthMessage('','');
   const pin = (document.getElementById('authPin')?.value || '').trim();
   if(!/^\d{4}$/.test(pin)){ setAuthMessage('4자리 숫자 PIN을 입력하세요'); return; }
-  if(!ACCESS_PIN){ setAuthMessage('ACCESS_PIN이 설정되지 않았습니다'); return; }
-  if(pin !== ACCESS_PIN){ setAuthMessage('PIN이 틀렸습니다'); return; }
-  showLoggedIn();
-  await bootScouter();
+  const btn = document.getElementById('authLoginBtn');
+  if(btn) btn.disabled = true;
+  try{
+    const { res, data } = await callJpPin({ action:'verify', pin });
+    if(!res.ok || !data?.ok){
+      setAuthMessage(data?.error || 'PIN이 틀렸습니다');
+      return;
+    }
+    setSessionPin(pin);
+    showLoggedIn();
+    await bootScouter();
+  }catch(err){
+    setAuthMessage('로그인 서버 연결 실패: ' + (err?.message || err));
+  }finally{
+    if(btn) btn.disabled = false;
+  }
+}
+
+async function authChangePin(){
+  setPinChangeMessage('','');
+  const currentPin = (document.getElementById('pinCurrent')?.value || '').trim();
+  const newPin = (document.getElementById('pinNew')?.value || '').trim();
+  const newPin2 = (document.getElementById('pinNew2')?.value || '').trim();
+  if(!/^\d{4}$/.test(currentPin) || !/^\d{4}$/.test(newPin)){
+    setPinChangeMessage('4자리 숫자 PIN을 입력하세요'); return;
+  }
+  if(newPin !== newPin2){ setPinChangeMessage('새 PIN 확인이 일치하지 않습니다'); return; }
+  if(currentPin === newPin){ setPinChangeMessage('새 PIN이 현재와 같습니다'); return; }
+  const btn = document.getElementById('pinChangeSaveBtn');
+  if(btn) btn.disabled = true;
+  try{
+    const { res, data } = await callJpPin({ action:'change', currentPin, newPin });
+    if(!res.ok || !data?.ok){
+      setPinChangeMessage(data?.error || 'PIN 변경 실패');
+      return;
+    }
+    setSessionPin(newPin);
+    setPinChangeMessage('', 'PIN이 변경되었습니다');
+    setTimeout(()=> closePinChangeModal(), 700);
+  }catch(err){
+    setPinChangeMessage('서버 연결 실패: ' + (err?.message || err));
+  }finally{
+    if(btn) btn.disabled = false;
+  }
 }
 
 async function authLogout(){
@@ -1971,8 +2115,17 @@ async function authLogout(){
 function bindAuthUi(){
   document.getElementById('authLoginBtn')?.addEventListener('click', authLogin);
   document.getElementById('authLogoutBtn')?.addEventListener('click', authLogout);
+  document.getElementById('authChangePinBtn')?.addEventListener('click', openPinChangeModal);
+  document.getElementById('pinChangeCancelBtn')?.addEventListener('click', closePinChangeModal);
+  document.getElementById('pinChangeSaveBtn')?.addEventListener('click', authChangePin);
   document.getElementById('authPin')?.addEventListener('keydown', (ev)=>{
     if(ev.key === 'Enter') authLogin();
+  });
+  document.getElementById('pinNew2')?.addEventListener('keydown', (ev)=>{
+    if(ev.key === 'Enter') authChangePin();
+  });
+  document.getElementById('pinChangeModal')?.addEventListener('click', (ev)=>{
+    if(ev.target?.id === 'pinChangeModal') closePinChangeModal();
   });
   bindSearchUi();
 }
@@ -1999,8 +2152,16 @@ async function bootScouter(){
   bindAuthUi();
   let unlocked = false;
   try{ unlocked = sessionStorage.getItem(PIN_STORAGE_KEY) === '1'; }catch(_){}
-  if(!unlocked){
+  const sessionPin = getSessionPin();
+  // 예전 세션(PIN값 없음) 또는 서버 PIN과 불일치 가능 → 재로그인
+  if(!unlocked || !sessionPin){
     showLoggedOut();
+    return;
+  }
+  const { res, data } = await callJpPin({ action:'verify', pin: sessionPin }).catch(()=>({ res:null, data:null }));
+  if(!res?.ok || !data?.ok){
+    showLoggedOut();
+    setAuthMessage(data?.error || '세션이 만료되었습니다. 다시 로그인하세요');
     return;
   }
   showLoggedIn();
