@@ -1603,7 +1603,7 @@ async function render(){
   if(!latestSnapshot){
     $('#sectitle').firstChild.textContent = state.view==='shorts' ? '쇼츠 인기 ' : '롱폼 인기 ';
     $('#count').textContent = '';
-    content.innerHTML = `<div class="state">日本データがまだありません. <b>fetch.mjs</b> 収集を先に実行してください.</div>`;
+    content.innerHTML = `<div class="state">일본 데이터가 아직 없습니다.<br><b>첫 수집</b>이 필요합니다. GitHub Actions → <b>Japan Daily Scout Collect</b> 실행, 또는 로컬에서 <b>node fetch.mjs</b>.</div>`;
     return;
   }
 
@@ -1686,7 +1686,7 @@ async function bootScouter(){
     setInterval(updateRefreshLabels, 1000);
     setInterval(pollForFreshSnapshot, 60000);
   } else {
-    $('#content').innerHTML = `<div class="state">日本データがまだありません。<b>node fetch.mjs</b> または Japan Daily Scout を実行してください。</div>`;
+    $('#content').innerHTML = `<div class="state">일본 데이터가 아직 없습니다.<br>GitHub Actions의 <b>Japan Daily Scout Collect</b> 또는 <b>node fetch.mjs</b>를 먼저 실행하세요.</div>`;
   }
   watchFrameHeight();
   renderChips();
