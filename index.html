@@ -180,6 +180,7 @@
     SUPABASE_ANON_KEY: 'sb_publishable_cmn9eVnnvaAjXVJWa6bRQA_qrb1xglQ',
     KEYWORDS_URL: 'https://ajvtyotblrtexcxuazqm.supabase.co/functions/v1/keywords',
     VIDEO_REACTIONS_URL: 'https://ajvtyotblrtexcxuazqm.supabase.co/functions/v1/video-reactions',
+    JP_SEARCH_URL: 'https://ajvtyotblrtexcxuazqm.supabase.co/functions/v1/jp-search',
     // ★ 테스트용 4자리 PIN — 여기만 바꾸면 됨
     ACCESS_PIN: '4826',
     MARKET: {
@@ -391,7 +392,31 @@
   .cbody{padding:11px 12px 13px;}
   .ctitle{font-size:13px; font-weight:600; line-height:1.35; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:35px;}
   .cmeta{margin-top:8px; font-size:11px; color:var(--hint); display:flex; flex-wrap:wrap; gap:5px; align-items:center;}
-  .views{color:var(--accent2); font-weight:700;}
+  .views{color:var(--accent2); font-weight:800;}
+  .viewbadge{
+    position:absolute; right:8px; bottom:8px;
+    background:rgba(13,15,20,.88); color:var(--accent2);
+    font-size:12px; font-weight:800; padding:4px 8px; border-radius:8px;
+    letter-spacing:.02em;
+  }
+  .searchBar{
+    display:flex; flex-wrap:wrap; gap:8px; align-items:center;
+    margin:0 0 14px; padding:12px; border-radius:12px;
+    background:var(--panel); border:1px solid var(--line);
+  }
+  .searchBar input{
+    flex:1; min-width:180px; padding:10px 12px; border-radius:10px;
+    border:1px solid var(--line); background:var(--panel2); color:var(--txt); font-size:14px;
+  }
+  .searchBar button{
+    padding:10px 14px; border-radius:10px; border:0; font-weight:800; cursor:pointer; font-size:13px;
+  }
+  .searchBar .btnFilter{background:var(--panel2); color:var(--txt); border:1px solid var(--line)}
+  .searchBar .btnYt{background:var(--accent); color:#fff}
+  .searchBar .btnClear{background:transparent; color:var(--sub); border:1px solid var(--line)}
+  .searchApiNote{width:100%; font-size:12px; color:var(--hint); line-height:1.45; margin:2px 0 0}
+  .searchApiNote b{color:var(--accent2)}
+  .searchApiUsed{color:var(--good); font-weight:700}
   .cchan{color:var(--sub); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;}
 
   .state{padding:60px 20px; text-align:center; color:var(--hint); font-size:14px;}
@@ -618,6 +643,17 @@
   </div>
 
   <div class="chips" id="chips"></div>
+
+  <div class="searchBar" id="searchBar">
+    <input id="searchInput" type="search" placeholder="제목·채널 필터 또는 YouTube 검색어" autocomplete="off" />
+    <button type="button" class="btnFilter" id="btnFilterList">목록 필터</button>
+    <button type="button" class="btnYt" id="btnYtSearch">YouTube 검색</button>
+    <button type="button" class="btnClear" id="btnSearchClear">초기화</button>
+    <div class="searchApiNote" id="searchApiNote">
+      목록 필터: <b>API 0 units</b> (이미 모은 데이터만) ·
+      YouTube 검색 1회: <b>약 101 units</b> (search.list 100 + videos.list 1)
+    </div>
+  </div>
 
   <div class="sectitle" id="sectitle">롱폼 인기 <span class="count" id="count"></span></div>
   <div id="ccTimerSlot" class="ccTimerSlot hidden"></div>
@@ -1147,17 +1183,18 @@ async function loadCategoryVideos(categoryKey, limit){
 function cardHTML(v, i){
   const country = v.country_code && v.country_code!=='GLOBAL' ? (COUNTRY_NAMES[v.country_code]||v.country_code) : '';
   const ago = agoText(v.published_at);
+  const viewsLabel = `조회수 ${fmtViews(v.view_count)}`;
   return `<a class="card" href="${v.youtube_url}" target="_blank" rel="noopener">
     <div class="thumb">
       <div class="rankbadge">${i+1}</div>
-      ${v.country_code && v.country_code!=='GLOBAL' ? `<div class="ccountry">${v.country_code}</div>`:''}
+      <div class="viewbadge">${viewsLabel}</div>
       <img src="${v.thumbnail_url}" loading="lazy" alt="${escapeHtml(v.title||'YouTube video')}">
     </div>
     <div class="cbody">
       <div class="ctitle">${escapeHtml(v.title)}</div>
       <div class="cmeta">
-        <span class="views">${fmtViews(v.view_count)} views</span>
-        ${v.like_count?`<span>· 👍${fmtViews(v.like_count)}</span>`:''}
+        <span class="views">${viewsLabel}</span>
+        ${v.like_count?`<span>· 좋아요 ${fmtViews(v.like_count)}</span>`:''}
         ${country?`<span>· ${country}</span>`:''}
         ${ago?`<span>· ${ago}</span>`:''}
       </div>
@@ -1323,12 +1360,123 @@ async function loadTrendsPanel(themeId){
     return `<aside class="trendsPanel"><h3>Google Trends · 日本の関連検索</h3><p>下の動画と合わせてショート・ロングの切り口を決める参考に。</p><ul>${items}</ul><p class="trendsNote">Seed: ${escapeHtml(data.seedKeyword||themeId)} · DataForSEO · ${when} · JP</p></aside>`;
   }catch(e){ console.warn('Trends panel', e); return ''; }
 }
-async function renderRichVideoPage({ rows, cardFn, sectitle, countText, prefixHTML }){
+let lastVideoRows = [];
+let lastVideoCardFn = cardHTML;
+let lastVideoSectitle = '';
+const YT_SEARCH_UNITS = 101; // search.list 100 + videos.list 1
+
+function setSearchApiNote(html){
+  const el = document.getElementById('searchApiNote');
+  if(el) el.innerHTML = html;
+}
+
+function filterRowsLocal(rows, q){
+  const needle = (q||'').trim().toLowerCase();
+  if(!needle) return rows.slice();
+  return (rows||[]).filter(v=>{
+    const hay = `${v.title||''} ${v.channel||''}`.toLowerCase();
+    return hay.includes(needle);
+  });
+}
+
+async function runListFilter(){
+  const q = document.getElementById('searchInput')?.value || '';
+  const filtered = filterRowsLocal(lastVideoRows, q);
+  setSearchApiNote(
+    `목록 필터: <b class="searchApiUsed">API 0 units</b> · 결과 ${filtered.length}/${lastVideoRows.length}건` +
+    (q ? ` · “${escapeHtml(q)}”` : '') +
+    ` · YouTube 검색 1회는 <b>약 ${YT_SEARCH_UNITS} units</b>`
+  );
+  await renderRichVideoPage({
+    rows: filtered,
+    cardFn: lastVideoCardFn,
+    sectitle: lastVideoSectitle || '검색 결과',
+    countText: `${filtered.length} · 필터`,
+    skipCache: true
+  });
+}
+
+async function runYtSearch(){
+  const q = (document.getElementById('searchInput')?.value || '').trim();
+  if(q.length < 2){
+    setSearchApiNote('<span style="color:#ff8b8b">검색어를 2자 이상 입력하세요. YouTube 검색은 실행하지 않았습니다 (0 units).</span>');
+    return;
+  }
+  const url = window.HUMATECK_CONFIG.JP_SEARCH_URL
+    || `${SUPABASE_URL}/functions/v1/jp-search`;
+  setSearchApiNote(`YouTube 검색 중… (예상 <b>${YT_SEARCH_UNITS} units</b>)`);
+  const content = $('#content');
+  content.innerHTML = `<div class="state"><div class="spin"></div><div>YouTube 검색 중…</div></div>`;
+  try{
+    const res = await fetch(url, {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        'x-scouter-pin': ACCESS_PIN
+      },
+      body: JSON.stringify({ q, pin: ACCESS_PIN, maxResults: 25 }),
+      cache:'no-store'
+    });
+    const data = await res.json();
+    if(!res.ok || !data.ok){
+      content.innerHTML = `<div class="state">검색 실패: ${escapeHtml(data.error||res.statusText)}</div>`;
+      setSearchApiNote(`실패 · 청구 units는 요청까지 갔을 수 있음 (보통 search 100). 오류: ${escapeHtml(data.error||'')}`);
+      return;
+    }
+    const units = data.apiUnits || YT_SEARCH_UNITS;
+    setSearchApiNote(
+      `<span class="searchApiUsed">이번 검색 소모: 약 ${units} units</span> · ${escapeHtml(data.apiNote||'')} · 결과 ${ (data.results||[]).length }건`
+    );
+    lastVideoRows = data.results || [];
+    lastVideoCardFn = cardHTML;
+    lastVideoSectitle = `YouTube 검색 · ${q}`;
+    await renderRichVideoPage({
+      rows: lastVideoRows,
+      cardFn: cardHTML,
+      sectitle: lastVideoSectitle,
+      countText: `${lastVideoRows.length} · API ${units}u`,
+      skipCache: true
+    });
+  }catch(e){
+    content.innerHTML = `<div class="state">네트워크 오류: ${escapeHtml(e.message||String(e))}</div>`;
+    setSearchApiNote('네트워크 오류 — units 소모 여부는 서버 로그 확인');
+  }
+}
+
+function clearSearchUi(){
+  const input = document.getElementById('searchInput');
+  if(input) input.value = '';
+  setSearchApiNote(
+    `목록 필터: <b>API 0 units</b> (이미 모은 데이터만) · YouTube 검색 1회: <b>약 ${YT_SEARCH_UNITS} units</b> (search.list 100 + videos.list 1)`
+  );
+  render();
+}
+
+function bindSearchUi(){
+  document.getElementById('btnFilterList')?.addEventListener('click', runListFilter);
+  document.getElementById('btnYtSearch')?.addEventListener('click', runYtSearch);
+  document.getElementById('btnSearchClear')?.addEventListener('click', clearSearchUi);
+  document.getElementById('searchInput')?.addEventListener('keydown', (ev)=>{
+    if(ev.key === 'Enter'){
+      ev.preventDefault();
+      // Enter = 무료 목록 필터 (실수 과금 방지). YouTube는 버튼만.
+      runListFilter();
+    }
+  });
+}
+
+async function renderRichVideoPage({ rows, cardFn, sectitle, countText, prefixHTML, skipCache }){
+  if(!skipCache){
+    lastVideoRows = rows || [];
+    lastVideoCardFn = cardFn || cardHTML;
+    lastVideoSectitle = sectitle || '';
+  }
   $('#sectitle').firstChild.textContent = sectitle + ' ';
   $('#count').textContent = countText || '';
   const content = $('#content');
   if(!rows.length){
-    content.innerHTML = (prefixHTML||'') + `<div class="state">表示する動画がありません。</div>`;
+    content.innerHTML = (prefixHTML||'') + `<div class="state">표시할 영상이 없습니다.</div>`;
     return;
   }
   content.innerHTML = (prefixHTML||'') + renderGridWithReactions(rows, cardFn);
@@ -1427,14 +1575,14 @@ function risingCardHTML(v, i){
   return `<a class="card" href="${v.youtube_url}" target="_blank" rel="noopener">
     <div class="thumb">
       <div class="rankbadge">${i+1}</div>
-      <div class="ccountry" style="color:#c77dff;">▲ ${fmtViews(v.delta)}</div>
+      <div class="viewbadge">▲ ${fmtViews(v.delta)}</div>
       <img src="${v.thumbnail_url}" loading="lazy" alt="${escapeHtml(v.title||'YouTube video')}">
     </div>
     <div class="cbody">
       <div class="ctitle">${escapeHtml(v.title)}</div>
       <div class="cmeta">
-        <span class="views">+${fmtViews(v.delta)} increase</span>
-        <span>· Total ${fmtViews(v.view_count)}</span>
+        <span class="views">증가 +${fmtViews(v.delta)}</span>
+        <span>· 조회수 ${fmtViews(v.view_count)}</span>
         ${country?`<span>· ${country}</span>`:''}
       </div>
       <div class="cmeta"><span class="cchan">${escapeHtml(v.channel||'')}</span></div>
@@ -1884,6 +2032,7 @@ function bindAuthUi(){
   document.getElementById('authPin')?.addEventListener('keydown', (ev)=>{
     if(ev.key === 'Enter') authLogin();
   });
+  bindSearchUi();
 }
 
 
