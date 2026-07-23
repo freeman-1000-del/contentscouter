@@ -490,8 +490,8 @@
       <div class="d">기간 칩 · 7·30일 누적 / 1년</div>
     </button>
     <button class="tab" data-view="shorts">
-      <div class="t"><span class="dot" style="background:var(--accent2)"></span>쇼츠 인기</div>
-      <div class="d">일본 Shorts · 조회수순</div>
+      <div class="t"><span class="dot" style="background:var(--accent2)"></span>쇼츠 누적순위</div>
+      <div class="d">기간 칩 · 7·30일 누적 / 1년 · #shorts</div>
     </button>
     <button class="tab" data-view="rising">
       <div class="t"><span class="dot" style="background:#c77dff"></span>급상승 영상</div>
@@ -1930,7 +1930,7 @@ async function render(){
 
   await ensureSnapshotForView();
   if(!latestSnapshot && state.periodDays <= 30){
-    $('#sectitle').firstChild.textContent = state.view==='shorts' ? '쇼츠 인기 ' : '롱폼 인기 ';
+    $('#sectitle').firstChild.textContent = state.view==='shorts' ? '쇼츠 누적순위 ' : '롱폼 인기 ';
     $('#count').textContent = '';
     content.innerHTML = `<div class="state">일본 데이터가 아직 없습니다.<br><b>첫 수집</b>이 필요합니다.</div>`;
     return;
@@ -1939,7 +1939,7 @@ async function render(){
   const isShorts = state.view === 'shorts';
   const kind = isShorts ? KIND_SHORTS : KIND_LONG;
   const format = isShorts ? 'shorts' : 'long';
-  const baseTitle = isShorts ? '쇼츠 인기' : '롱폼 인기';
+  const baseTitle = isShorts ? '쇼츠 누적순위' : '롱폼 인기';
   const periodLabel = ({1:'오늘',7:'7일',30:'30일',365:'1년'})[state.periodDays] || `${state.periodDays}일`;
 
   const packed = await loadPeriodPopular(kind, state.periodDays, 120);
