@@ -645,13 +645,16 @@
   <div class="chips" id="chips"></div>
 
   <div class="searchBar" id="searchBar">
-    <input id="searchInput" type="search" placeholder="제목·채널 필터 또는 YouTube 검색어" autocomplete="off" />
+    <input id="searchInput" type="search" placeholder="제목·채널 필터 또는 검색어" autocomplete="off" />
     <button type="button" class="btnFilter" id="btnFilterList">목록 필터</button>
-    <button type="button" class="btnYt" id="btnYtSearch">YouTube 검색</button>
+    <button type="button" class="btnYt" id="btnYtSearchLong">롱폼 검색</button>
+    <button type="button" class="btnYt" id="btnYtSearchShorts" style="background:var(--accent2);color:#111">쇼츠 검색</button>
     <button type="button" class="btnClear" id="btnSearchClear">초기화</button>
     <div class="searchApiNote" id="searchApiNote">
-      목록 필터: <b>API 0 units</b> (이미 모은 데이터만) ·
-      YouTube 검색 1회: <b>약 101 units</b> (search.list 100 + videos.list 1)
+      목록 필터: <b>API 0 units</b> ·
+      롱폼 YouTube 검색 1회: <b>약 101 units</b> (medium) ·
+      쇼츠 YouTube 검색 1회: <b>약 101 units</b> (short) ·
+      전체 통합 검색 없음
     </div>
   </div>
 
@@ -1385,7 +1388,7 @@ async function runListFilter(){
   setSearchApiNote(
     `목록 필터: <b class="searchApiUsed">API 0 units</b> · 결과 ${filtered.length}/${lastVideoRows.length}건` +
     (q ? ` · “${escapeHtml(q)}”` : '') +
-    ` · YouTube 검색 1회는 <b>약 ${YT_SEARCH_UNITS} units</b>`
+    ` · 롱폼/쇼츠 검색은 각 <b>약 ${YT_SEARCH_UNITS} units</b>`
   );
   await renderRichVideoPage({
     rows: filtered,
@@ -1396,17 +1399,18 @@ async function runListFilter(){
   });
 }
 
-async function runYtSearch(){
+async function runYtSearch(format){
   const q = (document.getElementById('searchInput')?.value || '').trim();
+  const label = format === 'shorts' ? '쇼츠' : '롱폼';
   if(q.length < 2){
-    setSearchApiNote('<span style="color:#ff8b8b">검색어를 2자 이상 입력하세요. YouTube 검색은 실행하지 않았습니다 (0 units).</span>');
+    setSearchApiNote(`<span style="color:#ff8b8b">검색어를 2자 이상 입력하세요. ${label} 검색은 실행하지 않았습니다 (0 units).</span>`);
     return;
   }
   const url = window.HUMATECK_CONFIG.JP_SEARCH_URL
     || `${SUPABASE_URL}/functions/v1/jp-search`;
-  setSearchApiNote(`YouTube 검색 중… (예상 <b>${YT_SEARCH_UNITS} units</b>)`);
+  setSearchApiNote(`${label} YouTube 검색 중… (예상 <b>${YT_SEARCH_UNITS} units</b>)`);
   const content = $('#content');
-  content.innerHTML = `<div class="state"><div class="spin"></div><div>YouTube 검색 중…</div></div>`;
+  content.innerHTML = `<div class="state"><div class="spin"></div><div>${label} YouTube 검색 중…</div></div>`;
   try{
     const res = await fetch(url, {
       method:'POST',
@@ -1415,22 +1419,22 @@ async function runYtSearch(){
         'apikey': SUPABASE_ANON_KEY,
         'x-scouter-pin': ACCESS_PIN
       },
-      body: JSON.stringify({ q, pin: ACCESS_PIN, maxResults: 25 }),
+      body: JSON.stringify({ q, pin: ACCESS_PIN, format, maxResults: 25 }),
       cache:'no-store'
     });
     const data = await res.json();
     if(!res.ok || !data.ok){
-      content.innerHTML = `<div class="state">검색 실패: ${escapeHtml(data.error||res.statusText)}</div>`;
-      setSearchApiNote(`실패 · 청구 units는 요청까지 갔을 수 있음 (보통 search 100). 오류: ${escapeHtml(data.error||'')}`);
+      content.innerHTML = `<div class="state">${label} 검색 실패: ${escapeHtml(data.error||res.statusText)}</div>`;
+      setSearchApiNote(`실패 · ${label} 검색 units ~100일 수 있음. ${escapeHtml(data.error||'')}`);
       return;
     }
     const units = data.apiUnits || YT_SEARCH_UNITS;
     setSearchApiNote(
-      `<span class="searchApiUsed">이번 검색 소모: 약 ${units} units</span> · ${escapeHtml(data.apiNote||'')} · 결과 ${ (data.results||[]).length }건`
+      `<span class="searchApiUsed">${label} 검색 소모: 약 ${units} units</span> · ${escapeHtml(data.apiNote||'')} · 결과 ${(data.results||[]).length}건`
     );
     lastVideoRows = data.results || [];
     lastVideoCardFn = cardHTML;
-    lastVideoSectitle = `YouTube 검색 · ${q}`;
+    lastVideoSectitle = `${label} YouTube 검색 · ${q}`;
     await renderRichVideoPage({
       rows: lastVideoRows,
       cardFn: cardHTML,
@@ -1448,19 +1452,20 @@ function clearSearchUi(){
   const input = document.getElementById('searchInput');
   if(input) input.value = '';
   setSearchApiNote(
-    `목록 필터: <b>API 0 units</b> (이미 모은 데이터만) · YouTube 검색 1회: <b>약 ${YT_SEARCH_UNITS} units</b> (search.list 100 + videos.list 1)`
+    `목록 필터: <b>API 0 units</b> · 롱폼 검색 1회: <b>약 ${YT_SEARCH_UNITS} units</b> · 쇼츠 검색 1회: <b>약 ${YT_SEARCH_UNITS} units</b> · 전체 통합 검색 없음`
   );
   render();
 }
 
 function bindSearchUi(){
   document.getElementById('btnFilterList')?.addEventListener('click', runListFilter);
-  document.getElementById('btnYtSearch')?.addEventListener('click', runYtSearch);
+  document.getElementById('btnYtSearchLong')?.addEventListener('click', ()=> runYtSearch('long'));
+  document.getElementById('btnYtSearchShorts')?.addEventListener('click', ()=> runYtSearch('shorts'));
   document.getElementById('btnSearchClear')?.addEventListener('click', clearSearchUi);
   document.getElementById('searchInput')?.addEventListener('keydown', (ev)=>{
     if(ev.key === 'Enter'){
       ev.preventDefault();
-      // Enter = 무료 목록 필터 (실수 과금 방지). YouTube는 버튼만.
+      // Enter = 무료 목록 필터 (실수 과금 방지)
       runListFilter();
     }
   });
