@@ -353,7 +353,7 @@
     </button>
     <button class="tab kill" data-view="cc">
       <div class="t"><span class="dot" style="background:#7ee787"></span>Reuse Allowed <span style="font-size:10px;color:#0d0f14;background:#7ee787;border-radius:8px;padding:1px 7px;margin-left:4px;font-weight:800;">CC</span></div>
-      <div class="d">Videos legally available for reuse · updated weekly</div>
+      <div class="d">CC-labeled videos · browse only · no archive</div>
     </button>
     <button class="tab" data-view="continent">
       <div class="t"><span class="dot" style="background:var(--good)"></span>By Continent</div>
@@ -574,7 +574,9 @@ function renderChips(){
     box.innerHTML = modes.map(([m,name])=>
       `<button class="chip ${state.keywordMode===m?'on':''}" data-type="keyword" data-val="${m}">${name}</button>`).join('');
   } else if(state.view==='cc'){
-    const modes = [['popular','Popular'],['reaction','Top Engagement'],['surge','Rising']];
+    // No Rising/surge — that needs weekly snapshot accumulation (disabled on public site)
+    if(state.ccMode === 'surge') state.ccMode = 'popular';
+    const modes = [['popular','Popular'],['reaction','Top Engagement']];
     box.innerHTML = modes.map(([m,name])=>
       `<button class="chip ${state.ccMode===m?'on':''}" data-type="cc" data-val="${m}">${name}</button>`).join('');
   } else {
@@ -1015,25 +1017,27 @@ async function render(){
     return;
   }
 
-  // Reuse Allowed (CC) view
+  // Reuse Allowed (CC) view — show CC videos only; no weekly archive / surge accumulation
   if(state.view==='cc'){
     const snap = await loadLatestCCSnapshot();
-    if(!snap){
-      $('#sectitle').firstChild.textContent = 'Reuse Allowed ';
-      $('#count').textContent = '';
-      content.innerHTML = `<div class="state">
-        No Reuse Allowed (CC) data yet.<br>
-        Please run the CC collector first.
-      </div>`;
-      return;
-    }
-    const ccDate = snap.collected_at ? new Date(snap.collected_at).toLocaleDateString('en-US') : '';
     const noticeHTML = `<div class="ccnotice">
-      <div style="margin-bottom:6px;"><b style="color:#7ee787;">📅 Updated once a week</b> <span style="color:#9aa;">· Last updated: ${ccDate}</span> <span style="color:#9aa;">(this is search-based, so it's collected on a weekly basis rather than in real time)</span></div>
+      <div style="margin-bottom:6px;"><b style="color:#7ee787;">Browse only</b>
+        <span style="color:#9aa;">· CC video list is shown when available. Weekly collect, history storage, and rising accumulation are <b style="color:var(--txt)">not used</b> on the public site.</span>
+      </div>
       ⚠️ These are videos YouTube has marked as <b>'Reuse Allowed (CC BY)'</b>.
       Using them requires <b>crediting the original creator</b>, and some elements within a video — such as music or clips — may carry separate copyright, so
       <b>please check the video's description directly</b>.
     </div>`;
+
+    if(!snap){
+      $('#sectitle').firstChild.textContent = 'Reuse Allowed ';
+      $('#count').textContent = '';
+      content.innerHTML = noticeHTML + `<div class="state">
+        No CC video list is available right now.<br>
+        Public site does not run CC archive collection.
+      </div>`;
+      return;
+    }
 
     // --- Engagement mode ---
     if(state.ccMode==='reaction'){
@@ -1045,29 +1049,10 @@ async function render(){
       return;
     }
 
-    // --- Rising mode ---
-    if(state.ccMode==='surge'){
-      const r = await loadCCSurge();
-      $('#sectitle').firstChild.textContent = 'Reuse Allowed · Rising ';
-      if(r.notReady){
-        $('#count').textContent = '';
-        content.innerHTML = noticeHTML + `<div class="state">
-          Rising is calculated by <b style="color:var(--txt)">comparing last week to this week</b>.<br><br>
-          CC data is collected once a week, so there's no prior week's data to compare against yet.<br>
-          <b style="color:#7ee787;">After next week's collection</b>, rising will start showing.
-        </div>`;
-        return;
-      }
-      $('#count').textContent = r.rows.length ? `${r.rows.length} · vs. last week` : '';
-      if(!r.rows.length){ content.innerHTML = noticeHTML + `<div class="state">No videos rose this week.</div>`; return; }
-      content.innerHTML = noticeHTML + `<div class="grid">${r.rows.map((v,i)=>ccSurgeCardHTML(v,i)).join('')}</div>`;
-      return;
-    }
-
-    // --- Popular mode (default): tally + all videos ---
+    // --- Popular mode (default): tally + videos (no surge / no multi-week compare) ---
     const { tally, videos } = await loadCCAll();
     $('#sectitle').firstChild.textContent = 'Reuse Allowed ';
-    $('#count').textContent = videos.length ? `${videos.length} · updated weekly` : '';
+    $('#count').textContent = videos.length ? `${videos.length}` : '';
     if(!videos.length){
       content.innerHTML = noticeHTML + `<div class="state">No Reuse Allowed videos found.</div>`;
       return;
