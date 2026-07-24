@@ -3,7 +3,8 @@ Content Scouter — GitHub upload bundle
 Repo: github.com/freeman-1000-del/contentscouter
 Domain: contentscouter.com
 
-Official: https://contentscouter.com/  (日本コンテンツスカウター · 会員ログイン必須)
+Official: https://contentscouter.com/  (English Content Scouter · public)
+Personal JP: https://contentscouter.com/jp/  (일본 유튜브트랜드 · PIN)
 
 !! ONLY upload files from THIS folder !!
 
@@ -22,16 +23,21 @@ Upload ALL of these to the repo ROOT (drag & drop on GitHub web):
   sitemap.xml
   CNAME
   deployer-ad.png
-  ko/index.html          (redirect to / — legacy /ko/ bookmarks)
-
-Steps:
-  1. Open github.com/freeman-1000-del/contentscouter
-  2. Upload files from:
-     g:\Global_Shorts_Factory\humateck-site\contentscouter-upload\
-  3. Wait 1–3 minutes, hard refresh: Ctrl+F5
+  ko/index.html
+  jp/index.html
+  jp/scouter.html
 
 After editing scouter.html or index-shell.html, rebuild index.html:
   python g:\Global_Shorts_Factory\scripts\merge-contentscouter-index.py
+
+Global collect (English site data):
+  cd g:\Global_Shorts_Factory\scripts\_humateck-scouter
+  node fetch-global.mjs
+  GitHub Actions: Global Daily Scout Collect
+
+Japan personal collect (optional):
+  node fetch.mjs
+  or Actions: Japan Daily Scout Collect (personal) → Run workflow
 
 Local path:
   g:\Global_Shorts_Factory\humateck-site\contentscouter-upload\
