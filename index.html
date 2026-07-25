@@ -329,6 +329,29 @@
   .cccount.zero .cccount-num{color:var(--hint);}
   .spin{display:inline-block; width:22px; height:22px; border:3px solid var(--line); border-top-color:var(--accent); border-radius:50%; animation:sp .8s linear infinite; margin-bottom:12px;}
   @keyframes sp{to{transform:rotate(360deg);}}
+  .cardArticle{display:flex;flex-direction:column;min-width:0}
+  .cardArticle .card{border-radius:14px 14px 0 0; flex:0 0 auto}
+  .videoReactions{
+    font-size:12px;line-height:1.55;color:var(--hint);
+    padding:10px 12px 13px;margin:0;
+    background:var(--panel);border:1px solid var(--line);border-top:0;
+    border-radius:0 0 14px 14px;
+    word-break:break-word;overflow-wrap:anywhere;
+  }
+  .videoReactions .reactionsTitle{font-size:11px;font-weight:700;color:var(--accent2);margin:0 0 6px;text-transform:uppercase;letter-spacing:.04em}
+  .commentList{margin:0;padding:0;list-style:none}
+  .commentList li{margin:0 0 8px;padding:8px 10px;background:var(--panel2);border-radius:8px;border:1px solid var(--line)}
+  .commentList li strong{color:var(--txt);font-size:12px}
+  .commentList .commentText{display:block;margin-top:4px;color:var(--sub)}
+  .commentList .commentLikes{font-size:11px;color:var(--hint);margin-top:3px}
+  .reactionsLoading,.reactionsEmpty{margin:0;font-size:12px;color:var(--hint)}
+  .commentsToggle{
+    margin:0;border:0;background:transparent;color:var(--accent2);
+    font-size:12px;font-weight:700;cursor:pointer;padding:0;text-align:left;
+  }
+  .commentsToggle:hover{color:#ffd08a;text-decoration:underline}
+  .commentsPanel{display:none;margin-top:10px}
+  .commentsPanel.open{display:block}
   </style>
 
 </head>
@@ -573,6 +596,125 @@ function cardHTML(v, i){
   </a>`;
 }
 function escapeHtml(s){ return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+const fmtNum = (n)=> Number(n||0).toLocaleString('en-US');
+
+function videoReactionsShell(v){
+  const id = escapeHtml(v.video_id || '');
+  if(!id) return '';
+  return `<div class="videoReactions" data-video-id="${id}"><p class="reactionsLoading">Loading comments…</p></div>`;
+}
+
+function renderCommentItems(comments){
+  return `<ul class="commentList">${comments.map(c=>`
+    <li><strong>${escapeHtml(c.author)}</strong>
+      <span class="commentText">${escapeHtml(c.text)}</span>
+      ${c.likes ? `<span class="commentLikes">👍 ${fmtNum(c.likes)}</span>` : ''}
+    </li>`).join('')}</ul>`;
+}
+
+function renderReactionsHTML(data){
+  if(!data || !data.ok){
+    if(data?.error === 'YouTube API not configured'){
+      return `<p class="reactionsEmpty">Top comments appear after YouTube API is connected.</p>`;
+    }
+    const msg = data?.error || 'Comments unavailable for this video.';
+    return `<p class="reactionsEmpty">${escapeHtml(msg)}</p>`;
+  }
+  if(data.comments && data.comments.length){
+    const count = data.comments.length;
+    return `
+      <button type="button" class="commentsToggle" data-action="toggle-comments" aria-expanded="false">
+        View comments (${count})
+      </button>
+      <div class="commentsPanel" data-role="comments-panel">
+        <p class="reactionsTitle">Top comments</p>
+        ${renderCommentItems(data.comments)}
+      </div>`;
+  }
+  if(data.commentsDisabled){
+    return `<p class="reactionsEmpty">Comments are turned off on this video.</p>`;
+  }
+  return `<p class="reactionsEmpty">No top comments found yet.</p>`;
+}
+
+const reactionsCache = new Map();
+let reactionsInflight = 0;
+const REACTIONS_MAX_PARALLEL = 4;
+
+async function fetchVideoReactions(videoId){
+  if(reactionsCache.has(videoId)) return reactionsCache.get(videoId);
+  const url = window.HUMATECK_CONFIG.VIDEO_REACTIONS_URL
+    || `${window.HUMATECK_CONFIG.SUPABASE_URL}/functions/v1/video-reactions`;
+  while(reactionsInflight >= REACTIONS_MAX_PARALLEL){
+    await new Promise(r=>setTimeout(r, 120));
+  }
+  reactionsInflight++;
+  try{
+    const res = await fetch(url, {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'apikey': SUPABASE_ANON_KEY
+      },
+      body:JSON.stringify({ videoId }), cache:'no-store'
+    });
+    const data = await res.json();
+    reactionsCache.set(videoId, data);
+    return data;
+  }catch(e){
+    return { ok:false, error:'Could not load reactions' };
+  }finally{
+    reactionsInflight--;
+  }
+}
+
+function loadReactionBox(el){
+  const videoId = el.dataset.videoId;
+  if(!videoId || el.dataset.loaded) return;
+  el.dataset.loaded = '1';
+  fetchVideoReactions(videoId).then(data=>{
+    el.innerHTML = renderReactionsHTML(data) || '<p class="reactionsEmpty">Comments unavailable.</p>';
+  });
+}
+
+function bindVideoReactions(root){
+  if(!root) return;
+  const boxes = [...root.querySelectorAll('.videoReactions[data-video-id]')];
+  if(!boxes.length) return;
+
+  boxes.slice(0, 24).forEach(loadReactionBox);
+  if(boxes.length > 24){
+    const observer = new IntersectionObserver((entries)=>{
+      entries.forEach(entry=>{
+        if(!entry.isIntersecting) return;
+        observer.unobserve(entry.target);
+        loadReactionBox(entry.target);
+      });
+    }, { rootMargin:'500px' });
+    boxes.slice(24).forEach(el=>observer.observe(el));
+  }
+
+  if(root.dataset.reactionsBound) return;
+  root.dataset.reactionsBound = '1';
+  root.addEventListener('click', (e)=>{
+    const btn = e.target.closest('[data-action="toggle-comments"]');
+    if(!btn || !root.contains(btn)) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const box = btn.closest('.videoReactions');
+    const panel = box && box.querySelector('[data-role="comments-panel"]');
+    if(!panel) return;
+    const open = panel.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    const count = panel.querySelectorAll('.commentList li').length;
+    btn.textContent = open ? `Hide comments (${count})` : `View comments (${count})`;
+  });
+}
+
+function renderGridWithReactions(rows, cardFn){
+  return `<div class="grid">${rows.map((v,i)=>`<article class="cardArticle">${cardFn(v,i)}${videoReactionsShell(v)}</article>`).join('')}</div>`;
+}
 
 // Render sub-selection chips
 function renderChips(){
@@ -1042,7 +1184,8 @@ async function render(){
       content.innerHTML = `<div class="state">No videos with rising view counts were found for this period.</div>`;
       return;
     }
-    content.innerHTML = `<div class="grid">${r.rows.map((v,i)=>risingCardHTML(v,i)).join('')}</div>`;
+    content.innerHTML = renderGridWithReactions(r.rows, risingCardHTML);
+    bindVideoReactions(content);
     return;
   }
 
@@ -1074,7 +1217,8 @@ async function render(){
       $('#sectitle').firstChild.textContent = 'Reuse Allowed · Top Engagement ';
       $('#count').textContent = rows.length ? `${rows.length}` : '';
       if(!rows.length){ content.innerHTML = noticeHTML + `<div class="state">No videos to display.</div>`; return; }
-      content.innerHTML = noticeHTML + `<div class="grid">${rows.map((v,i)=>ccReactionCardHTML(v,i)).join('')}</div>`;
+      content.innerHTML = noticeHTML + renderGridWithReactions(rows, ccReactionCardHTML);
+      bindVideoReactions(content);
       return;
     }
 
@@ -1096,7 +1240,8 @@ async function render(){
           </div>`).join('')}
       </div>
     </div>`;
-    content.innerHTML = noticeHTML + tallyHTML + `<div class="grid">${videos.map((v,i)=>ccCardHTML(v,i)).join('')}</div>`;
+    content.innerHTML = noticeHTML + tallyHTML + renderGridWithReactions(videos, ccCardHTML);
+    bindVideoReactions(content);
     return;
   }
 
@@ -1139,7 +1284,8 @@ async function render(){
       content.innerHTML = `<div class="state">No videos to display.</div>`;
       return;
     }
-    content.innerHTML = `<div class="grid">${rows.map((v,i)=>engagementCardHTML(v,i)).join('')}</div>`;
+    content.innerHTML = renderGridWithReactions(rows, engagementCardHTML);
+    bindVideoReactions(content);
     return;
   }
 
@@ -1156,7 +1302,8 @@ async function render(){
     content.innerHTML = `<div class="state">No videos to display. Data for this filter may not have been collected yet.</div>`;
     return;
   }
-  content.innerHTML = `<div class="grid">${vids.slice(0,filter.limit).map((v,i)=>cardHTML(v,i)).join('')}</div>`;
+  content.innerHTML = renderGridWithReactions(vids.slice(0,filter.limit), cardHTML);
+  bindVideoReactions(content);
 }
 
 // Tab switching (skip outbound Google Rising Keywords link)
