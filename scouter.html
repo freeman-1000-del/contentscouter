@@ -37,35 +37,21 @@
 
   /* View buttons */
   .tabs{display:grid; grid-template-columns:repeat(8,1fr); gap:9px; margin:24px 0 8px; align-items:stretch;}
-  .tabKeywordCol{
-    min-width:0; display:flex; flex-direction:column; gap:6px; align-items:stretch;
-  }
-  .tabKeywordCol .tab{flex:1 1 auto; width:100%; min-width:0}
-  .risingKeywordsLink{
-    display:inline-flex;align-items:center;justify-content:center;align-self:stretch;
-    gap:4px;padding:5px 8px;border-radius:999px;
-    border:1px solid rgba(70,211,154,.45);background:rgba(70,211,154,.12);
-    color:#7ee787;font-size:11px;font-weight:800;text-decoration:none;white-space:nowrap;
-    line-height:1.2;text-align:center;
-  }
-  .risingKeywordsLink:hover{background:rgba(70,211,154,.22);border-color:rgba(70,211,154,.7);color:#b6f5c7}
-  .risingHot{
-    display:inline-block;padding:1px 6px;border-radius:6px;
-    background:#ff3b4a;color:#fff;font-size:9px;font-weight:900;letter-spacing:.04em;
-    line-height:1.35;animation:risingHotBlink 1s ease-in-out infinite;
-    box-shadow:0 0 8px rgba(255,59,74,.65);
-  }
-  @keyframes risingHotBlink{
-    0%,100%{opacity:1;transform:scale(1);filter:brightness(1);box-shadow:0 0 8px rgba(255,59,74,.65)}
-    50%{opacity:.45;transform:scale(1.08);filter:brightness(1.35);box-shadow:0 0 14px rgba(255,120,80,.95)}
-  }
-  @media (prefers-reduced-motion:reduce){
-    .risingHot{animation:none}
-  }
   .tab{
     background:var(--panel); border:1.5px solid var(--line); border-radius:14px;
     padding:13px 12px; cursor:pointer; transition:.15s; text-align:left;
   }
+  a.tab.risingKeywordsLink{
+    display:flex; flex-direction:column; text-decoration:none; color:inherit;
+    border-color:rgba(70,211,154,.45);
+    background:linear-gradient(145deg,#16302a,var(--panel));
+    box-shadow:0 0 0 1px rgba(126,231,135,.2), 0 4px 16px rgba(126,231,135,.1);
+  }
+  a.tab.risingKeywordsLink:hover{
+    border-color:rgba(70,211,154,.75);
+    box-shadow:0 0 0 1px rgba(126,231,135,.35), 0 6px 20px rgba(126,231,135,.18);
+  }
+  a.tab.risingKeywordsLink .t{color:#7ee787;}
   .tab:hover{border-color:#3a4150; transform:translateY(-1px);}
   .tab.on{border-color:var(--accent); background:var(--panel2);}
   .tab .dot{width:9px; height:9px; border-radius:50%; display:inline-block; margin-right:7px;}
@@ -175,6 +161,10 @@
       <div class="t"><span class="dot" style="background:var(--accent)"></span>Global Trending</div>
       <div class="d">Combined across 16 countries, by view count</div>
     </button>
+    <a class="tab risingKeywordsLink" href="https://getkeypro.com/vending/" target="_blank" rel="noopener">
+      <div class="t"><span class="dot" style="background:#5ad1c8"></span>Google Rising Keywords</div>
+      <div class="d">Google rising keyword category picks</div>
+    </a>
     <button class="tab kill" data-view="cc">
       <div class="t"><span class="dot" style="background:#7ee787"></span>Reuse Allowed <span style="font-size:10px;color:#0d0f14;background:#7ee787;border-radius:8px;padding:1px 7px;margin-left:4px;font-weight:800;">CC</span></div>
       <div class="d">CC-labeled videos · browse only · no archive</div>
@@ -199,13 +189,6 @@
       <div class="t"><span class="dot" style="background:#ff7eb6"></span>Top Engagement</div>
       <div class="d">Videos with the hottest engagement relative to views</div>
     </button>
-    <div class="tabKeywordCol">
-      <button class="tab" data-view="keyword">
-        <div class="t"><span class="dot" style="background:#5ad1c8"></span>Keyword Trends</div>
-        <div class="d">Popular keywords frequently found in titles</div>
-      </button>
-      <a class="risingKeywordsLink" href="https://getkeypro.com/vending/" target="_blank" rel="noopener"><span class="risingHot">Hot!</span> Rising Keywords (Free)</a>
-    </div>
   </div>
 
   <div class="chips" id="chips"></div>
@@ -933,9 +916,9 @@ async function render(){
   content.innerHTML = `<div class="grid">${vids.slice(0,filter.limit).map((v,i)=>cardHTML(v,i)).join('')}</div>`;
 }
 
-// Tab switching
-document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
-  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+// Tab switching (skip outbound Google Rising Keywords link)
+document.querySelectorAll('.tab[data-view]').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.tab[data-view]').forEach(x=>x.classList.remove('on'));
   t.classList.add('on');
   state.view = t.dataset.view;
   renderChips(); render();
