@@ -119,63 +119,6 @@
     .keywordProCta{display:block;margin:10px 0;padding-top:8px;font-size:13px;font-weight:600;color:#ffd95a;border-top:1px solid rgba(214,176,78,.3);}
     .keywordProPhoto{display:block;width:100%;min-height:120px;margin-top:auto;border-radius:8px;border:1px solid rgba(214,176,78,.35);object-fit:contain;background:#fff;}
 
-    .deployerAd{
-      display:flex;flex-direction:column;width:100%;min-height:640px;
-      padding:16px 14px 18px;
-      background:linear-gradient(165deg,#122240 0%,#0a1628 55%,#061018 100%);
-      border:2px solid rgba(90,150,255,.55);border-radius:12px;color:#dbe9ff;
-      box-shadow:0 12px 40px rgba(0,0,0,.45),0 0 0 1px rgba(120,180,255,.12);
-      transition:transform .18s, box-shadow .18s;
-    }
-    .deployerAd:hover{
-      transform:translateY(-4px);
-      box-shadow:0 16px 48px rgba(0,0,0,.55),0 0 24px rgba(70,144,255,.18);
-      border-color:rgba(108,166,255,.75);
-    }
-    .deployerAd .headline{
-      display:block;font-size:13px;line-height:1.45;color:#ffd95a;font-weight:400;
-      margin-bottom:8px;letter-spacing:.02em;
-    }
-    .deployerAd .adBody{display:block;margin-top:4px}
-    .deployerAd .adIcons{
-      display:flex;flex-direction:column;align-items:center;
-      margin:0 auto 10px;width:100%;
-    }
-    .deployerAd .globe{
-      width:60px;height:60px;border-radius:50%;margin:0 0 10px;
-      border:2px solid rgba(93,160,255,.65);
-      background:radial-gradient(circle at 50% 50%,rgba(58,126,255,.4),rgba(4,18,45,.92) 68%);
-      box-shadow:0 0 18px rgba(70,144,255,.3);
-    }
-    .deployerAd .play{
-      width:40px;height:28px;border-radius:8px;margin:-22px 0 0;
-      background:linear-gradient(145deg,#ffe070,#b98217);
-      box-shadow:0 0 12px rgba(235,180,62,.45);position:relative;
-    }
-    .deployerAd .play:after{
-      content:"";position:absolute;left:15px;top:6px;
-      border-left:13px solid #1a1307;border-top:8px solid transparent;border-bottom:8px solid transparent;
-    }
-    .deployerAd .title{
-      display:block;font-size:14px;line-height:1.45;color:#ffd95a;font-weight:800;margin:0 0 10px;
-    }
-    .deployerAd .line{
-      display:block;font-size:13px;line-height:1.5;color:#c8d8ef;font-weight:400;margin-bottom:7px;
-    }
-    .deployerAd .cta{
-      display:block;margin:12px 0;padding-top:10px;
-      font-size:13px;font-weight:400;color:#ffd95a;
-      border-top:1px solid rgba(108,166,255,.25);
-    }
-    .deployerAd .adPhoto{
-      display:block;width:100%;min-height:100px;margin-top:auto;border-radius:8px;
-      border:1px solid rgba(108,166,255,.35);object-fit:cover;background:#0a1424;
-    }
-
-    .adCol .deployerAd .headline,
-    .adCol .deployerAd .adBody,
-    .adCol .deployerAd .cta{text-align:left}
-
     @media(max-width:960px){
       .siteHead{padding:12px 14px}
       .siteLegal{font-size:11px;gap:4px 8px;justify-content:flex-end;width:100%;margin-left:0}
@@ -185,11 +128,9 @@
       }
       .adCol{width:100%;max-width:480px;position:static}
       .centerPanel{width:100%;max-width:100%}
-      .keywordProAd,.deployerAd{min-height:auto;display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:flex-start;gap:10px;padding:14px;text-align:left}
-      .deployerAd .globe,.deployerAd .play{margin:0}
-      .deployerAd .play{margin-left:10px;margin-top:-22px}
-      .deployerAd .cta,.keywordProCta{margin:0;border-top:0;padding-top:0}
-      .deployerAd .adPhoto,.keywordProPhoto{max-width:120px;margin-top:0}
+      .keywordProAd{min-height:auto;display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:flex-start;gap:10px;padding:14px;text-align:left}
+      .keywordProCta{margin:0;border-top:0;padding-top:0}
+      .keywordProPhoto{max-width:120px;margin-top:0}
       .keywordProLogo{max-width:160px;margin-bottom:0}
       .centerPanel{border-radius:12px;border:2px solid #1e2433}
     }
@@ -236,23 +177,7 @@
         <!--SCOUTER_MOUNT-->
       </div>
 
-      <aside class="adCol">
-        <a class="deployerAd" data-ad-placement="right" href="https://humateck.com/" target="_blank" rel="noopener">
-          <span class="headline">YouTube Multilingual Registration</span>
-          <div class="adIcons">
-            <div class="globe"></div>
-            <div class="play"></div>
-          </div>
-          <div class="adBody">
-            <span class="title">Web subscription · multilingual titles &amp; descriptions</span>
-            <span class="line">Standard $19.90/mo · Annual $191</span>
-            <span class="line">Google OAuth · YouTube API delivery</span>
-            <span class="line">1-minute sequential registration</span>
-          </div>
-          <span class="cta">Open order page →</span>
-          <img class="adPhoto" src="deployer-ad.png" alt="Multilingual registration order page" loading="lazy">
-        </a>
-      </aside>
+      <aside class="adCol" aria-hidden="true"></aside>
     </div>
   </section>
 

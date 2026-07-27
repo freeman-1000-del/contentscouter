@@ -22,7 +22,6 @@ Upload ALL of these to the repo ROOT (drag & drop on GitHub web):
   robots.txt
   sitemap.xml
   CNAME
-  deployer-ad.png
   ko/index.html
   jp/index.html
   jp/scouter.html

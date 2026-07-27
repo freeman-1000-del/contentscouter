@@ -1,6 +1,6 @@
 /**
  * Content Scouter — Google Analytics 4
- * Custom: deployer_ad_click on .deployerAd links
+ * Custom: keyword_pro_ad_click on .keywordProAd links
  */
 window.CS_GA_MEASUREMENT_ID = "G-02PN0TZF9M";
 
@@ -41,22 +41,6 @@ window.CS_GA_MEASUREMENT_ID = "G-02PN0TZF9M";
   document.addEventListener(
     "click",
     function (e) {
-      var deployer = e.target.closest && e.target.closest("a.deployerAd");
-      if (deployer) {
-        var ctaEl = deployer.querySelector(".cta");
-        window.csTrackEvent("deployer_ad_click", {
-          event_category: "outbound_ad",
-          event_label: "humateck_deployer",
-          product: "content_scouter",
-          ad_placement: adPlacementFromLink(deployer),
-          link_url: deployer.getAttribute("href") || "",
-          cta_text: (ctaEl && ctaEl.textContent.trim()) || "deployer_ad",
-          page_path: window.location.pathname || "",
-          page_title: document.title || "",
-          transport_type: "beacon",
-        });
-        return;
-      }
       var keypro = e.target.closest && e.target.closest("a.keywordProAd");
       if (!keypro) return;
       var keyCta = keypro.querySelector(".keywordProCta");
