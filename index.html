@@ -99,25 +99,28 @@
       .centerPanel{width:auto}
     }
 
-    .keywordProAd{
+    .keywordProAd,.getkeyEditorAd{
       display:flex;flex-direction:column;width:100%;min-height:640px;padding:14px 12px 16px;
-      background:linear-gradient(165deg,#0f1a2e 0%,#0a1220 50%,#060d18 100%);
-      border:2px solid rgba(214,176,78,.65);border-radius:12px;color:#e8edf5;
-      box-shadow:0 12px 40px rgba(0,0,0,.45),0 0 0 1px rgba(214,176,78,.12);
+      background:linear-gradient(165deg,#0b1f24 0%,#0a1620 50%,#071018 100%);
+      border:2px solid rgba(45,212,191,.55);border-radius:12px;color:#e8edf5;
+      box-shadow:0 12px 40px rgba(0,0,0,.45),0 0 0 1px rgba(45,212,191,.12);
       transition:transform .18s,box-shadow .18s;text-decoration:none;
     }
-    .keywordProAd:hover{
+    .keywordProAd:hover,.getkeyEditorAd:hover{
       transform:translateY(-4px);
-      box-shadow:0 16px 48px rgba(0,0,0,.55),0 0 24px rgba(214,176,78,.15);
-      border-color:rgba(255,217,90,.85);
+      box-shadow:0 16px 48px rgba(0,0,0,.55),0 0 24px rgba(45,212,191,.18);
+      border-color:rgba(94,234,212,.85);
     }
-    .keywordProLogo{display:block;width:100%;height:auto;border-radius:8px;margin-bottom:10px;object-fit:contain;background:#f5f6f8;padding:6px 4px;}
+    .keywordProLogo,.getkeyEditorLogo{display:block;width:100%;height:auto;border-radius:8px;margin-bottom:10px;object-fit:contain;background:#0a1218;padding:10px 8px;}
     .keywordProBody{display:block;margin-top:2px}
-    .keywordProTag{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#0a1220;background:#ffd95a;border-radius:999px;padding:3px 8px;margin-bottom:8px;}
-    .keywordProTitle{display:block;font-size:15px;font-weight:800;line-height:1.35;color:#f3f7ff;margin:0 0 8px;}
+    .keywordProTag{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#042f2e;background:rgba(45,212,191,.92);border-radius:999px;padding:3px 8px;margin-bottom:8px;}
+    .keywordProTitle{display:block;font-size:15px;font-weight:800;line-height:1.35;color:#5eead4;margin:0 0 8px;}
     .keywordProLine{display:block;font-size:12px;line-height:1.5;color:#b8c8dc;font-weight:400;margin-bottom:5px;}
-    .keywordProCta{display:block;margin:10px 0;padding-top:8px;font-size:13px;font-weight:600;color:#ffd95a;border-top:1px solid rgba(214,176,78,.3);}
-    .keywordProPhoto{display:block;width:100%;min-height:120px;margin-top:auto;border-radius:8px;border:1px solid rgba(214,176,78,.35);object-fit:contain;background:#fff;}
+    .keywordProCta{display:block;margin:10px 0;padding-top:8px;font-size:13px;font-weight:600;color:#5eead4;border-top:1px solid rgba(45,212,191,.3);}
+    .keywordProPhoto,.getkeyEditorPanel{display:block;width:100%;min-height:120px;margin-top:auto;border-radius:8px;border:1px solid rgba(45,212,191,.35);object-fit:contain;background:linear-gradient(160deg,#134e4a 0%,#0f766e 55%,#115e59 100%);}
+    .getkeyEditorPanel{display:flex;flex-direction:column;justify-content:flex-end;gap:6px;min-height:160px;padding:16px 14px;color:#ecfdf5;box-sizing:border-box;}
+    .getkeyEditorPanel strong{font-size:18px;letter-spacing:-.02em;}
+    .getkeyEditorPanel span{font-size:12px;line-height:1.45;color:#ccfbf1;}
 
     @media(max-width:960px){
       .siteHead{padding:12px 14px}
@@ -318,17 +321,20 @@
   <section id="scouter" class="pageRow">
     <div class="pageRowInner">
       <aside class="adCol">
-        <a class="keywordProAd" data-ad-placement="left" href="https://getkeypro.com/" target="_blank" rel="noopener">
-          <img class="keywordProLogo" src="keyword-pro-logo.png" alt="Keyword Pro — Smart Keyword Analysis" loading="lazy">
+        <a class="keywordProAd getkeyEditorAd" data-ad-placement="left" href="https://getkeypro.com/" target="_blank" rel="noopener">
+          <img class="keywordProLogo getkeyEditorLogo" src="getkey-logo.png" alt="Getkey — Free browser video editor" loading="lazy">
           <div class="keywordProBody">
-            <span class="keywordProTag">Paid · Live Analytics</span>
-            <span class="keywordProTitle">Hooking &amp; Industry charts</span>
-            <span class="keywordProLine">Real-time keyword trend data</span>
-            <span class="keywordProLine">Competitor &amp; PDF reports</span>
-            <span class="keywordProLine">16-country market coverage</span>
+            <span class="keywordProTag">Free · Browser Editor</span>
+            <span class="keywordProTitle">Cut, caption &amp; export Shorts</span>
+            <span class="keywordProLine">Timeline editor in your browser</span>
+            <span class="keywordProLine">Captions &amp; voice tools included</span>
+            <span class="keywordProLine">No install — open and start</span>
           </div>
-          <span class="keywordProCta">Open Keyword Pro →</span>
-          <img class="keywordProPhoto" src="keyword-pro-ad-bottom.png" alt="Keyword Pro — Find Keywords, Get Insights, Grow Faster" loading="lazy">
+          <span class="keywordProCta">Open Getkey Editor →</span>
+          <div class="getkeyEditorPanel" aria-hidden="true">
+            <strong>Getkey</strong>
+            <span>Free browser video editor for Shorts &amp; Reels</span>
+          </div>
         </a>
       </aside>
 
