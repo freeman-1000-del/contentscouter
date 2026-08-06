@@ -7,7 +7,7 @@
 <meta name="description" content="Daily catalog of ~500 unique YouTube videos about Korea from foreign markets. Deduped. Live search available.">
 <link rel="canonical" href="https://contentscouter.com/korea-abroad.html">
 <script>
-  window.HUMATECK_CONFIG = {
+  window.SCOUTER_CONFIG = {
     SUPABASE_URL: 'https://ajvtyotblrtexcxuazqm.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_cmn9eVnnvaAjXVJWa6bRQA_qrb1xglQ',
     KOREA_ABROAD_SEARCH_URL: 'https://ajvtyotblrtexcxuazqm.supabase.co/functions/v1/korea-abroad-search'
@@ -148,7 +148,7 @@
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-const CFG = window.HUMATECK_CONFIG || {};
+const CFG = window.SCOUTER_CONFIG || {};
 const SUPABASE_URL = CFG.SUPABASE_URL;
 const SUPABASE_ANON_KEY = CFG.SUPABASE_ANON_KEY;
 const SEARCH_URL = CFG.KOREA_ABROAD_SEARCH_URL || (SUPABASE_URL + '/functions/v1/korea-abroad-search');

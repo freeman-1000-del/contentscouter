@@ -23,7 +23,7 @@
 <!-- ★★★ Fill in your keys here (check these two lines each time you swap files) ★★★ -->
 <!-- ============================================================= -->
 <script>
-  window.HUMATECK_CONFIG = {
+  window.SCOUTER_CONFIG = {
     SUPABASE_URL: 'https://ajvtyotblrtexcxuazqm.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_cmn9eVnnvaAjXVJWa6bRQA_qrb1xglQ',
     KEYWORDS_URL: 'https://ajvtyotblrtexcxuazqm.supabase.co/functions/v1/keywords',
@@ -535,10 +535,10 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 // ===== Config: fill in the two lines below with your own values =====
-// ===== The key settings are in HUMATECK_CONFIG at the top of this file's <head> =====
-const SUPABASE_URL = window.HUMATECK_CONFIG.SUPABASE_URL;
-const SUPABASE_ANON_KEY = window.HUMATECK_CONFIG.SUPABASE_ANON_KEY;
-const MARKET = window.HUMATECK_CONFIG.MARKET || { id:'jp', regionCode:'JP', kinds:{long:'jp_long',shorts:'jp_shorts'}, niches:[], title:'일본 유튜브트랜드' };
+// ===== The key settings are in SCOUTER_CONFIG at the top of this file's <head> =====
+const SUPABASE_URL = window.SCOUTER_CONFIG.SUPABASE_URL;
+const SUPABASE_ANON_KEY = window.SCOUTER_CONFIG.SUPABASE_ANON_KEY;
+const MARKET = window.SCOUTER_CONFIG.MARKET || { id:'jp', regionCode:'JP', kinds:{long:'jp_long',shorts:'jp_shorts'}, niches:[], title:'일본 유튜브트랜드' };
 const PIN_STORAGE_KEY = 'yt_trend_pin_' + (MARKET.id || 'jp');
 const PIN_VALUE_KEY = 'yt_trend_pin_val_' + (MARKET.id || 'jp');
 let authSession = null;
@@ -601,7 +601,7 @@ let latestCcSnapshot = null;
 let trackedSnapshotId = null;
 let trackedCcSnapshotId = null;
 let state = { view:'long', country:'JP', category:'music', continent:'asia', risingPeriod:1, risingFormat:'long', keywordMode:'surge', nicheId:'challenge', periodDays:7, ccCategory:'comedy', ccMode:'popular' };
-const LOCALE = (window.HUMATECK_CONFIG.MARKET && window.HUMATECK_CONFIG.MARKET.locale) || 'ko-KR';
+const LOCALE = (window.SCOUTER_CONFIG.MARKET && window.SCOUTER_CONFIG.MARKET.locale) || 'ko-KR';
 const COLLECTION_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const CC_COLLECTION_INTERVAL_MS = 3 * 24 * 60 * 60 * 1000;
 const CC_PER_CATEGORY = 50;
@@ -1151,8 +1151,8 @@ const REACTIONS_MAX_PARALLEL = 4;
 
 async function fetchVideoReactions(videoId){
   if(reactionsCache.has(videoId)) return reactionsCache.get(videoId);
-  const url = window.HUMATECK_CONFIG.VIDEO_REACTIONS_URL
-    || `${window.HUMATECK_CONFIG.SUPABASE_URL}/functions/v1/video-reactions`;
+  const url = window.SCOUTER_CONFIG.VIDEO_REACTIONS_URL
+    || `${window.SCOUTER_CONFIG.SUPABASE_URL}/functions/v1/video-reactions`;
   while(reactionsInflight >= REACTIONS_MAX_PARALLEL){
     await new Promise(r=>setTimeout(r, 120));
   }
@@ -1273,8 +1273,8 @@ function viewIntroHTML(title, paragraphs){
 }
 const TREND_THEME_BY_VIEW = { long:'tips', shorts:'tips', rising:'controversy', keyword:'tips' };
 async function loadTrendsPanel(themeId){
-  const url = window.HUMATECK_CONFIG.KEYWORDS_URL
-    || `${window.HUMATECK_CONFIG.SUPABASE_URL}/functions/v1/keywords`;
+  const url = window.SCOUTER_CONFIG.KEYWORDS_URL
+    || `${window.SCOUTER_CONFIG.SUPABASE_URL}/functions/v1/keywords`;
   try{
     const headers = {'Content-Type':'application/json', 'apikey': SUPABASE_ANON_KEY};
     if(authSession?.access_token) headers['Authorization'] = 'Bearer ' + authSession.access_token;
@@ -1350,7 +1350,7 @@ async function runPeriodYtSearch(format, periodDays){
 async function runYtSearchRequest({ format, q, periodDays }){
   const label = format === 'shorts' ? '쇼츠' : '롱폼';
   const periodLabel = periodDays >= 365 ? '1년' : periodDays >= 30 ? '30일' : periodDays >= 7 ? '7일' : '';
-  const url = window.HUMATECK_CONFIG.JP_SEARCH_URL
+  const url = window.SCOUTER_CONFIG.JP_SEARCH_URL
     || `${SUPABASE_URL}/functions/v1/jp-search`;
   const expect = YT_SEARCH_UNITS;
   setSearchApiNote(
@@ -1849,9 +1849,9 @@ async function render(){
     content.innerHTML = `<div class="state"><div class="spin"></div><div>일본 Google Trends 수집 중…</div></div>`;
     try{
       const headers = {'Content-Type':'application/json', 'apikey': SUPABASE_ANON_KEY};
-      const res = await fetch(window.HUMATECK_CONFIG.KEYWORDS_URL, {
+      const res = await fetch(window.SCOUTER_CONFIG.KEYWORDS_URL, {
         method:'POST', headers,
-        body: JSON.stringify({ seedKeyword: niche.seed, themeId: 'tips', email: 'support@humateck.com' }),
+        body: JSON.stringify({ seedKeyword: niche.seed, themeId: 'tips', email: 'support@contentscouter.com' }),
         cache:'no-store'
       });
       const data = await res.json();
