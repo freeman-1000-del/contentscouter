@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>방문 로그 — 컨텐츠 스카우터 관리자</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://contentscouter.com/admin/logs.html">
+  <style>
+    :root{
+      --bg:#0d0f14; --panel:#161922; --line:#2a2f3c;
+      --txt:#eef1f6; --sub:#aeb6c4; --accent:#ffb454; --good:#46d39a; --bad:#ff8b8b;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; background:var(--bg); color:var(--txt);
+      font-family:"Pretendard","Noto Sans KR",system-ui,sans-serif;
+      padding:24px 16px 64px; line-height:1.5;
+    }
+    .wrap{max-width:1100px; margin:0 auto}
+    h1{font-size:22px; margin:0 0 6px; color:var(--accent)}
+    .lead{color:var(--sub); font-size:14px; margin:0 0 18px}
+    .panel{
+      background:var(--panel); border:1px solid var(--line);
+      border-radius:14px; padding:18px; margin-bottom:16px;
+    }
+    label{display:block; font-size:13px; color:var(--sub); font-weight:700; margin-bottom:6px}
+    input{
+      width:100%; max-width:280px; padding:10px 12px; border-radius:10px;
+      border:1px solid var(--line); background:#0f131a; color:var(--txt); font-size:16px;
+    }
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      margin-top:12px; margin-right:8px; padding:10px 16px; border:0; border-radius:10px;
+      background:#3d7eff; color:#fff; font-weight:700; cursor:pointer; font-size:14px;
+    }
+    .btn.secondary{background:#2a3140}
+    .btn:disabled{opacity:.5; cursor:not-allowed}
+    .note{font-size:13px; color:var(--sub); margin-top:10px}
+    .ok{color:var(--good)} .err{color:var(--bad)}
+    .stats{display:flex; flex-wrap:wrap; gap:12px; margin-bottom:14px}
+    .stat{
+      min-width:120px; background:#0f131a; border:1px solid var(--line);
+      border-radius:12px; padding:12px 14px;
+    }
+    .stat b{display:block; font-size:22px; color:#fff}
+    .stat span{font-size:12px; color:var(--sub)}
+    table{width:100%; border-collapse:collapse; font-size:13px}
+    th,td{padding:8px 10px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top}
+    th{color:var(--accent); font-size:12px; font-weight:700}
+    td.path{word-break:break-all; color:#cfe0ff}
+    td.muted{color:var(--sub); font-size:12px}
+    #gate{display:block}
+    #dash{display:none}
+    a.home{color:#9eb6ff; font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <p><a class="home" href="/">← 컨텐츠 스카우터 홈</a></p>
+    <h1>방문 로그 (관리자)</h1>
+    <p class="lead">접속 시 내 IP는 자동으로 기록에서 제외됩니다.</p>
+
+    <div class="panel" id="gate">
+      <label for="pin">관리자 PIN</label>
+      <input id="pin" type="password" inputmode="numeric" maxlength="8" placeholder="숫자 PIN" autocomplete="current-password">
+      <div>
+        <button class="btn" type="button" id="btnLogin">들어가기</button>
+      </div>
+      <p class="note" id="gateMsg"></p>
+    </div>
+
+    <div id="dash">
+      <div class="stats">
+        <div class="stat"><b id="totalHits">0</b><span>전체 기록</span></div>
+        <div class="stat"><b id="todayHits">0</b><span>오늘</span></div>
+        <div class="stat"><b id="myIp">—</b><span>내 IP (제외됨)</span></div>
+      </div>
+      <div class="panel">
+        <button class="btn secondary" type="button" id="btnRefresh">새로고침</button>
+        <button class="btn secondary" type="button" id="btnLogout">나가기</button>
+        <p class="note" id="dashMsg"></p>
+        <div style="overflow-x:auto; margin-top:12px">
+          <table>
+            <thead>
+              <tr>
+                <th>시각</th>
+                <th>경로</th>
+                <th>IP</th>
+                <th>국가</th>
+                <th>유입</th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (function () {
+    var CFG = {
+      url: "https://ajvtyotblrtexcxuazqm.supabase.co/functions/v1/cs-traffic",
+      anon: "sb_publishable_cmn9eVnnvaAjXVJWa6bRQA_qrb1xglQ",
+      pinKey: "cs_admin_pin"
+    };
+
+    function $(id) { return document.getElementById(id); }
+
+    async function api(action, extra) {
+      var pin = sessionStorage.getItem(CFG.pinKey) || ($("pin") && $("pin").value) || "";
+      var body = Object.assign({ action: action, pin: pin }, extra || {});
+      var res = await fetch(CFG.url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + CFG.anon,
+          "apikey": CFG.anon,
+          "x-cs-admin-pin": pin
+        },
+        body: JSON.stringify(body),
+        cache: "no-store"
+      });
+      var data = {};
+      try { data = await res.json(); } catch (e) { data = { ok: false, error: "응답 오류" }; }
+      if (!res.ok) data.ok = false;
+      return data;
+    }
+
+    function fmtTime(iso) {
+      if (!iso) return "";
+      try {
+        return new Date(iso).toLocaleString("ko-KR", { hour12: false });
+      } catch (e) { return iso; }
+    }
+
+    async function loadStats() {
+      $("dashMsg").textContent = "불러오는 중…";
+      $("dashMsg").className = "note";
+      var data = await api("stats", { limit: 200 });
+      if (!data.ok) {
+        $("dashMsg").textContent = data.error || "불러오기 실패";
+        $("dashMsg").className = "note err";
+        return false;
+      }
+      $("totalHits").textContent = String(data.total || 0);
+      var today = new Date().toISOString().slice(0, 10);
+      $("todayHits").textContent = String((data.daily && data.daily[today]) || 0);
+      if (data.your_ip) $("myIp").textContent = data.your_ip;
+
+      var tb = $("rows");
+      tb.innerHTML = "";
+      (data.hits || []).forEach(function (h) {
+        var tr = document.createElement("tr");
+        tr.innerHTML =
+          "<td class='muted'>" + fmtTime(h.created_at) + "</td>" +
+          "<td class='path'>" + escapeHtml(h.path || "/") + "</td>" +
+          "<td>" + escapeHtml(h.ip || "") + "</td>" +
+          "<td>" + escapeHtml(h.country || "-") + "</td>" +
+          "<td class='muted'>" + escapeHtml((h.referrer || "-").slice(0, 80)) + "</td>";
+        tb.appendChild(tr);
+      });
+      $("dashMsg").textContent = "최근 " + ((data.hits && data.hits.length) || 0) + "건";
+      $("dashMsg").className = "note ok";
+      return true;
+    }
+
+    function escapeHtml(s) {
+      return String(s || "").replace(/[&<>"']/g, function (c) {
+        return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c];
+      });
+    }
+
+    async function login() {
+      var pin = ($("pin").value || "").trim();
+      $("gateMsg").textContent = "";
+      if (!/^\d{4,8}$/.test(pin)) {
+        $("gateMsg").textContent = "숫자 PIN을 입력하세요.";
+        $("gateMsg").className = "note err";
+        return;
+      }
+      sessionStorage.setItem(CFG.pinKey, pin);
+      $("btnLogin").disabled = true;
+      // Exclude my IP first, then load stats
+      var ex = await api("exclude_me", { note: "admin_login" });
+      if (!ex.ok) {
+        sessionStorage.removeItem(CFG.pinKey);
+        $("gateMsg").textContent = ex.error || "PIN 확인 실패";
+        $("gateMsg").className = "note err";
+        $("btnLogin").disabled = false;
+        return;
+      }
+      var ok = await loadStats();
+      $("btnLogin").disabled = false;
+      if (!ok) {
+        sessionStorage.removeItem(CFG.pinKey);
+        return;
+      }
+      $("gate").style.display = "none";
+      $("dash").style.display = "block";
+      if (ex.ip) $("myIp").textContent = ex.ip;
+      $("dashMsg").textContent = "내 IP(" + (ex.ip || "") + ")는 앞으로 로그에 안 남습니다. " + ($("dashMsg").textContent || "");
+    }
+
+    $("btnLogin").onclick = login;
+    $("pin").addEventListener("keydown", function (e) {
+      if (e.key === "Enter") login();
+    });
+    $("btnRefresh").onclick = function () { loadStats(); };
+    $("btnLogout").onclick = function () {
+      sessionStorage.removeItem(CFG.pinKey);
+      location.reload();
+    };
+
+    // Auto resume session
+    if (sessionStorage.getItem(CFG.pinKey)) {
+      api("exclude_me", { note: "admin_resume" }).then(function () {
+        return loadStats();
+      }).then(function (ok) {
+        if (ok) {
+          $("gate").style.display = "none";
+          $("dash").style.display = "block";
+        }
+      });
+    }
+  })();
+  </script>
+</body>
+</html>

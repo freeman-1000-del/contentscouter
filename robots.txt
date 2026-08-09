@@ -1,4 +1,10 @@
 User-agent: *
 Allow: /
+Disallow: /en/
+Disallow: /jp/
+Disallow: /admin/
+Disallow: /scouter.html
+Disallow: /rising-keyword.html
+Disallow: /contact_en.html
 
 Sitemap: https://contentscouter.com/sitemap.xml

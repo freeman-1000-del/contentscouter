@@ -3,11 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>컨텐츠 스카우터 — 글로벌 유튜브 트렌드 조사</title>
-<meta name="description" content="16개국 유튜브 인기·조회수 트렌드를 한곳에서. 국가·카테고리·CC 재사용 가능 영상까지 무료로 조사하세요.">
-<meta name="robots" content="index,follow">
-<link rel="canonical" href="https://contentscouter.com/">
-
+<title>컨텐츠 스카우터 — 유튜브 트렌드·쇼츠 키워드 무료 조사</title>
+  <link rel="canonical" href="https://contentscouter.com/">
+<meta name="description" content="16개국 유튜브 인기 영상, 국가·카테고리별 트렌드, 쇼츠 급상승 키워드, 재사용 가능(CC) 영상까지 한곳에서 무료로 조사하세요.">
+<meta name="robots" content="noindex, follow">
 <!-- ============================================================= -->
 <!-- ★★★ Fill in your keys here (check these two lines each time you swap files) ★★★ -->
 <!-- ============================================================= -->
@@ -158,8 +157,12 @@
   .commentList{margin:0;padding:0;list-style:none}
   .commentList li{margin:0 0 8px;padding:8px 10px;background:var(--panel2);border-radius:8px;border:1px solid var(--line)}
   .commentList li strong{color:var(--txt);font-size:12px}
-  .commentList .commentText{display:block;margin-top:4px;color:var(--sub)}
+  .commentList .commentText{display:block;margin-top:4px;color:var(--txt);line-height:1.45}
+  .commentList .commentOrig{display:block;margin-top:4px;color:var(--hint);font-size:11px;line-height:1.4}
   .commentList .commentLikes{font-size:11px;color:var(--hint);margin-top:3px}
+  .descBox{margin:0 0 10px;padding:8px 10px;background:var(--panel2);border:1px solid var(--line);border-radius:8px}
+  .descBox .descKo{color:var(--txt);font-size:12px;line-height:1.45}
+  .descBox .descOrig{margin-top:4px;color:var(--hint);font-size:11px;line-height:1.4}
   .reactionsLoading,.reactionsEmpty{margin:0;font-size:12px;color:var(--hint)}
   .commentsToggle{
     margin:0;border:0;background:transparent;color:var(--accent2);
@@ -358,11 +361,28 @@ function videoReactionsShell(v){
 }
 
 function renderCommentItems(comments){
-  return `<ul class="commentList">${comments.map(c=>`
-    <li><strong>${escapeHtml(c.author)}</strong>
-      <span class="commentText">${escapeHtml(c.text)}</span>
+  return `<ul class="commentList">${comments.map(c=>{
+    const ko = String(c.textKo || c.text || '').trim();
+    const orig = String(c.text || '').trim();
+    const showOrig = orig && ko && orig !== ko;
+    return `<li><strong>${escapeHtml(c.author)}</strong>
+      <span class="commentText">${escapeHtml(ko || orig)}</span>
+      ${showOrig ? `<span class="commentOrig">원문: ${escapeHtml(orig)}</span>` : ''}
       ${c.likes ? `<span class="commentLikes">👍 ${fmtNum(c.likes)}</span>` : ''}
-    </li>`).join('')}</ul>`;
+    </li>`;
+  }).join('')}</ul>`;
+}
+
+function renderDescriptionBox(data){
+  const ko = String(data.descriptionKo || '').trim();
+  const orig = String(data.description || '').trim();
+  if(!ko && !orig) return '';
+  const showOrig = orig && ko && orig !== ko;
+  return `<div class="descBox">
+    <p class="reactionsTitle">영상 설명</p>
+    <div class="descKo">${escapeHtml(ko || orig)}</div>
+    ${showOrig ? `<div class="descOrig">원문: ${escapeHtml(orig)}</div>` : ''}
+  </div>`;
 }
 
 function renderReactionsHTML(data){
@@ -373,15 +393,18 @@ function renderReactionsHTML(data){
     const msg = data?.error || '이 영상의 댓글을 불러올 수 없습니다.';
     return `<p class="reactionsEmpty">${escapeHtml(msg)}</p>`;
   }
-  if(data.comments && data.comments.length){
-    const count = data.comments.length;
+  const descHTML = renderDescriptionBox(data);
+  const hasComments = data.comments && data.comments.length;
+  if(hasComments || descHTML){
+    const count = hasComments ? data.comments.length : 0;
+    const label = hasComments ? `리뷰·댓글 보기 (${count})` : '리뷰·설명 보기';
     return `
       <button type="button" class="commentsToggle" data-action="toggle-comments" aria-expanded="false">
-        댓글 보기 (${count})
+        ${label}
       </button>
       <div class="commentsPanel" data-role="comments-panel">
-        <p class="reactionsTitle">인기 댓글</p>
-        ${renderCommentItems(data.comments)}
+        ${descHTML}
+        ${hasComments ? `<p class="reactionsTitle">인기 댓글 (한글)</p>${renderCommentItems(data.comments)}` : ''}
       </div>`;
   }
   if(data.commentsDisabled){
@@ -461,7 +484,9 @@ function bindVideoReactions(root){
     const open = panel.classList.toggle('open');
     btn.setAttribute('aria-expanded', open ? 'true' : 'false');
     const count = panel.querySelectorAll('.commentList li').length;
-    btn.textContent = open ? `댓글 접기 (${count})` : `댓글 보기 (${count})`;
+    btn.textContent = open
+      ? (count ? `리뷰·댓글 접기 (${count})` : '리뷰·설명 접기')
+      : (count ? `리뷰·댓글 보기 (${count})` : '리뷰·설명 보기');
   });
 }
 
