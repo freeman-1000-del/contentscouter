@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>컨텐츠 스카우터 — 글로벌 유튜브 트렌드 조사</title>
-<meta name="description" content="16개국 유튜브 인기·조회수 트렌드를 한곳에서. 국가·카테고리·CC 재사용 가능 영상까지 무료로 조사하세요.">
+<title>Content Scouter — Global YouTube Trending Tool</title>
+<meta name="description" content="Browse trending YouTube videos across 16 countries by views, category, and Creative Commons reuse.">
 <meta name="robots" content="index,follow">
-<link rel="canonical" href="https://contentscouter.com/">
+<link rel="canonical" href="https://contentscouter.com/scouter.html">
 
 <!-- ============================================================= -->
 <!-- ★★★ Fill in your keys here (check these two lines each time you swap files) ★★★ -->
@@ -172,50 +172,50 @@
 </head>
 <body>
 
-  <div class="eyebrow"><b>컨텐츠 스카우터</b></div>
-  <h1>글로벌 유튜브 트렌드를 바로 조사</h1>
-  <div class="lead">16개국 인기 영상을 조회수 기준으로 모읍니다.<span class="upd" id="updated"></span></div>
+  <div class="eyebrow"><b>Content Scouter</b></div>
+  <h1>Discover Trending YouTube Videos Worldwide</h1>
+  <div class="lead">Surfacing trending videos across 16 countries.<span class="upd" id="updated"></span></div>
 
   <div class="tabs">
     <button class="tab on" data-view="global">
-      <div class="t"><span class="dot" style="background:var(--accent)"></span>전체 트렌드</div>
-      <div class="d">16개국 합산 · 조회수순</div>
+      <div class="t"><span class="dot" style="background:var(--accent)"></span>Global Trending</div>
+      <div class="d">Combined across 16 countries, by view count</div>
     </button>
     <a class="tab risingKeywordsLink" href="https://contentscouter.com/vending/index.html" target="_blank" rel="noopener">
-      <div class="t"><span class="dot" style="background:#5ad1c8"></span>쇼츠 급상승 키워드</div>
-      <div class="d">Google Rising Keywords · 18개 카테고리</div>
+      <div class="t"><span class="dot" style="background:#5ad1c8"></span>Google Rising Keywords</div>
+      <div class="d">Google Rising Keywords — 18 categories</div>
     </a>
     <button class="tab kill" data-view="cc">
-      <div class="t"><span class="dot" style="background:#7ee787"></span>재사용 가능 <span style="font-size:10px;color:#0d0f14;background:#7ee787;border-radius:8px;padding:1px 7px;margin-left:4px;font-weight:800;">CC</span></div>
-      <div class="d">CC 표기 영상 · 열람 전용</div>
+      <div class="t"><span class="dot" style="background:#7ee787"></span>Reuse Allowed <span style="font-size:10px;color:#0d0f14;background:#7ee787;border-radius:8px;padding:1px 7px;margin-left:4px;font-weight:800;">CC</span></div>
+      <div class="d">CC-labeled videos · browse only · no archive</div>
     </button>
     <button class="tab" data-view="continent">
-      <div class="t"><span class="dot" style="background:var(--good)"></span>대륙별</div>
-      <div class="d">북미 · 유럽 · 아시아 · 남미 · 오세아니아</div>
+      <div class="t"><span class="dot" style="background:var(--good)"></span>By Continent</div>
+      <div class="d">North America · Europe · Asia · South America · Oceania</div>
     </button>
     <button class="tab" data-view="country">
-      <div class="t"><span class="dot" style="background:var(--accent3)"></span>국가별</div>
-      <div class="d">국가를 골라 인기 영상을 봅니다</div>
+      <div class="t"><span class="dot" style="background:var(--accent3)"></span>By Country</div>
+      <div class="d">Pick a country to see its trending videos</div>
     </button>
     <button class="tab" data-view="category">
-      <div class="t"><span class="dot" style="background:var(--accent2)"></span>카테고리별</div>
-      <div class="d">음악, 게임, 스포츠, 뉴스 등</div>
+      <div class="t"><span class="dot" style="background:var(--accent2)"></span>By Category</div>
+      <div class="d">Music, gaming, sports, news, and more</div>
     </button>
     <button class="tab" data-view="rising">
-      <div class="t"><span class="dot" style="background:#c77dff"></span>급상승 <span style="font-size:10px;color:var(--accent);border:1px solid var(--accent);border-radius:8px;padding:1px 6px;margin-left:4px;">BETA</span></div>
-      <div class="d">하루 만에 조회수가 뛴 영상</div>
+      <div class="t"><span class="dot" style="background:#c77dff"></span>Rising <span style="font-size:10px;color:var(--accent);border:1px solid var(--accent);border-radius:8px;padding:1px 6px;margin-left:4px;">BETA</span></div>
+      <div class="d">Videos whose views spiked in a day</div>
     </button>
     <button class="tab" data-view="engagement">
-      <div class="t"><span class="dot" style="background:#ff7eb6"></span>반응 높은 영상</div>
-      <div class="d">조회수 대비 반응이 뜨거운 영상</div>
+      <div class="t"><span class="dot" style="background:#ff7eb6"></span>Top Engagement</div>
+      <div class="d">Videos with the hottest engagement relative to views</div>
     </button>
   </div>
 
   <div class="chips" id="chips"></div>
 
-  <div class="sectitle" id="sectitle">전체 트렌드 <span class="count" id="count"></span></div>
+  <div class="sectitle" id="sectitle">Global Trending <span class="count" id="count"></span></div>
   <div id="content">
-    <div class="state"><div class="spin"></div><div>데이터를 불러오는 중…</div></div>
+    <div class="state"><div class="spin"></div><div>Loading data...</div></div>
   </div>
 
 <script type="module">
@@ -230,18 +230,18 @@ const SUPABASE_ANON_KEY = window.SCOUTER_CONFIG.SUPABASE_ANON_KEY;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const COUNTRY_NAMES = {
-  US:"미국", CA:"캐나다", MX:"멕시코", GB:"영국", DE:"독일", FR:"프랑스",
-  ES:"스페인", IT:"이탈리아", RU:"러시아", JP:"일본", KR:"한국", IN:"인도",
-  ID:"인도네시아", VN:"베트남", BR:"브라질", AU:"호주"
+  US:"United States", CA:"Canada", MX:"Mexico", GB:"United Kingdom", DE:"Germany", FR:"France",
+  ES:"Spain", IT:"Italy", RU:"Russia", JP:"Japan", KR:"South Korea", IN:"India",
+  ID:"Indonesia", VN:"Vietnam", BR:"Brazil", AU:"Australia"
 };
 const CONTINENTS = {
-  namerica:"북미", europe:"유럽", asia:"아시아", samerica:"남미", oceania:"오세아니아"
+  namerica:"North America", europe:"Europe", asia:"Asia", samerica:"South America", oceania:"Oceania"
 };
 const CATEGORIES = {
-  music:"음악", comedy:"코미디", animals:"동물", howto:"노하우·스타일",
-  people:"인물·블로그", education:"교육", ent:"엔터테인먼트", film:"영화·애니",
-  sports:"스포츠", news:"뉴스·정치", science:"과학·기술", gaming:"게임",
-  travel:"여행·이벤트", autos:"자동차"
+  music:"Music", comedy:"Comedy", animals:"Animals", howto:"How-to & Style",
+  people:"People & Blogs", education:"Education", ent:"Entertainment", film:"Film & Animation",
+  sports:"Sports", news:"News & Politics", science:"Science & Technology", gaming:"Gaming",
+  travel:"Travel & Events", autos:"Autos & Vehicles"
 };
 
 let latestSnapshot = null;
@@ -253,9 +253,9 @@ const fmtViews = (n)=>{ n=Number(n)||0;
   if(n>=1e9) return (n/1e9).toFixed(1)+"B"; if(n>=1e6) return (n/1e6).toFixed(1)+"M"; if(n>=1e3) return (n/1e3).toFixed(1)+"K"; return ""+n; };
 const agoText = (iso)=>{ if(!iso) return ""; const d=new Date(iso); if(isNaN(d)) return "";
   const days=Math.floor((Date.now()-d.getTime())/86400000);
-  if(days<=0) return "오늘"; if(days<7) return days+"일 전";
-  if(days<30) return Math.floor(days/7)+"주 전"; if(days<365) return Math.floor(days/30)+"개월 전";
-  return Math.floor(days/365)+"년 전"; };
+  if(days<=0) return "Today"; if(days<7) return days+"d ago";
+  if(days<30) return Math.floor(days/7)+"w ago"; if(days<365) return Math.floor(days/30)+"mo ago";
+  return Math.floor(days/365)+"y ago"; };
 
 // Find the latest collection snapshot
 async function loadLatestSnapshot(){
@@ -338,7 +338,7 @@ function cardHTML(v, i){
     </div>
     <div class="cbody">
       <div class="ctitle">${escapeHtml(v.title)}</div>
-      <div class="viewsRow"><span class="viewsLabel">조회수</span><span>${views}</span></div>
+      <div class="viewsRow"><span class="viewsLabel">Views</span><span>${views}</span></div>
       <div class="cmeta">
         ${v.like_count?`<span>👍 ${fmtViews(v.like_count)}</span>`:''}
         ${country?`<span>· ${country}</span>`:''}
@@ -349,12 +349,12 @@ function cardHTML(v, i){
   </a>`;
 }
 function escapeHtml(s){ return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
-const fmtNum = (n)=> Number(n||0).toLocaleString('ko-KR');
+const fmtNum = (n)=> Number(n||0).toLocaleString('en-US');
 
 function videoReactionsShell(v){
   const id = escapeHtml(v.video_id || '');
   if(!id) return '';
-  return `<div class="videoReactions" data-video-id="${id}"><p class="reactionsLoading">댓글 불러오는 중…</p></div>`;
+  return `<div class="videoReactions" data-video-id="${id}"><p class="reactionsLoading">Loading comments…</p></div>`;
 }
 
 function renderCommentItems(comments){
@@ -368,26 +368,26 @@ function renderCommentItems(comments){
 function renderReactionsHTML(data){
   if(!data || !data.ok){
     if(data?.error === 'YouTube API not configured'){
-      return `<p class="reactionsEmpty">YouTube API 연결 후 인기 댓글이 표시됩니다.</p>`;
+      return `<p class="reactionsEmpty">Top comments appear after YouTube API is connected.</p>`;
     }
-    const msg = data?.error || '이 영상의 댓글을 불러올 수 없습니다.';
+    const msg = data?.error || 'Comments unavailable for this video.';
     return `<p class="reactionsEmpty">${escapeHtml(msg)}</p>`;
   }
   if(data.comments && data.comments.length){
     const count = data.comments.length;
     return `
       <button type="button" class="commentsToggle" data-action="toggle-comments" aria-expanded="false">
-        댓글 보기 (${count})
+        View comments (${count})
       </button>
       <div class="commentsPanel" data-role="comments-panel">
-        <p class="reactionsTitle">인기 댓글</p>
+        <p class="reactionsTitle">Top comments</p>
         ${renderCommentItems(data.comments)}
       </div>`;
   }
   if(data.commentsDisabled){
-    return `<p class="reactionsEmpty">이 영상은 댓글이 꺼져 있습니다.</p>`;
+    return `<p class="reactionsEmpty">Comments are turned off on this video.</p>`;
   }
-  return `<p class="reactionsEmpty">인기 댓글이 아직 없습니다.</p>`;
+  return `<p class="reactionsEmpty">No top comments found yet.</p>`;
 }
 
 const reactionsCache = new Map();
@@ -416,7 +416,7 @@ async function fetchVideoReactions(videoId){
     reactionsCache.set(videoId, data);
     return data;
   }catch(e){
-    return { ok:false, error:'반응을 불러오지 못했습니다' };
+    return { ok:false, error:'Could not load reactions' };
   }finally{
     reactionsInflight--;
   }
@@ -427,7 +427,7 @@ function loadReactionBox(el){
   if(!videoId || el.dataset.loaded) return;
   el.dataset.loaded = '1';
   fetchVideoReactions(videoId).then(data=>{
-    el.innerHTML = renderReactionsHTML(data) || '<p class="reactionsEmpty">댓글을 불러올 수 없습니다.</p>';
+    el.innerHTML = renderReactionsHTML(data) || '<p class="reactionsEmpty">Comments unavailable.</p>';
   });
 }
 
@@ -461,7 +461,7 @@ function bindVideoReactions(root){
     const open = panel.classList.toggle('open');
     btn.setAttribute('aria-expanded', open ? 'true' : 'false');
     const count = panel.querySelectorAll('.commentList li').length;
-    btn.textContent = open ? `댓글 접기 (${count})` : `댓글 보기 (${count})`;
+    btn.textContent = open ? `Hide comments (${count})` : `View comments (${count})`;
   });
 }
 
@@ -484,23 +484,23 @@ function renderChips(){
       .filter(([key])=> !CATEGORY_UNSUPPORTED.includes(key))
       .map(([key,name])=>
       `<button class="chip ${state.category===key?'on':''}" data-type="category" data-val="${key}">${name}</button>`).join('')
-      + `<div class="catnote">※ ‘교육’, ‘여행·이벤트’는 YouTube가 국가별 인기 차트를 제공하지 않아 숨겼습니다.</div>`;
+      + `<div class="catnote">※ 'Education' and 'Travel & Events' aren't shown because YouTube doesn't provide a per-country trending chart for these categories.</div>`;
   } else if(state.view==='continent'){
     box.innerHTML = Object.entries(CONTINENTS).map(([key,name])=>
       `<button class="chip ${state.continent===key?'on':''}" data-type="continent" data-val="${key}">${name}</button>`).join('');
   } else if(state.view==='rising'){
     // For monthly, once 30 days of data have accumulated, re-enable the [30,'Monthly'] line (currently hidden)
-    const periods = [[1,'일간'],[7,'주간']];
+    const periods = [[1,'Daily'],[7,'Weekly']];
     box.innerHTML = periods.map(([d,name])=>
       `<button class="chip ${state.risingPeriod===d?'on':''}" data-type="rising" data-val="${d}">${name}</button>`).join('');
   } else if(state.view==='keyword'){
-    const modes = [['popular','인기 키워드'],['surge','급상승 키워드']];
+    const modes = [['popular','Popular Keywords'],['surge','Rising Keywords']];
     box.innerHTML = modes.map(([m,name])=>
       `<button class="chip ${state.keywordMode===m?'on':''}" data-type="keyword" data-val="${m}">${name}</button>`).join('');
   } else if(state.view==='cc'){
     // No Rising/surge — that needs weekly snapshot accumulation (disabled on public site)
     if(state.ccMode === 'surge') state.ccMode = 'popular';
-    const modes = [['popular','인기'],['reaction','반응 높은 순']];
+    const modes = [['popular','Popular'],['reaction','Top Engagement']];
     box.innerHTML = modes.map(([m,name])=>
       `<button class="chip ${state.ccMode===m?'on':''}" data-type="cc" data-val="${m}">${name}</button>`).join('');
   } else {
@@ -576,8 +576,8 @@ function risingCardHTML(v, i){
     <div class="cbody">
       <div class="ctitle">${escapeHtml(v.title)}</div>
       <div class="cmeta">
-        <span class="views">+${fmtViews(v.delta)} 증가</span>
-        <span>· 합계 ${fmtViews(v.view_count)}</span>
+        <span class="views">+${fmtViews(v.delta)} increase</span>
+        <span>· Total ${fmtViews(v.view_count)}</span>
         ${country?`<span>· ${country}</span>`:''}
       </div>
       <div class="cmeta"><span class="cchan">${escapeHtml(v.channel||'')}</span></div>
@@ -617,8 +617,8 @@ function engagementCardHTML(v, i){
     <div class="cbody">
       <div class="ctitle">${escapeHtml(v.title)}</div>
       <div class="cmeta">
-        <span class="views" style="color:#ff7eb6;">반응 ${pct}%</span>
-        <span>· ${fmtViews(v.view_count)} 조회</span>
+        <span class="views" style="color:#ff7eb6;">Engagement ${pct}%</span>
+        <span>· ${fmtViews(v.view_count)} views</span>
         ${country?`<span>· ${country}</span>`:''}
       </div>
       <div class="cmeta"><span class="cchan">👍${fmtViews(v.like_count)} · 💬${fmtViews(v.comment_count)}</span></div>
@@ -702,7 +702,7 @@ async function loadKeywordsSurge(){
 // Keyword list HTML (copy-all button + click-to-copy for each keyword)
 function keywordListHTML(items, isSurge){
   const bar = `<div class="kwbar">
-    <button class="copyall" id="copyAllBtn">키워드 전체 복사</button>
+    <button class="copyall" id="copyAllBtn">Copy All Keywords</button>
     <span class="kwtip">Click a keyword to copy just that one</span>
   </div>`;
   const grid = `<div class="kwgrid">${items.map((k,i)=>
@@ -710,8 +710,8 @@ function keywordListHTML(items, isSurge){
       <span class="rk">${i+1}</span>
       <span class="word">${escapeHtml(k.word)}</span>
       ${isSurge?`<span class="up">▲ ${k.delta}</span>`:''}
-      <span class="cnt">${k.count}${isSurge?'회':'개 영상'}</span>
-      <span class="copyhint">복사</span>
+      <span class="cnt">${k.count}${isSurge?' occurrences':' videos'}</span>
+      <span class="copyhint">Copy</span>
     </div>`
   ).join('')}</div>`;
   return bar + grid;
@@ -738,8 +738,8 @@ function bindKeywordCopy(words){
       if(ok){
         el.classList.add('copied');
         const hint = el.querySelector('.copyhint');
-        if(hint) hint.textContent = '복사됨!';
-        setTimeout(()=>{ el.classList.remove('copied'); if(hint) hint.textContent='복사'; }, 1200);
+        if(hint) hint.textContent = 'Copied!';
+        setTimeout(()=>{ el.classList.remove('copied'); if(hint) hint.textContent='Copy'; }, 1200);
       }
     });
   });
@@ -751,7 +751,7 @@ function bindKeywordCopy(words){
       if(ok){
         btn.classList.add('done');
         const orig = btn.textContent;
-        btn.textContent = `${words.length}개 키워드 복사됨!`;
+        btn.textContent = `${words.length} keywords copied!`;
         setTimeout(()=>{ btn.classList.remove('done'); btn.textContent = orig; }, 1500);
       }
     });
@@ -855,7 +855,7 @@ function ccCardHTML(v, i){
     <div class="cbody">
       <div class="ctitle">${escapeHtml(v.title)}</div>
       <div class="cmeta">
-        <span class="views">${fmtViews(v.view_count)} 조회</span>
+        <span class="views">${fmtViews(v.view_count)} views</span>
         <span>· 👍${fmtViews(v.like_count)}</span>
       </div>
       <div class="cmeta"><span class="cchan">${escapeHtml(v.channel||'')}</span></div>
@@ -876,8 +876,8 @@ function ccReactionCardHTML(v, i){
     <div class="cbody">
       <div class="ctitle">${escapeHtml(v.title)}</div>
       <div class="cmeta">
-        <span class="views" style="color:#ff7eb6;">반응 ${pct}%</span>
-        <span>· ${fmtViews(v.view_count)} 조회</span>
+        <span class="views" style="color:#ff7eb6;">Engagement ${pct}%</span>
+        <span>· ${fmtViews(v.view_count)} views</span>
         ${catName?`<span>· ${catName}</span>`:''}
       </div>
       <div class="cmeta"><span class="cchan">${escapeHtml(v.channel||'')}</span></div>
@@ -897,8 +897,8 @@ function ccSurgeCardHTML(v, i){
     <div class="cbody">
       <div class="ctitle">${escapeHtml(v.title)}</div>
       <div class="cmeta">
-        <span class="views" style="color:#c77dff;">+${fmtViews(v.delta)} 증가</span>
-        <span>· 합계 ${fmtViews(v.view_count)}</span>
+        <span class="views" style="color:#c77dff;">+${fmtViews(v.delta)} increase</span>
+        <span>· Total ${fmtViews(v.view_count)}</span>
         ${catName?`<span>· ${catName}</span>`:''}
       </div>
       <div class="cmeta"><span class="cchan">${escapeHtml(v.channel||'')}</span></div>
@@ -908,33 +908,33 @@ function ccSurgeCardHTML(v, i){
 
 async function render(){
   const content = $('#content');
-  content.innerHTML = `<div class="state"><div class="spin"></div><div>불러오는 중…</div></div>`;
+  content.innerHTML = `<div class="state"><div class="spin"></div><div>Loading...</div></div>`;
 
   // The rising view is handled separately
   if(state.view==='rising'){
-    const periodName = {1:'일간',7:'주간',30:'월간'}[state.risingPeriod] || '';
+    const periodName = {1:'Daily',7:'Weekly',30:'Monthly'}[state.risingPeriod] || '';
     const r = await loadRising(state.risingPeriod);
-    $('#sectitle').firstChild.textContent = `급상승 · ${periodName} `;
+    $('#sectitle').firstChild.textContent = `Rising · ${periodName} `;
     if(r.notReady){
       $('#count').textContent = '';
       let msg;
       if(r.reason==='firstrun'){
-        msg = `급상승은 <b style="color:var(--txt)">기간별 조회수 변화</b>를 비교해 계산합니다.<br><br>
-          아직 수집본이 1개뿐이라 비교할 이전 데이터가 없습니다.<br>
-          <b style="color:var(--accent)">내일 자동 수집이 돌면</b> 일간 급상승이 표시됩니다.`;
+        msg = `Rising is calculated by <b style="color:var(--txt)">comparing changes over a time period</b>.<br><br>
+          There's only 1 collection snapshot so far, so there's no earlier data to compare against.<br>
+          <b style="color:var(--accent)">Once tomorrow's automatic collection runs</b>, daily rising will start showing.`;
       } else {
         const need = r.needDays, have = r.haveDays||0;
         const left = Math.max(1, need - have);
-        msg = `${periodName} 급상승에는 <b style="color:var(--txt)">약 ${need}일분 데이터</b>가 필요합니다.<br><br>
-          현재 약 ${have}일분이 쌓였습니다.<br>
-          <b style="color:var(--accent)">약 ${left}일 더</b> 지나면 ${periodName} 급상승이 표시됩니다.`;
+        msg = `${periodName} rising needs <b style="color:var(--txt)">about ${need} days of data</b>.<br><br>
+          About ${have} days have accumulated so far.<br>
+          <b style="color:var(--accent)">In about ${left} more day(s)</b>, ${periodName.toLowerCase()} rising will start showing.`;
       }
       content.innerHTML = `<div class="state">${msg}</div>`;
       return;
     }
-    $('#count').textContent = r.rows.length ? `${r.rows.length} · 최근 ${r.spanDays}일 변화` : '';
+    $('#count').textContent = r.rows.length ? `${r.rows.length} · change over the last ${r.spanDays} days` : '';
     if(!r.rows.length){
-      content.innerHTML = `<div class="state">이 기간에 조회수가 급상승한 영상이 없습니다.</div>`;
+      content.innerHTML = `<div class="state">No videos with rising view counts were found for this period.</div>`;
       return;
     }
     content.innerHTML = renderGridWithReactions(r.rows, risingCardHTML);
@@ -946,20 +946,20 @@ async function render(){
   if(state.view==='cc'){
     const snap = await loadLatestCCSnapshot();
     const noticeHTML = `<div class="ccnotice">
-      <div style="margin-bottom:6px;"><b style="color:#7ee787;">열람 전용</b>
-        <span style="color:#9aa;">· CC 영상 목록이 있을 때 표시됩니다. 공개 사이트에서는 주간 수집·이력 저장·급상승 누적을 <b style="color:var(--txt)">쓰지 않습니다</b>.</span>
+      <div style="margin-bottom:6px;"><b style="color:#7ee787;">Browse only</b>
+        <span style="color:#9aa;">· CC video list is shown when available. Weekly collect, history storage, and rising accumulation are <b style="color:var(--txt)">not used</b> on the public site.</span>
       </div>
-      ⚠️ YouTube가 <b>‘재사용 허용(CC BY)’</b>으로 표시한 영상입니다.
-      사용 시 <b>원작자 표기</b>가 필요하고, 영상 안 음악·클립 등은 별도 저작권이 있을 수 있으니
-      <b>영상 설명을 직접 확인</b>하세요.
+      ⚠️ These are videos YouTube has marked as <b>'Reuse Allowed (CC BY)'</b>.
+      Using them requires <b>crediting the original creator</b>, and some elements within a video — such as music or clips — may carry separate copyright, so
+      <b>please check the video's description directly</b>.
     </div>`;
 
     if(!snap){
-      $('#sectitle').firstChild.textContent = '재사용 가능 ';
+      $('#sectitle').firstChild.textContent = 'Reuse Allowed ';
       $('#count').textContent = '';
       content.innerHTML = noticeHTML + `<div class="state">
-        지금 볼 수 있는 CC 영상 목록이 없습니다.<br>
-        공개 사이트에서는 CC 아카이브 수집을 돌리지 않습니다.
+        No CC video list is available right now.<br>
+        Public site does not run CC archive collection.
       </div>`;
       return;
     }
@@ -967,9 +967,9 @@ async function render(){
     // --- Engagement mode ---
     if(state.ccMode==='reaction'){
       const rows = await loadCCReaction();
-      $('#sectitle').firstChild.textContent = '재사용 가능 · 반응 높은 순 ';
+      $('#sectitle').firstChild.textContent = 'Reuse Allowed · Top Engagement ';
       $('#count').textContent = rows.length ? `${rows.length}` : '';
-      if(!rows.length){ content.innerHTML = noticeHTML + `<div class="state">표시할 영상이 없습니다.</div>`; return; }
+      if(!rows.length){ content.innerHTML = noticeHTML + `<div class="state">No videos to display.</div>`; return; }
       content.innerHTML = noticeHTML + renderGridWithReactions(rows, ccReactionCardHTML);
       bindVideoReactions(content);
       return;
@@ -977,14 +977,14 @@ async function render(){
 
     // --- Popular mode (default): tally + videos (no surge / no multi-week compare) ---
     const { tally, videos } = await loadCCAll();
-    $('#sectitle').firstChild.textContent = '재사용 가능 ';
+    $('#sectitle').firstChild.textContent = 'Reuse Allowed ';
     $('#count').textContent = videos.length ? `${videos.length}` : '';
     if(!videos.length){
-      content.innerHTML = noticeHTML + `<div class="state">재사용 가능 영상을 찾지 못했습니다.</div>`;
+      content.innerHTML = noticeHTML + `<div class="state">No Reuse Allowed videos found.</div>`;
       return;
     }
     const tallyHTML = `<div class="cctally">
-      <div class="cctally-title">카테고리별 재사용 가능 영상 수</div>
+      <div class="cctally-title">Reuse Allowed Video Count by Category</div>
       <div class="cctally-grid">
         ${tally.map(t=>`
           <div class="cccount ${t.count===0?'zero':''}">
@@ -1002,26 +1002,26 @@ async function render(){
   if(state.view==='keyword'){
     if(state.keywordMode==='popular'){
       const kws = await loadKeywordsPopular();
-      $('#sectitle').firstChild.textContent = '인기 키워드 ';
-      $('#count').textContent = kws.length ? `상위 ${kws.length}` : '';
-      if(!kws.length){ content.innerHTML = `<div class="state">키워드를 뽑을 데이터가 없습니다.</div>`; return; }
+      $('#sectitle').firstChild.textContent = 'Popular Keywords ';
+      $('#count').textContent = kws.length ? `Top ${kws.length}` : '';
+      if(!kws.length){ content.innerHTML = `<div class="state">No data available to extract keywords from.</div>`; return; }
       content.innerHTML = keywordListHTML(kws.map(k=>({word:k.word, count:k.count})), false);
       bindKeywordCopy(kws.map(k=>k.word));
       return;
     } else {
       const r = await loadKeywordsSurge();
-      $('#sectitle').firstChild.textContent = '급상승 키워드 ';
+      $('#sectitle').firstChild.textContent = 'Rising Keywords ';
       if(r.notReady){
         $('#count').textContent = '';
         content.innerHTML = `<div class="state">
-          급상승 키워드는 <b style="color:var(--txt)">어제와 오늘의 키워드를 비교</b>해 계산합니다.<br><br>
-          아직 수집본이 1개뿐이라 비교할 이전 데이터가 없습니다.<br>
-          <b style="color:var(--accent)">내일 자동 수집이 돌면</b> 급상승 키워드가 표시됩니다.
+          Rising keywords are calculated by <b style="color:var(--txt)">comparing yesterday's and today's keywords</b>.<br><br>
+          There's only 1 collection snapshot so far, so there's no earlier data to compare against.<br>
+          <b style="color:var(--accent)">Once tomorrow's automatic collection runs</b>, rising keywords will start showing.
         </div>`;
         return;
       }
-      $('#count').textContent = r.rows.length ? `상위 ${r.rows.length}` : '';
-      if(!r.rows.length){ content.innerHTML = `<div class="state">이 기간에 급상승한 키워드가 없습니다.</div>`; return; }
+      $('#count').textContent = r.rows.length ? `Top ${r.rows.length}` : '';
+      if(!r.rows.length){ content.innerHTML = `<div class="state">No keywords rose during this period.</div>`; return; }
       content.innerHTML = keywordListHTML(r.rows, true);
       bindKeywordCopy(r.rows.map(k=>k.word));
       return;
@@ -1031,10 +1031,10 @@ async function render(){
   // Top engagement view
   if(state.view==='engagement'){
     const rows = await loadEngagement();
-    $('#sectitle').firstChild.textContent = '반응 높은 영상 ';
-    $('#count').textContent = rows.length ? `${rows.length} · 조회수 1만+ 영상` : '';
+    $('#sectitle').firstChild.textContent = 'Top Engagement ';
+    $('#count').textContent = rows.length ? `${rows.length} · videos with 10K+ views` : '';
     if(!rows.length){
-      content.innerHTML = `<div class="state">표시할 영상이 없습니다.</div>`;
+      content.innerHTML = `<div class="state">No videos to display.</div>`;
       return;
     }
     content.innerHTML = renderGridWithReactions(rows, engagementCardHTML);
@@ -1043,16 +1043,16 @@ async function render(){
   }
 
   let filter={}, title='';
-  if(state.view==='global'){ filter={country_code:'GLOBAL', limit:100}; title='전체 트렌드'; }
-  else if(state.view==='continent'){ filter={continent:state.continent, dedupe:true, limit:200}; title=`${CONTINENTS[state.continent]} 트렌드`; }
-  else if(state.view==='country'){ filter={country_code:state.country, limit:50}; title=`${COUNTRY_NAMES[state.country]} 트렌드`; }
-  else if(state.view==='category'){ filter={category_key:state.category, limit:50}; title=`${CATEGORIES[state.category]} 트렌드`; }
+  if(state.view==='global'){ filter={country_code:'GLOBAL', limit:100}; title='Global Trending'; }
+  else if(state.view==='continent'){ filter={continent:state.continent, dedupe:true, limit:200}; title=`${CONTINENTS[state.continent]} Trending`; }
+  else if(state.view==='country'){ filter={country_code:state.country, limit:50}; title=`${COUNTRY_NAMES[state.country]} Trending`; }
+  else if(state.view==='category'){ filter={category_key:state.category, limit:50}; title=`${CATEGORIES[state.category]} Trending`; }
 
   const vids = await loadVideos(filter);
   $('#sectitle').firstChild.textContent = title + ' ';
   $('#count').textContent = vids.length ? `${vids.length}` : '';
   if(!vids.length){
-    content.innerHTML = `<div class="state">표시할 영상이 없습니다. 이 조건의 데이터가 아직 수집되지 않았을 수 있습니다.</div>`;
+    content.innerHTML = `<div class="state">No videos to display. Data for this filter may not have been collected yet.</div>`;
     return;
   }
   content.innerHTML = renderGridWithReactions(vids.slice(0,filter.limit), cardHTML);
@@ -1072,9 +1072,9 @@ document.querySelectorAll('.tab[data-view]').forEach(t=>t.addEventListener('clic
   latestSnapshot = await loadLatestSnapshot();
   if(latestSnapshot){
     const d = new Date(latestSnapshot.collected_at);
-    $('#updated').textContent = `업데이트 ${d.toLocaleString('ko-KR')}`;
+    $('#updated').textContent = `Updated ${d.toLocaleString('en-US')}`;
   } else {
-    $('#content').innerHTML = `<div class="state">아직 수집된 데이터가 없습니다. 잠시 후 다시 확인해 주세요.</div>`;
+    $('#content').innerHTML = `<div class="state">No data has been collected yet. Please run the collector first.</div>`;
     return;
   }
   renderChips();
