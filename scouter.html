@@ -79,7 +79,7 @@
   .sectitle .count{font-size:12px; color:var(--hint); font-weight:600;}
 
   /* Video grid */
-  .grid{display:grid; grid-template-columns:repeat(5,1fr); gap:18px;}
+  .grid{display:grid; grid-template-columns:repeat(5,1fr); gap:18px; align-items:start;}
   @media(max-width:1100px){.grid{grid-template-columns:repeat(3,1fr);} .tabs{grid-template-columns:repeat(2,1fr);}}
   @media(max-width:640px){.grid{grid-template-columns:repeat(2,1fr);} h1{font-size:28px;}}
   .card{background:var(--panel); border:1px solid var(--line); border-radius:14px; overflow:hidden; transition:.15s; text-decoration:none; color:inherit; display:flex; flex-direction:column;}
@@ -144,7 +144,7 @@
   .cccount.zero .cccount-num{color:var(--hint);}
   .spin{display:inline-block; width:22px; height:22px; border:3px solid var(--line); border-top-color:var(--accent); border-radius:50%; animation:sp .8s linear infinite; margin-bottom:12px;}
   @keyframes sp{to{transform:rotate(360deg);}}
-  .cardArticle{display:flex;flex-direction:column;min-width:0}
+  .cardArticle{display:flex;flex-direction:column;min-width:0;align-self:start}
   .cardArticle .card{border-radius:14px 14px 0 0; flex:0 0 auto}
   .videoReactions{
     font-size:12px;line-height:1.55;color:var(--hint);
@@ -171,6 +171,7 @@
   .commentsToggle:hover{color:#ffd08a;text-decoration:underline}
   .commentsPanel{display:none;margin-top:10px}
   .commentsPanel.open{display:block}
+  .commentsPanel[hidden]{display:none !important; margin:0 !important; padding:0 !important; height:0 !important; overflow:hidden !important}
 </style>
 </head>
 <body>
@@ -402,7 +403,7 @@ function renderReactionsHTML(data){
       <button type="button" class="commentsToggle" data-action="toggle-comments" aria-expanded="false">
         ${label}
       </button>
-      <div class="commentsPanel" data-role="comments-panel">
+      <div class="commentsPanel" data-role="comments-panel" hidden>
         ${descHTML}
         ${hasComments ? `<p class="reactionsTitle">인기 댓글 (한글)</p>${renderCommentItems(data.comments)}` : ''}
       </div>`;
@@ -416,6 +417,92 @@ function renderReactionsHTML(data){
 const reactionsCache = new Map();
 let reactionsInflight = 0;
 const REACTIONS_MAX_PARALLEL = 4;
+
+function looksKoreanText(text){
+  const s = String(text || '');
+  const hangul = (s.match(/[\uAC00-\uD7A3]/g) || []).length;
+  const latin = (s.match(/[A-Za-z]/g) || []).length;
+  return hangul >= 2 && hangul >= latin * 0.6;
+}
+
+async function translateToKoClient(text){
+  const src = String(text || '').replace(/\s+/g, ' ').trim().slice(0, 900);
+  if(!src) return '';
+  if(looksKoreanText(src)) return src;
+  try{
+    const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=ko&dt=t&q='
+      + encodeURIComponent(src);
+    const res = await fetch(url);
+    if(!res.ok) return src;
+    const data = await res.json();
+    if(!Array.isArray(data?.[0])) return src;
+    const joined = data[0].map(chunk => Array.isArray(chunk) ? String(chunk[0] || '') : '').join('').trim();
+    return joined || src;
+  }catch(e){
+    return src;
+  }
+}
+
+async function ensurePanelKorean(panel){
+  if(!panel || panel.dataset.koReady === '1') return;
+  const jobs = [];
+  panel.querySelectorAll('.commentText').forEach(el=>{
+    if(el.dataset.koDone === '1') return;
+    const raw = (el.textContent || '').trim();
+    if(!raw || looksKoreanText(raw)){
+      el.dataset.koDone = '1';
+      return;
+    }
+    jobs.push((async ()=>{
+      const ko = await translateToKoClient(raw);
+      if(ko && ko !== raw){
+        el.textContent = ko;
+        if(!el.nextElementSibling || !el.nextElementSibling.classList.contains('commentOrig')){
+          const orig = document.createElement('span');
+          orig.className = 'commentOrig';
+          orig.textContent = '원문: ' + raw;
+          el.after(orig);
+        }
+      }
+      el.dataset.koDone = '1';
+    })());
+  });
+  panel.querySelectorAll('.descKo').forEach(el=>{
+    if(el.dataset.koDone === '1') return;
+    const raw = (el.textContent || '').trim();
+    if(!raw || looksKoreanText(raw)){
+      el.dataset.koDone = '1';
+      return;
+    }
+    jobs.push((async ()=>{
+      const ko = await translateToKoClient(raw);
+      if(ko && ko !== raw){
+        el.textContent = ko;
+        if(!el.nextElementSibling || !el.nextElementSibling.classList.contains('descOrig')){
+          const orig = document.createElement('div');
+          orig.className = 'descOrig';
+          orig.textContent = '원문: ' + raw;
+          el.after(orig);
+        }
+      }
+      el.dataset.koDone = '1';
+    })());
+  });
+  if(jobs.length) await Promise.all(jobs);
+  panel.dataset.koReady = '1';
+}
+
+function setPanelOpen(panel, btn, open){
+  if(!panel || !btn) return;
+  panel.classList.toggle('open', open);
+  if(open) panel.removeAttribute('hidden');
+  else panel.setAttribute('hidden', '');
+  btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  const count = panel.querySelectorAll('.commentList li').length;
+  btn.textContent = open
+    ? (count ? `리뷰·댓글 접기 (${count})` : '리뷰·설명 접기')
+    : (count ? `리뷰·댓글 보기 (${count})` : '리뷰·설명 보기');
+}
 
 async function fetchVideoReactions(videoId){
   if(reactionsCache.has(videoId)) return reactionsCache.get(videoId);
@@ -481,12 +568,19 @@ function bindVideoReactions(root){
     const box = btn.closest('.videoReactions');
     const panel = box && box.querySelector('[data-role="comments-panel"]');
     if(!panel) return;
-    const open = panel.classList.toggle('open');
-    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-    const count = panel.querySelectorAll('.commentList li').length;
-    btn.textContent = open
-      ? (count ? `리뷰·댓글 접기 (${count})` : '리뷰·설명 접기')
-      : (count ? `리뷰·댓글 보기 (${count})` : '리뷰·설명 보기');
+    const willOpen = panel.hasAttribute('hidden') || !panel.classList.contains('open');
+    // Accordion: close other open review panels so card heights return
+    root.querySelectorAll('.commentsPanel.open').forEach(p=>{
+      if(p === panel) return;
+      const otherBtn = p.parentElement && p.parentElement.querySelector('[data-action="toggle-comments"]');
+      if(otherBtn) setPanelOpen(p, otherBtn, false);
+      else {
+        p.classList.remove('open');
+        p.setAttribute('hidden', '');
+      }
+    });
+    setPanelOpen(panel, btn, willOpen);
+    if(willOpen) ensurePanelKorean(panel);
   });
 }
 
