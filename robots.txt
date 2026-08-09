@@ -3,7 +3,7 @@ Allow: /
 Disallow: /en/
 Disallow: /jp/
 Disallow: /admin/
-Disallow: /shop/admin.html
+Disallow: /shop/admin/
 Disallow: /scouter.html
 Disallow: /rising-keyword.html
 Disallow: /contact_en.html
