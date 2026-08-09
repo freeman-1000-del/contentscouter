@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>쇼핑 쇼츠 관리자 — 컨텐츠 스카우터</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://contentscouter.com/shop/admin.html">
+  <style>
+    :root{
+      --bg:#0d0f14; --panel:#161922; --line:#2a2f3c;
+      --txt:#eef1f6; --sub:#aeb6c4; --accent:#ffb454; --good:#46d39a; --bad:#ff8b8b;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; background:var(--bg); color:var(--txt);
+      font-family:"Pretendard","Noto Sans KR",system-ui,sans-serif;
+      padding:24px 16px 64px; line-height:1.5;
+    }
+    .wrap{max-width:560px; margin:0 auto}
+    h1{font-size:22px; margin:0 0 6px; color:var(--accent)}
+    .lead{color:var(--sub); font-size:14px; margin:0 0 18px}
+    .panel{
+      background:var(--panel); border:1px solid var(--line);
+      border-radius:14px; padding:18px; margin-bottom:16px;
+    }
+    label{display:block; font-size:13px; color:var(--sub); font-weight:700; margin-bottom:6px}
+    input{
+      width:100%; max-width:280px; padding:10px 12px; border-radius:10px;
+      border:1px solid var(--line); background:#0f131a; color:var(--txt); font-size:16px;
+    }
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      margin-top:12px; margin-right:8px; padding:10px 16px; border:0; border-radius:10px;
+      background:#3d7eff; color:#fff; font-weight:700; cursor:pointer; font-size:14px;
+    }
+    .btn.secondary{background:#2a3140}
+    .btn:disabled{opacity:.5; cursor:not-allowed}
+    .note{font-size:13px; color:var(--sub); margin-top:10px}
+    .ok{color:var(--good)} .err{color:var(--bad)}
+    a.home{color:#9eb6ff; font-size:13px; text-decoration:none; font-weight:700}
+    .links{display:flex; flex-wrap:wrap; gap:12px; margin-top:14px}
+    .links a{color:var(--accent); font-weight:700; text-decoration:none; font-size:14px}
+    #done{display:none}
+    .ipBox{
+      margin-top:12px; padding:12px 14px; border-radius:12px;
+      background:#0f131a; border:1px solid var(--line); font-size:15px;
+    }
+    .ipBox b{color:#fff}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <p><a class="home" href="/shop/">← 쇼핑 쇼츠</a></p>
+    <h1>쇼핑 쇼츠 관리자</h1>
+    <p class="lead">PIN 로그인 시 현재 IP는 방문 로그에서 제외됩니다. (사이트 전체 적용)</p>
+
+    <div class="panel" id="gate">
+      <label for="pin">관리자 PIN</label>
+      <input id="pin" type="password" inputmode="numeric" maxlength="8" placeholder="숫자 PIN" autocomplete="current-password">
+      <div>
+        <button class="btn" type="button" id="btnLogin">로그인 · IP 제외</button>
+      </div>
+      <p class="note" id="gateMsg"></p>
+    </div>
+
+    <div class="panel" id="done">
+      <p class="note ok" id="doneMsg">로그인됨</p>
+      <div class="ipBox">제외 IP: <b id="myIp">—</b></div>
+      <div class="links">
+        <a href="/shop/">쇼핑 쇼츠 검색</a>
+        <a href="/admin/logs.html">방문 로그</a>
+        <a href="/" id="btnHome">홈</a>
+      </div>
+      <button class="btn secondary" type="button" id="btnLogout">로그아웃</button>
+      <p class="note">로그아웃해도 이미 등록된 IP 제외는 유지됩니다. 제외 해제는 DB/관리자에서 처리합니다.</p>
+    </div>
+  </div>
+
+  <script>
+  (function () {
+    var CFG = {
+      url: "https://ajvtyotblrtexcxuazqm.supabase.co/functions/v1/cs-traffic",
+      anon: "sb_publishable_cmn9eVnnvaAjXVJWa6bRQA_qrb1xglQ",
+      pinKey: "cs_admin_pin"
+    };
+
+    function $(id) { return document.getElementById(id); }
+
+    async function api(action, extra) {
+      var pin = sessionStorage.getItem(CFG.pinKey) || ($("pin") && $("pin").value) || "";
+      var body = Object.assign({ action: action, pin: pin }, extra || {});
+      var res = await fetch(CFG.url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + CFG.anon,
+          "apikey": CFG.anon,
+          "x-cs-admin-pin": pin
+        },
+        body: JSON.stringify(body),
+        cache: "no-store"
+      });
+      var data = {};
+      try { data = await res.json(); } catch (e) { data = { ok: false, error: "응답 오류" }; }
+      if (!res.ok) data.ok = false;
+      return data;
+    }
+
+    function showDone(ip, msg) {
+      $("gate").style.display = "none";
+      $("done").style.display = "block";
+      if (ip) $("myIp").textContent = ip;
+      $("doneMsg").textContent = msg || "로그인됨 · IP 제외 완료";
+      $("doneMsg").className = "note ok";
+    }
+
+    async function login() {
+      var pin = ($("pin").value || "").trim();
+      $("gateMsg").textContent = "";
+      if (!/^\d{4,8}$/.test(pin)) {
+        $("gateMsg").textContent = "숫자 PIN을 입력하세요.";
+        $("gateMsg").className = "note err";
+        return;
+      }
+      sessionStorage.setItem(CFG.pinKey, pin);
+      $("btnLogin").disabled = true;
+      var ex = await api("exclude_me", { note: "shop_admin_login" });
+      $("btnLogin").disabled = false;
+      if (!ex.ok) {
+        sessionStorage.removeItem(CFG.pinKey);
+        $("gateMsg").textContent = ex.error || "PIN 확인 실패";
+        $("gateMsg").className = "note err";
+        return;
+      }
+      showDone(ex.ip, "내 IP(" + (ex.ip || "") + ")는 앞으로 방문 로그에 안 남습니다.");
+    }
+
+    $("btnLogin").onclick = login;
+    $("pin").addEventListener("keydown", function (e) {
+      if (e.key === "Enter") login();
+    });
+    $("btnLogout").onclick = function () {
+      sessionStorage.removeItem(CFG.pinKey);
+      location.reload();
+    };
+
+    if (sessionStorage.getItem(CFG.pinKey)) {
+      api("exclude_me", { note: "shop_admin_resume" }).then(function (ex) {
+        if (ex && ex.ok) {
+          showDone(ex.ip, "세션 유지 · IP 제외 확인됨");
+        }
+      });
+    }
+  })();
+  </script>
+</body>
+</html>

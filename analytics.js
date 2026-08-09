@@ -15,7 +15,11 @@ window.CS_TRAFFIC_ANON =
 
   // First-party visit log (admin excludes own IP via /admin/logs.html)
   try {
-    if (path.indexOf("/admin") !== 0 && typeof fetch === "function") {
+    if (
+      path.indexOf("/admin") !== 0 &&
+      path.indexOf("/shop/admin") !== 0 &&
+      typeof fetch === "function"
+    ) {
       var trafficUrl = String(window.CS_TRAFFIC_URL || "").trim();
       var anon = String(window.CS_TRAFFIC_ANON || "").trim();
       if (trafficUrl && anon) {
