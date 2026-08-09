@@ -103,7 +103,7 @@
       <button class="btn" type="button" id="btnCollect">일일 차트 지금 수집</button>
       <button class="btn secondary" type="button" id="btnCsv">일일 차트 CSV</button>
       <button class="btn secondary" type="button" id="btnLogout">로그아웃</button>
-      <p class="note" id="collectMsg">일일 차트는 보통 24시간마다 자동 수집됩니다.</p>
+      <p class="note" id="collectMsg">일일 차트는 24시간마다 자동 수집되며, 배포 전 3차 자체 검수(비쇼핑·연예인만·중복 제외)를 거칩니다.</p>
       <p class="note" id="csvMsg">일일 차트 목록을 표 파일로 저장합니다.</p>
     </div>
 
@@ -317,7 +317,15 @@
           $("collectMsg").textContent = data.error || "수집 실패";
           $("collectMsg").className = "note err";
         } else {
-          $("collectMsg").textContent = "수집 완료 · " + (data.count || 0) + "개 · snapshot " + (data.snapshotId || "");
+          var ins = data.inspect || {};
+          $("collectMsg").textContent =
+            "수집 완료 · " + (data.count || 0) + "개 · snapshot " + (data.snapshotId || "") +
+            " · 검수 raw=" + (ins.raw || "?") +
+            " → p1=" + (ins.pass1Keep || "?") +
+            " → p2=" + (ins.pass2Keep || "?") +
+            " · 비쇼핑제외=" + (ins.dropNoShop || 0) +
+            " · 연예인만=" + (ins.dropCelebOnly || 0) +
+            " · strong=" + (ins.strongRatio != null ? Math.round(ins.strongRatio * 100) + "%" : "?");
           $("collectMsg").className = "note ok";
         }
       } catch (e) {
