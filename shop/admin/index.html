@@ -17,18 +17,28 @@
       font-family:"Pretendard","Noto Sans KR",system-ui,sans-serif;
       padding:24px 16px 64px; line-height:1.5;
     }
-    .wrap{max-width:560px; margin:0 auto}
+    .wrap{max-width:960px; margin:0 auto}
     h1{font-size:22px; margin:0 0 6px; color:var(--accent)}
+    h2{font-size:16px; margin:0 0 10px; color:var(--accent)}
     .lead{color:var(--sub); font-size:14px; margin:0 0 18px}
     .panel{
       background:var(--panel); border:1px solid var(--line);
       border-radius:14px; padding:18px; margin-bottom:16px;
     }
     label{display:block; font-size:13px; color:var(--sub); font-weight:700; margin-bottom:6px}
-    input{
-      width:100%; max-width:280px; padding:10px 12px; border-radius:10px;
-      border:1px solid var(--line); background:#0f131a; color:var(--txt); font-size:16px;
+    input,select{
+      width:100%; max-width:100%; padding:10px 12px; border-radius:10px;
+      border:1px solid var(--line); background:#0f131a; color:var(--txt); font-size:15px;
     }
+    #pin{max-width:280px}
+    .row{display:grid; grid-template-columns:1fr 1fr 1.4fr; gap:12px}
+    @media(max-width:800px){.row{grid-template-columns:1fr}}
+    .chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:12px}
+    .chip{
+      border:1px solid var(--line); background:#121722; color:var(--txt);
+      border-radius:999px; padding:7px 12px; font-size:13px; font-weight:700; cursor:pointer;
+    }
+    .chip:hover,.chip.on{border-color:var(--accent); color:var(--accent)}
     .btn{
       display:inline-flex; align-items:center; justify-content:center;
       margin-top:12px; margin-right:8px; padding:10px 16px; border:0; border-radius:10px;
@@ -41,19 +51,37 @@
     a.home{color:#9eb6ff; font-size:13px; text-decoration:none; font-weight:700}
     .links{display:flex; flex-wrap:wrap; gap:12px; margin-top:14px}
     .links a{color:var(--accent); font-weight:700; text-decoration:none; font-size:14px}
-    #done{display:none}
+    #done,#searchTools{display:none}
     .ipBox{
       margin-top:12px; padding:12px 14px; border-radius:12px;
       background:#0f131a; border:1px solid var(--line); font-size:15px;
     }
     .ipBox b{color:#fff}
+    .grid{
+      display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+      gap:12px; margin-top:14px; align-items:start;
+    }
+    .card{
+      display:block; text-decoration:none; color:inherit;
+      border:1px solid var(--line); border-radius:14px; overflow:hidden; background:#121722;
+    }
+    .card img{width:100%; aspect-ratio:9/16; object-fit:cover; display:block; background:#000}
+    .card .body{padding:10px 12px}
+    .card .t{font-size:13px; font-weight:800; line-height:1.35; margin-bottom:6px}
+    .card .m{font-size:12px; color:var(--sub)}
+    .state{padding:20px; text-align:center; color:var(--sub)}
+    .spin{
+      width:28px; height:28px; border-radius:50%; margin:0 auto 10px;
+      border:3px solid #333; border-top-color:var(--accent); animation:sp .8s linear infinite;
+    }
+    @keyframes sp{to{transform:rotate(360deg)}}
   </style>
 </head>
 <body>
   <div class="wrap">
     <p><a class="home" href="/shop/">← 쇼핑 쇼츠</a></p>
     <h1>쇼핑 쇼츠 관리자</h1>
-    <p class="lead">PIN 로그인 시 현재 IP는 방문 로그에서 제외됩니다. (사이트 전체 적용)</p>
+    <p class="lead">PIN 로그인 · IP 제외 · 일일 수집 · 키워드 검색(관리자 전용, API 소모 주의)</p>
 
     <div class="panel" id="gate">
       <label for="pin">관리자 PIN</label>
@@ -68,16 +96,50 @@
       <p class="note ok" id="doneMsg">로그인됨</p>
       <div class="ipBox">제외 IP: <b id="myIp">—</b></div>
       <div class="links">
-        <a href="/shop/">쇼핑 쇼츠</a>
+        <a href="/shop/">쇼핑 쇼츠 공개 페이지</a>
         <a href="/admin/logs.html">방문 로그</a>
         <a href="/">홈</a>
       </div>
       <button class="btn" type="button" id="btnCollect">일일 차트 지금 수집</button>
-      <button class="btn secondary" type="button" id="btnCsv">쇼핑쇼츠 목록 저장 (CSV)</button>
+      <button class="btn secondary" type="button" id="btnCsv">일일 차트 CSV</button>
       <button class="btn secondary" type="button" id="btnLogout">로그아웃</button>
-      <p class="note" id="collectMsg">일일 차트는 보통 24시간마다 자동 수집됩니다. 필요 시 수동 실행.</p>
-      <p class="note" id="csvMsg">목록 저장(CSV)은 관리자 전용입니다. 현재 일일 차트 목록을 표 파일로 받습니다.</p>
-      <p class="note">로그아웃해도 이미 등록된 IP 제외는 유지됩니다.</p>
+      <p class="note" id="collectMsg">일일 차트는 보통 24시간마다 자동 수집됩니다.</p>
+      <p class="note" id="csvMsg">일일 차트 목록을 표 파일로 저장합니다.</p>
+    </div>
+
+    <div class="panel" id="searchTools">
+      <h2>한국어 쇼핑쇼츠 검색 (관리자)</h2>
+      <p class="note" style="margin-top:0">공개 페이지와 비슷한 결과가 나올 수 있어 API를 빨리 소모합니다. 필요할 때만 사용하세요.</p>
+      <div class="row" style="margin-top:12px">
+        <div>
+          <label for="region">지역</label>
+          <select id="region">
+            <option value="KR" selected>한국 (KR)</option>
+            <option value="US">미국 (US)</option>
+          </select>
+        </div>
+        <div>
+          <label for="period">게시 기간</label>
+          <select id="period">
+            <option value="7">7일</option>
+            <option value="30" selected>30일</option>
+            <option value="90">90일</option>
+            <option value="365">1년</option>
+            <option value="0">전체</option>
+          </select>
+        </div>
+        <div>
+          <label for="q">키워드</label>
+          <input id="q" type="text" placeholder="예: 연예인템, 아이돌템, 여행템">
+        </div>
+      </div>
+      <div class="chips" id="presets"></div>
+      <div>
+        <button class="btn" type="button" id="btnSearch">검색 실행</button>
+        <button class="btn secondary" type="button" id="btnSearchCsv">검색결과 CSV</button>
+      </div>
+      <p class="note" id="apiNote">검색 전</p>
+      <div id="searchContent"></div>
     </div>
   </div>
 
@@ -87,11 +149,56 @@
       url: "https://ajvtyotblrtexcxuazqm.supabase.co/functions/v1/cs-traffic",
       collectUrl: "https://ajvtyotblrtexcxuazqm.supabase.co/functions/v1/shopping-shorts-collect",
       feedUrl: "https://ajvtyotblrtexcxuazqm.supabase.co/functions/v1/shopping-shorts-feed",
+      searchUrl: "https://ajvtyotblrtexcxuazqm.supabase.co/functions/v1/shopping-shorts-search",
       anon: "sb_publishable_cmn9eVnnvaAjXVJWa6bRQA_qrb1xglQ",
       pinKey: "cs_admin_pin"
     };
+    var searchRows = [];
+
+    var PRESETS_KR = [
+      "연예인템","아이돌템","여행템","인기템","트랜드템",
+      "연예인쇼츠","연예인 쇼핑쇼츠","쿠팡","네이버","쿠팡쇼츠","네이버쇼츠",
+      "인스타","틱톡","스레드","올리브영","2차 창작","구매","쇼핑컨텐츠"
+    ];
+    var PRESETS_US = [
+      "celebrity haul","instagram","tiktok","threads","olive young",
+      "shopping haul","amazon finds","product review","unboxing"
+    ];
 
     function $(id) { return document.getElementById(id); }
+
+    function fmt(n){
+      n = Number(n) || 0;
+      if(n >= 1e8) return (n/1e8).toFixed(1) + "억";
+      if(n >= 1e4) return (n/1e4).toFixed(1) + "만";
+      if(n >= 1e3) return (n/1e3).toFixed(1) + "K";
+      return String(n);
+    }
+    function esc(s){
+      return String(s || "").replace(/[&<>"']/g, function(ch){
+        return ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[ch];
+      });
+    }
+
+    function currentPresets(){
+      return $("region").value === "US" ? PRESETS_US : PRESETS_KR;
+    }
+    function renderPresets(){
+      var el = $("presets");
+      el.innerHTML = "";
+      currentPresets().forEach(function(p){
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "chip";
+        b.textContent = p;
+        b.onclick = function(){
+          $("q").value = p;
+          el.querySelectorAll(".chip").forEach(function(c){ c.classList.remove("on"); });
+          b.classList.add("on");
+        };
+        el.appendChild(b);
+      });
+    }
 
     async function api(action, extra) {
       var pin = sessionStorage.getItem(CFG.pinKey) || ($("pin") && $("pin").value) || "";
@@ -116,9 +223,11 @@
     function showDone(ip, msg) {
       $("gate").style.display = "none";
       $("done").style.display = "block";
+      $("searchTools").style.display = "block";
       if (ip) $("myIp").textContent = ip;
       $("doneMsg").textContent = msg || "로그인됨 · IP 제외 완료";
       $("doneMsg").className = "note ok";
+      renderPresets();
     }
 
     async function login() {
@@ -142,6 +251,40 @@
       showDone(ex.ip, "내 IP(" + (ex.ip || "") + ")는 앞으로 방문 로그에 안 남습니다.");
     }
 
+    function renderGrid(rows){
+      if(!rows.length) return '<div class="state">결과 없음</div>';
+      return '<div class="grid">' + rows.map(function(v){
+        return '<a class="card" href="' + esc(v.youtube_url) + '" target="_blank" rel="noopener">' +
+          '<img src="' + esc(v.thumbnail_url) + '" alt="" loading="lazy">' +
+          '<div class="body"><div class="t">' + esc(v.title) + '</div>' +
+          '<div class="m">' + esc(v.channel) + '<br>조회 ' + fmt(v.view_count) + '</div></div></a>';
+      }).join("") + "</div>";
+    }
+
+    function downloadRows(rows, filename, collectedAt){
+      if(!rows.length) return false;
+      var lines = [["rank","video_id","title","channel","views","region","url","collected_at"].join(",")];
+      rows.forEach(function(v, i){
+        lines.push([
+          v.rank || (i + 1),
+          v.video_id,
+          '"' + String(v.title || "").replace(/"/g, '""') + '"',
+          '"' + String(v.channel || "").replace(/"/g, '""') + '"',
+          v.view_count,
+          v.country_code || "KR",
+          v.youtube_url,
+          collectedAt || ""
+        ].join(","));
+      });
+      var blob = new Blob(["\uFEFF" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(a.href);
+      return true;
+    }
+
     $("btnLogin").onclick = login;
     $("pin").addEventListener("keydown", function (e) {
       if (e.key === "Enter") login();
@@ -150,6 +293,7 @@
       sessionStorage.removeItem(CFG.pinKey);
       location.reload();
     };
+    $("region").addEventListener("change", renderPresets);
 
     $("btnCollect").onclick = async function () {
       var pin = sessionStorage.getItem(CFG.pinKey) || "";
@@ -200,39 +344,78 @@
         });
         var data = await res.json();
         var rows = (data && data.results) || [];
-        if (!res.ok || !data.ok || !rows.length) {
+        if (!res.ok || !data.ok || !downloadRows(rows, "shopping-shorts-daily.csv", data.collected_at)) {
           $("csvMsg").textContent = (data && data.error) || "저장할 목록이 없습니다.";
           $("csvMsg").className = "note err";
-          $("btnCsv").disabled = false;
-          return;
+        } else {
+          $("csvMsg").textContent = "일일 차트 CSV 저장 · " + rows.length + "개";
+          $("csvMsg").className = "note ok";
         }
-        var lines = [["rank","video_id","title","channel","views","region","url","collected_at"].join(",")];
-        rows.forEach(function (v, i) {
-          lines.push([
-            v.rank || (i + 1),
-            v.video_id,
-            '"' + String(v.title || "").replace(/"/g, '""') + '"',
-            '"' + String(v.channel || "").replace(/"/g, '""') + '"',
-            v.view_count,
-            v.country_code || "KR",
-            v.youtube_url,
-            data.collected_at || ""
-          ].join(","));
-        });
-        var blob = new Blob(["\uFEFF" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
-        var a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = "shopping-shorts-daily.csv";
-        a.click();
-        URL.revokeObjectURL(a.href);
-        $("csvMsg").textContent = "저장 완료 · " + rows.length + "개 (관리자 전용)";
-        $("csvMsg").className = "note ok";
       } catch (e) {
         $("csvMsg").textContent = e.message || String(e);
         $("csvMsg").className = "note err";
       }
       $("btnCsv").disabled = false;
     };
+
+    $("btnSearch").onclick = async function () {
+      var q = String($("q").value || "").trim();
+      var regionCode = $("region").value;
+      var periodDays = parseInt($("period").value, 10);
+      if (isNaN(periodDays)) periodDays = 30;
+      $("searchContent").innerHTML = '<div class="state"><div class="spin"></div><div>검색 중… API 소모 주의</div></div>';
+      $("apiNote").textContent = "검색 중…";
+      $("apiNote").className = "note";
+      $("btnSearch").disabled = true;
+      try {
+        var res = await fetch(CFG.searchUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + CFG.anon,
+            "apikey": CFG.anon
+          },
+          body: JSON.stringify({
+            q: q,
+            regionCode: regionCode,
+            periodDays: periodDays,
+            maxResults: 200
+          }),
+          cache: "no-store"
+        });
+        var data = await res.json();
+        if (!res.ok || !data.ok) {
+          $("searchContent").innerHTML = '<div class="state">검색 실패</div>';
+          $("apiNote").textContent = data.error || res.statusText;
+          $("apiNote").className = "note err";
+        } else {
+          searchRows = data.results || [];
+          $("apiNote").innerHTML = "<b>≈" + (data.apiUnits || "?") + " units</b> · " +
+            esc(data.apiNote || "") + " · " + searchRows.length + "개 · 쿼리: " + esc(data.searchQ || "");
+          $("apiNote").className = "note ok";
+          $("searchContent").innerHTML = renderGrid(searchRows);
+        }
+      } catch (e) {
+        $("searchContent").innerHTML = '<div class="state">네트워크 오류</div>';
+        $("apiNote").textContent = e.message || String(e);
+        $("apiNote").className = "note err";
+      }
+      $("btnSearch").disabled = false;
+    };
+
+    $("btnSearchCsv").onclick = function () {
+      if (!downloadRows(searchRows, "shopping-shorts-search.csv", "")) {
+        $("apiNote").textContent = "먼저 검색을 실행하세요.";
+        $("apiNote").className = "note err";
+      } else {
+        $("apiNote").textContent = "검색결과 CSV 저장 · " + searchRows.length + "개";
+        $("apiNote").className = "note ok";
+      }
+    };
+
+    $("q").addEventListener("keydown", function (e) {
+      if (e.key === "Enter") $("btnSearch").click();
+    });
 
     if (sessionStorage.getItem(CFG.pinKey)) {
       api("exclude_me", { note: "shop_admin_resume" }).then(function (ex) {

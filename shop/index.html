@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>한국어 쇼핑 쇼츠 차트 | 쿠팡·네이버·연예인쇼츠 — 컨텐츠 스카우터</title>
-<meta name="description" content="한국어 쇼핑 쇼츠를 매일 자동으로 모읍니다. 쿠팡·네이버·연예인쇼츠·연예인 쇼핑쇼츠·인스타·틱톡·올리브영·2차 창작 키워드 검색도 지원.">
+<meta name="description" content="한국어 쇼핑 쇼츠를 매일 자동으로 모은 일일 차트. 쿠팡·네이버·연예인템·아이돌템 등 쇼핑 관련 쇼츠를 조회수순으로 봅니다.">
 <meta name="keywords" content="쇼핑 쇼츠,한국어 쇼핑쇼츠,쿠팡,네이버,쿠팡쇼츠,네이버쇼츠,연예인쇼츠,연예인 쇼핑쇼츠,연예인템,아이돌템,여행템,인기템,트랜드템,트렌드템,구매,쇼핑컨텐츠,인스타,틱톡,스레드,올리브영,2차 창작">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <meta name="author" content="컨텐츠 스카우터">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="컨텐츠 스카우터">
 <meta property="og:title" content="한국어 쇼핑 쇼츠 차트 — 컨텐츠 스카우터">
-<meta property="og:description" content="매일 자동 갱신되는 한국어 쇼핑 쇼츠. 연예인쇼츠·쿠팡쇼츠·네이버쇼츠 검색 보조.">
+<meta property="og:description" content="매일 자동 갱신되는 한국어 쇼핑 쇼츠 차트.">
 <meta property="og:url" content="https://contentscouter.com/shop/">
 <meta property="og:locale" content="ko_KR">
 <meta property="og:image" content="https://contentscouter.com/content-scouter-logo.png">
@@ -272,52 +272,14 @@
         <p class="lead">쇼핑쇼츠는 별도의 유튜브 공개대상 컨텐츠가 아닙니다. 쇼핑쇼츠가 아닌 영상이 검색되는 경우가 많아도 양해 부탁드립니다.</p>
         <p class="metaLine" id="feedMeta">일일 차트 불러오는 중…</p>
 
-        <div class="toolbar">
-          <button class="btn secondary" type="button" id="btnToggleSearch">한국어 쇼핑쇼츠 검색</button>
-        </div>
-
         <div id="dailyContent"><div class="state"><div class="spin"></div><div>오늘의 한국어 쇼핑 쇼츠 불러오는 중…</div></div></div>
 
-        <div class="panel" id="searchPanel" hidden>
-          <p class="searchTitle">보조 기능 · 키워드 검색</p>
-          <div class="row">
-            <div>
-              <label for="region">지역</label>
-              <select id="region">
-                <option value="KR" selected>한국 (KR)</option>
-                <option value="US">미국 (US)</option>
-              </select>
-            </div>
-            <div>
-              <label for="period">게시 기간</label>
-              <select id="period">
-                <option value="7">7일</option>
-                <option value="30" selected>30일</option>
-                <option value="90">90일</option>
-                <option value="365">1년</option>
-                <option value="0">전체</option>
-              </select>
-            </div>
-            <div>
-              <label for="q">키워드</label>
-              <input id="q" type="text" placeholder="예: 연예인템, 아이돌템, 여행템, 인기템">
-            </div>
-          </div>
-          <div class="chips" id="presets"></div>
-          <div class="actions">
-            <button class="btn" type="button" id="btnSearch">검색 실행</button>
-            <button class="btn secondary" type="button" id="btnCloseSearch">닫기 · 메인 영상</button>
-          </div>
-          <p class="note" id="apiNote">검색은 보조 기능입니다. 영문 위주 결과는 자동 제외됩니다.</p>
-          <div id="searchContent" style="margin-top:14px"></div>
-        </div>
-
         <section class="seoBlock" aria-label="쇼핑 쇼츠 안내">
-          <h2>한국어 쇼핑 쇼츠 · 연예인쇼츠 안내</h2>
-          <p>메인에는 매일 자동 수집된 한국어 쇼핑 쇼츠가 뜹니다. 「한국어 쇼핑쇼츠 검색」 버튼으로 <strong style="color:var(--txt)">연예인템, 아이돌템, 여행템, 인기템, 트랜드템, 연예인쇼츠, 쿠팡쇼츠</strong> 등을 찾을 수 있습니다.</p>
+          <h2>한국어 쇼핑 쇼츠 안내</h2>
+          <p>이 페이지는 <strong style="color:var(--txt)">24시간마다 자동 수집된 한국어 쇼핑 쇼츠 일일 차트</strong>만 제공합니다. 키워드 검색은 관리자 전용입니다.</p>
           <ul>
-            <li>메인: 한국어 쇼핑 쇼츠 일일 차트 (24시간 1회)</li>
-            <li>보조: 버튼으로 여는 키워드 검색</li>
+            <li>일일 차트: 쿠팡·네이버·연예인템·아이돌템·여행템 등 관련 쇼츠</li>
+            <li>갱신: 24시간 1회 자동</li>
           </ul>
         </section>
       </div>
@@ -348,46 +310,10 @@
 <script>
 (function(){
   var CFG = window.SCOUTER_CONFIG || {};
-  var SEARCH_URL = CFG.SHOPPING_SHORTS_URL || (CFG.SUPABASE_URL + '/functions/v1/shopping-shorts-search');
   var FEED_URL = CFG.SHOPPING_SHORTS_FEED_URL || (CFG.SUPABASE_URL + '/functions/v1/shopping-shorts-feed');
   var ANON = CFG.SUPABASE_ANON_KEY || '';
-  var dailyRows = [];
-  var searchRows = [];
-  var showing = 'daily';
   var nextRefreshAt = 0;
   var countdownTimer = null;
-
-  var PRESETS_KR = [
-    '연예인템','아이돌템','여행템','인기템','트랜드템',
-    '연예인쇼츠','연예인 쇼핑쇼츠','쿠팡','네이버','쿠팡쇼츠','네이버쇼츠',
-    '인스타','틱톡','스레드','올리브영','2차 창작','구매','쇼핑컨텐츠'
-  ];
-  var PRESETS_US = [
-    'celebrity haul','instagram','tiktok','threads','olive young','fan edit',
-    'shopping haul','amazon finds','product review','unboxing'
-  ];
-
-  function currentPresets(){
-    return document.getElementById('region').value === 'US' ? PRESETS_US : PRESETS_KR;
-  }
-  function renderPresets(){
-    var presetsEl = document.getElementById('presets');
-    presetsEl.innerHTML = '';
-    currentPresets().forEach(function(p){
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'chip';
-      b.textContent = p;
-      b.addEventListener('click', function(){
-        document.getElementById('q').value = p;
-        presetsEl.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('on'); });
-        b.classList.add('on');
-      });
-      presetsEl.appendChild(b);
-    });
-  }
-  document.getElementById('region').addEventListener('change', renderPresets);
-  renderPresets();
 
   function fmt(n){
     n = Number(n) || 0;
@@ -401,26 +327,17 @@
       return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[ch];
     });
   }
-  function setNote(html, isErr){
-    var el = document.getElementById('apiNote');
-    el.className = 'note' + (isErr ? ' err' : '');
-    el.innerHTML = html;
-  }
   function fmtWhen(iso){
     if(!iso) return '—';
-    try{
-      return new Date(iso).toLocaleString('ko-KR', { hour12:false });
-    }catch(e){ return iso; }
+    try{ return new Date(iso).toLocaleString('ko-KR', { hour12:false }); }
+    catch(e){ return iso; }
   }
-
   function pad2(n){ return (n < 10 ? '0' : '') + n; }
 
   function setNextRefreshFromCollected(iso){
     var t = iso ? new Date(iso).getTime() : NaN;
-    if(!isNaN(t)){
-      nextRefreshAt = t + 24 * 60 * 60 * 1000;
-    }else{
-      // fallback: next KST midnight
+    if(!isNaN(t)) nextRefreshAt = t + 24 * 60 * 60 * 1000;
+    else {
       var now = new Date();
       var kst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
       var next = Date.UTC(kst.getUTCFullYear(), kst.getUTCMonth(), kst.getUTCDate() + 1, 0, 0, 0);
@@ -431,16 +348,9 @@
 
   function tickCountdown(){
     var el = document.getElementById('countdownClock');
-    if(!el || !nextRefreshAt){
-      if(el) el.textContent = '--:--:--';
-      return;
-    }
+    if(!el || !nextRefreshAt){ if(el) el.textContent = '--:--:--'; return; }
     var ms = nextRefreshAt - Date.now();
-    if(ms <= 0){
-      el.textContent = '00:00:00';
-      el.className = 'countdownClock urgent';
-      return;
-    }
+    if(ms <= 0){ el.textContent = '00:00:00'; el.className = 'countdownClock urgent'; return; }
     var total = Math.floor(ms / 1000);
     var h = Math.floor(total / 3600);
     var m = Math.floor((total % 3600) / 60);
@@ -453,22 +363,6 @@
     if(countdownTimer) clearInterval(countdownTimer);
     tickCountdown();
     countdownTimer = setInterval(tickCountdown, 1000);
-  }
-
-  function openSearch(){
-    var panel = document.getElementById('searchPanel');
-    panel.hidden = false;
-    document.getElementById('btnToggleSearch').textContent = '검색 닫기';
-    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }
-
-  function closeSearch(){
-    var panel = document.getElementById('searchPanel');
-    panel.hidden = true;
-    document.getElementById('searchContent').innerHTML = '';
-    document.getElementById('btnToggleSearch').textContent = '한국어 쇼핑쇼츠 검색';
-    showing = 'daily';
-    setNote('검색은 버튼으로 열리는 보조 기능입니다.');
   }
 
   function renderGrid(rows, emptyMsg){
@@ -504,11 +398,10 @@
         meta.innerHTML = '<span class="err">' + esc(data.error || res.statusText) + '</span>';
         return;
       }
-      dailyRows = data.results || [];
-      meta.innerHTML = '수집 <b>' + esc(fmtWhen(data.collected_at)) + '</b> · <b>' + dailyRows.length + '</b>개';
+      var rows = data.results || [];
+      meta.innerHTML = '수집 <b>' + esc(fmtWhen(data.collected_at)) + '</b> · <b>' + rows.length + '</b>개';
       box.innerHTML = '<span class="modeTag">TODAY · AUTO</span>' +
-        renderGrid(dailyRows, '아직 일일 차트가 없습니다.');
-      showing = 'daily';
+        renderGrid(rows, '아직 일일 차트가 없습니다.');
       setNextRefreshFromCollected(data.collected_at);
       startCountdown();
     }catch(e){
@@ -518,70 +411,6 @@
       startCountdown();
     }
   }
-
-  async function runSearch(){
-    openSearch();
-    var q = String(document.getElementById('q').value || '').trim();
-    var regionCode = document.getElementById('region').value;
-    var periodDays = parseInt(document.getElementById('period').value, 10);
-    if(isNaN(periodDays)) periodDays = 30;
-    var content = document.getElementById('searchContent');
-    content.innerHTML = '<div class="state"><div class="spin"></div><div>키워드 검색 중…</div></div>';
-    setNote('검색 중…');
-    try{
-      var res = await fetch(SEARCH_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': ANON,
-          'Authorization': 'Bearer ' + ANON
-        },
-        body: JSON.stringify({
-          q: q,
-          regionCode: regionCode,
-          periodDays: periodDays,
-          maxResults: 200
-        }),
-        cache: 'no-store'
-      });
-      var data = await res.json();
-      if(!res.ok || !data.ok){
-        content.innerHTML = '<div class="state">검색에 실패했습니다.</div>';
-        setNote(esc(data.error || res.statusText), true);
-        return;
-      }
-      searchRows = data.results || [];
-      showing = 'search';
-      setNote('<b>≈' + (data.apiUnits || 101) + ' units</b> · ' + esc(data.apiNote || '') +
-        ' · ' + searchRows.length + '개');
-      content.innerHTML = '<span class="modeTag">SEARCH</span>' +
-        renderGrid(searchRows, '일치하는 쇼핑 쇼츠가 없습니다.');
-    }catch(e){
-      content.innerHTML = '<div class="state">네트워크 오류</div>';
-      setNote(esc(e.message || String(e)), true);
-    }
-  }
-
-  document.getElementById('btnToggleSearch').addEventListener('click', function(){
-    var panel = document.getElementById('searchPanel');
-    if(panel.hidden) openSearch();
-    else closeSearch();
-  });
-  document.getElementById('btnCloseSearch').addEventListener('click', closeSearch);
-  document.getElementById('btnSearch').addEventListener('click', runSearch);
-  document.getElementById('q').addEventListener('keydown', function(e){
-    if(e.key === 'Enter') runSearch();
-  });
-
-  try{
-    var params = new URLSearchParams(location.search);
-    var qParam = (params.get('q') || '').trim();
-    if(qParam){
-      document.getElementById('q').value = qParam;
-      openSearch();
-      runSearch();
-    }
-  }catch(e){}
 
   startCountdown();
   loadDaily();
