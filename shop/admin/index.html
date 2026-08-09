@@ -68,11 +68,13 @@
       <p class="note ok" id="doneMsg">로그인됨</p>
       <div class="ipBox">제외 IP: <b id="myIp">—</b></div>
       <div class="links">
-        <a href="/shop/">쇼핑 쇼츠 검색</a>
+        <a href="/shop/">쇼핑 쇼츠</a>
         <a href="/admin/logs.html">방문 로그</a>
         <a href="/">홈</a>
       </div>
+      <button class="btn" type="button" id="btnCollect">일일 차트 지금 수집</button>
       <button class="btn secondary" type="button" id="btnLogout">로그아웃</button>
+      <p class="note" id="collectMsg">일일 차트는 보통 24시간마다 자동 수집됩니다. 필요 시 수동 실행.</p>
       <p class="note">로그아웃해도 이미 등록된 IP 제외는 유지됩니다.</p>
     </div>
   </div>
@@ -81,6 +83,7 @@
   (function () {
     var CFG = {
       url: "https://ajvtyotblrtexcxuazqm.supabase.co/functions/v1/cs-traffic",
+      collectUrl: "https://ajvtyotblrtexcxuazqm.supabase.co/functions/v1/shopping-shorts-collect",
       anon: "sb_publishable_cmn9eVnnvaAjXVJWa6bRQA_qrb1xglQ",
       pinKey: "cs_admin_pin"
     };
@@ -143,6 +146,38 @@
     $("btnLogout").onclick = function () {
       sessionStorage.removeItem(CFG.pinKey);
       location.reload();
+    };
+
+    $("btnCollect").onclick = async function () {
+      var pin = sessionStorage.getItem(CFG.pinKey) || "";
+      $("collectMsg").textContent = "수집 중… (1~2분 걸릴 수 있음)";
+      $("collectMsg").className = "note";
+      $("btnCollect").disabled = true;
+      try {
+        var res = await fetch(CFG.collectUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + CFG.anon,
+            "apikey": CFG.anon,
+            "x-cs-admin-pin": pin
+          },
+          body: "{}",
+          cache: "no-store"
+        });
+        var data = await res.json();
+        if (!res.ok || !data.ok) {
+          $("collectMsg").textContent = data.error || "수집 실패";
+          $("collectMsg").className = "note err";
+        } else {
+          $("collectMsg").textContent = "수집 완료 · " + (data.count || 0) + "개 · snapshot " + (data.snapshotId || "");
+          $("collectMsg").className = "note ok";
+        }
+      } catch (e) {
+        $("collectMsg").textContent = e.message || String(e);
+        $("collectMsg").className = "note err";
+      }
+      $("btnCollect").disabled = false;
     };
 
     if (sessionStorage.getItem(CFG.pinKey)) {

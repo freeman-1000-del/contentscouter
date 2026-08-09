@@ -1,0 +1,38 @@
+name: Daily Korean Shopping Shorts Collect
+
+# Requires repo secret: CS_ADMIN_PIN (or CRON_SECRET if you switch header)
+on:
+  schedule:
+    - cron: '0 15 * * *' # 00:00 KST
+  workflow_dispatch:
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger shopping-shorts-collect
+        env:
+          PIN: ${{ secrets.CS_ADMIN_PIN }}
+          CRON: ${{ secrets.CRON_SECRET }}
+        run: |
+          set -e
+          URL="https://ajvtyotblrtexcxuazqm.supabase.co/functions/v1/shopping-shorts-collect"
+          ANON="sb_publishable_cmn9eVnnvaAjXVJWa6bRQA_qrb1xglQ"
+          HDR=(-H "Content-Type: application/json" -H "Authorization: Bearer $ANON" -H "apikey: $ANON")
+          if [ -n "$CRON" ]; then
+            HDR+=(-H "x-cron-secret: $CRON")
+          elif [ -n "$PIN" ]; then
+            HDR+=(-H "x-cs-admin-pin: $PIN")
+          else
+            echo "::error::Set secret CS_ADMIN_PIN or CRON_SECRET"
+            exit 1
+          fi
+          curl -sS -X POST "${HDR[@]}" -d '{}' "$URL" | tee /tmp/out.json
+          python3 - <<'PY'
+          import json,sys
+          d=json.load(open("/tmp/out.json"))
+          if not d.get("ok"):
+            print(d)
+            sys.exit(1)
+          print("ok count=", d.get("count"), "snapshot=", d.get("snapshotId"))
+          PY

@@ -36,7 +36,8 @@
   window.SCOUTER_CONFIG = {
     SUPABASE_URL: 'https://ajvtyotblrtexcxuazqm.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_cmn9eVnnvaAjXVJWa6bRQA_qrb1xglQ',
-    SHOPPING_SHORTS_URL: 'https://ajvtyotblrtexcxuazqm.supabase.co/functions/v1/shopping-shorts-search'
+    SHOPPING_SHORTS_URL: 'https://ajvtyotblrtexcxuazqm.supabase.co/functions/v1/shopping-shorts-search',
+    SHOPPING_SHORTS_FEED_URL: 'https://ajvtyotblrtexcxuazqm.supabase.co/functions/v1/shopping-shorts-feed'
   };
 </script>
 <style>
@@ -119,10 +120,13 @@
       <a class="adminLink" href="/shop/admin/">Admin</a>
     </div>
   </div>
-  <h1>Shopping Shorts Search — Coupang &amp; Naver</h1>
-  <p class="lead">Find Coupang Shorts, Naver Shorts, buy reviews, and shopping-content YouTube Shorts by views. Markets: Korea (KR) / United States (US).</p>
+  <h1>Korean Shopping Shorts (Daily)</h1>
+  <p class="lead">Main chart: Korean shopping Shorts auto-refreshed every 24 hours. Keyword search is secondary.</p>
+  <p class="note" id="feedMeta">Loading daily chart…</p>
+  <div id="dailyContent"><div class="state">Loading…</div></div>
 
-  <div class="panel">
+  <div class="panel" style="margin-top:16px">
+    <p class="note" style="margin-top:0;margin-bottom:10px"><b>Secondary · Keyword search</b></p>
     <div class="row">
       <div>
         <label for="region">Market</label>
@@ -143,7 +147,7 @@
       </div>
       <div>
         <label for="q">Keyword</label>
-        <input id="q" type="text" placeholder="e.g. amazon finds, skincare haul, gadgets">
+        <input id="q" type="text" placeholder="e.g. 연예인쇼츠, amazon finds">
       </div>
     </div>
     <div class="chips" id="presets"></div>
@@ -151,14 +155,14 @@
       <button class="btn" type="button" id="btnSearch">Search Shorts</button>
       <button class="btn secondary" type="button" id="btnCsv">Download CSV</button>
     </div>
-    <p class="note" id="apiNote">Pick a chip or type a keyword, then search. (~101 API units per search)</p>
+    <p class="note" id="apiNote">Search is optional (~101 API units).</p>
   </div>
 
-  <div id="content"><div class="state">No results yet.</div></div>
+  <div id="content"></div>
 
   <section class="seoBlock">
-    <h2>About this shopping Shorts search</h2>
-    <p>Search YouTube Shorts tied to Coupang, Naver, Instagram, TikTok, Threads, Olive Young, 2차 창작 (fan edits), buy intent, and shopping content. Korea presets include 쿠팡, 네이버, 인스타, 틱톡, 스레드, 올리브영, 2차 창작.</p>
+    <h2>About</h2>
+    <p>Daily Korean shopping Shorts chart plus keyword search (쿠팡, 네이버, 연예인쇼츠, 연예인 쇼핑쇼츠, Instagram, TikTok, Olive Young, and more).</p>
   </section>
 </div>
 
@@ -166,12 +170,14 @@
 (function(){
   var CFG = window.SCOUTER_CONFIG || {};
   var URL = CFG.SHOPPING_SHORTS_URL || (CFG.SUPABASE_URL + '/functions/v1/shopping-shorts-search');
+  var FEED_URL = CFG.SHOPPING_SHORTS_FEED_URL || (CFG.SUPABASE_URL + '/functions/v1/shopping-shorts-feed');
   var ANON = CFG.SUPABASE_ANON_KEY || '';
   var lastRows = [];
+  var dailyRows = [];
 
   var PRESETS_KR = [
-    '쿠팡','네이버','쿠팡쇼츠','네이버쇼츠','인스타','틱톡','스레드','올리브영','2차 창작',
-    '구매','쇼핑컨텐츠','쇼핑 쇼츠','쿠팡 추천','네이버 쇼핑','언박싱','제품 리뷰'
+    '연예인쇼츠','연예인 쇼핑쇼츠','쿠팡','네이버','쿠팡쇼츠','네이버쇼츠',
+    '인스타','틱톡','스레드','올리브영','2차 창작','구매','쇼핑컨텐츠'
   ];
   var PRESETS_US = [
     'instagram','tiktok','threads','olive young','fan edit','shopping haul',
@@ -220,9 +226,9 @@
     el.innerHTML = html;
   }
 
-  function render(rows){
+  function render(rows, targetId){
     lastRows = rows || [];
-    var box = document.getElementById('content');
+    var box = document.getElementById(targetId || 'content');
     if(!lastRows.length){
       box.innerHTML = '<div class="state">No shopping Shorts matched. Try another keyword.</div>';
       return;
@@ -233,6 +239,34 @@
         '<div class="body"><div class="t">' + esc(v.title) + '</div>' +
         '<div class="m">' + esc(v.channel) + '<br>' + fmt(v.view_count) + ' views · ' + esc(v.country_code) + '</div></div></a>';
     }).join('') + '</div>';
+  }
+
+  async function loadDaily(){
+    var box = document.getElementById('dailyContent');
+    var meta = document.getElementById('feedMeta');
+    try{
+      var res = await fetch(FEED_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': ANON,
+          'Authorization': 'Bearer ' + ANON
+        },
+        body: '{}',
+        cache: 'no-store'
+      });
+      var data = await res.json();
+      if(!res.ok || !data.ok){
+        box.innerHTML = '<div class="state">Failed to load daily chart.</div>';
+        return;
+      }
+      dailyRows = data.results || [];
+      lastRows = dailyRows;
+      meta.innerHTML = 'Daily KR chart · ' + (data.collected_at ? new Date(data.collected_at).toLocaleString() : '—') + ' · ' + dailyRows.length + ' videos';
+      render(dailyRows, 'dailyContent');
+    }catch(e){
+      box.innerHTML = '<div class="state">Network error</div>';
+    }
   }
 
   async function runSearch(){
@@ -267,7 +301,7 @@
       }
       setNote('<b>~' + (data.apiUnits || 101) + ' units</b> · ' + esc(data.apiNote || '') +
         ' · ' + (data.results||[]).length + ' videos · query: ' + esc(data.searchQ || ''));
-      render(data.results || []);
+      render(data.results || [], 'content');
     }catch(e){
       content.innerHTML = '<div class="state">Network error.</div>';
       setNote(esc(e.message || String(e)), true);
@@ -313,6 +347,7 @@
       runSearch();
     }
   }catch(e){}
+  loadDaily();
 })();
 </script>
 <script src="/analytics.js" defer></script>
