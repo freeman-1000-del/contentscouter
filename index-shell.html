@@ -3,30 +3,53 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>컨텐츠 스카우터 — 글로벌 유튜브 트렌드 조사</title>
-  <meta name="description" content="16개국 유튜브 인기·조회수 트렌드를 한곳에서. 쇼츠 키워드·CC 재사용 영상까지. 무료 컨텐츠 스카우터.">
-  <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://contentscouter.com/">
+  <title>컨텐츠 스카우터 — 유튜브 트렌드·쇼츠 키워드 무료 조사</title>
+<meta name="twitter:image" content="https://contentscouter.com/content-scouter-logo.png">
   <link rel="alternate" hreflang="ko" href="https://contentscouter.com/">
   <link rel="alternate" hreflang="x-default" href="https://contentscouter.com/">
+  <link rel="canonical" href="https://contentscouter.com/">
+<meta name="keywords" content="유튜브 트렌드,유튜브 인기 영상,쇼츠 키워드,급상승 키워드,컨텐츠 스카우터,유튜브 조사,CC,재사용컨텐츠,급상승 영상,쇼핑 쇼츠">
+  <meta name="description" content="16개국 유튜브 인기 영상, 국가·카테고리별 트렌드, 쇼츠 급상승 키워드, 재사용 가능(CC) 영상까지 한곳에서 무료로 조사하세요.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
   <meta property="og:type" content="website">
+  <meta property="og:image" content="https://contentscouter.com/content-scouter-logo.png">
+  <meta property="og:site_name" content="컨텐츠 스카우터">
   <meta property="og:locale" content="ko_KR">
-  <meta property="og:title" content="컨텐츠 스카우터">
-  <meta property="og:description" content="16개국 유튜브 트렌드를 한국어로 바로 조사하세요.">
+  <meta property="og:title" content="컨텐츠 스카우터 — 유튜브 트렌드·쇼츠 키워드 무료 조사">
+  <meta property="og:description" content="16개국 유튜브 인기 영상, 국가·카테고리별 트렌드, 쇼츠 급상승 키워드, 재사용 가능(CC) 영상까지 한곳에서 무료로 조사하세요.">
   <meta property="og:url" content="https://contentscouter.com/">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="컨텐츠 스카우터">
-  <meta name="twitter:description" content="글로벌 유튜브 트렌드 조사.">
+  <meta name="twitter:title" content="컨텐츠 스카우터 — 유튜브 트렌드·쇼츠 키워드 무료 조사">
+  <meta name="twitter:description" content="16개국 유튜브 인기 영상, 국가·카테고리별 트렌드, 쇼츠 급상승 키워드, 재사용 가능(CC) 영상까지 한곳에서 무료로 조사하세요.">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "컨텐츠 스카우터",
-    "url": "https://contentscouter.com/",
-    "description": "16개국 유튜브 인기 영상을 조회수 기준으로 조사하는 무료 도구.",
-    "applicationCategory": "MultimediaApplication",
-    "operatingSystem": "Web",
-    "inLanguage": "ko"
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://contentscouter.com/#website",
+        "url": "https://contentscouter.com/",
+        "name": "컨텐츠 스카우터",
+        "inLanguage": "ko",
+        "publisher": {"@id": "https://contentscouter.com/#app"}
+      },
+      {
+        "@type": "WebApplication",
+        "@id": "https://contentscouter.com/#app",
+        "name": "컨텐츠 스카우터",
+        "url": "https://contentscouter.com/",
+        "description": "16개국 유튜브 인기 영상, 국가·카테고리별 트렌드, 쇼츠 급상승 키워드, 재사용 가능(CC) 영상까지 한곳에서 무료로 조사하세요.",
+        "applicationCategory": "MultimediaApplication",
+        "operatingSystem": "Web",
+        "inLanguage": "ko",
+        "isAccessibleForFree": true,
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "KRW"
+        }
+      }
+    ]
   }
   </script>
   <script defer src="analytics.js"></script>
@@ -42,7 +65,7 @@
       --frame-nudge:11px; /* whole frame shift; was 16px, moved 5px left */
       --page-gray:#505050;
     }
-    html,body{margin:0;padding:0;background:var(--page-gray);color:#eef1f6;font-family:Arial,"Segoe UI",sans-serif}
+    html,body{margin:0;padding:0;background:var(--page-gray);color:#eef1f6;font-family:"Pretendard","Noto Sans KR","Malgun Gothic",Arial,sans-serif}
     html{overflow-x:hidden;overflow-y:scroll}
     body{min-height:100vh}
 
@@ -169,6 +192,8 @@
       <img class="siteLogoImg" src="content-scouter-logo.png" alt="컨텐츠 스카우터" width="340" height="96" />
     </a>
     <nav class="siteLegal" aria-label="사이트">
+      <a href="shop/">쇼핑 쇼츠</a>
+      <span class="sep">|</span>
       <a href="about.html">소개</a>
       <span class="sep">|</span>
       <a href="terms.html">이용약관</a>
