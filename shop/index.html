@@ -274,7 +274,6 @@
 
         <div class="toolbar">
           <button class="btn secondary" type="button" id="btnToggleSearch">한국어 쇼핑쇼츠 검색</button>
-          <button class="btn secondary" type="button" id="btnCsv" title="화면에 보이는 영상 목록을 표 파일로 저장">목록 저장 (CSV)</button>
         </div>
 
         <div id="dailyContent"><div class="state"><div class="spin"></div><div>오늘의 한국어 쇼핑 쇼츠 불러오는 중…</div></div></div>
@@ -563,32 +562,6 @@
     }
   }
 
-  function downloadCsv(){
-    var rows = showing === 'search' ? searchRows : dailyRows;
-    if(!rows.length){
-      alert('내보낼 결과가 없습니다.');
-      return;
-    }
-    var lines = [['rank','video_id','title','channel','views','region','url'].join(',')];
-    rows.forEach(function(v, i){
-      lines.push([
-        v.rank || (i + 1),
-        v.video_id,
-        '"' + String(v.title||'').replace(/"/g,'""') + '"',
-        '"' + String(v.channel||'').replace(/"/g,'""') + '"',
-        v.view_count,
-        v.country_code || 'KR',
-        v.youtube_url
-      ].join(','));
-    });
-    var blob = new Blob(['\uFEFF' + lines.join('\n')], { type: 'text/csv;charset=utf-8' });
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = showing === 'search' ? 'shopping-shorts-search.csv' : 'shopping-shorts-daily.csv';
-    a.click();
-    URL.revokeObjectURL(a.href);
-  }
-
   document.getElementById('btnToggleSearch').addEventListener('click', function(){
     var panel = document.getElementById('searchPanel');
     if(panel.hidden) openSearch();
@@ -596,7 +569,6 @@
   });
   document.getElementById('btnCloseSearch').addEventListener('click', closeSearch);
   document.getElementById('btnSearch').addEventListener('click', runSearch);
-  document.getElementById('btnCsv').addEventListener('click', downloadCsv);
   document.getElementById('q').addEventListener('keydown', function(e){
     if(e.key === 'Enter') runSearch();
   });

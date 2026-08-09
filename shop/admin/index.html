@@ -73,8 +73,10 @@
         <a href="/">홈</a>
       </div>
       <button class="btn" type="button" id="btnCollect">일일 차트 지금 수집</button>
+      <button class="btn secondary" type="button" id="btnCsv">쇼핑쇼츠 목록 저장 (CSV)</button>
       <button class="btn secondary" type="button" id="btnLogout">로그아웃</button>
       <p class="note" id="collectMsg">일일 차트는 보통 24시간마다 자동 수집됩니다. 필요 시 수동 실행.</p>
+      <p class="note" id="csvMsg">목록 저장(CSV)은 관리자 전용입니다. 현재 일일 차트 목록을 표 파일로 받습니다.</p>
       <p class="note">로그아웃해도 이미 등록된 IP 제외는 유지됩니다.</p>
     </div>
   </div>
@@ -84,6 +86,7 @@
     var CFG = {
       url: "https://ajvtyotblrtexcxuazqm.supabase.co/functions/v1/cs-traffic",
       collectUrl: "https://ajvtyotblrtexcxuazqm.supabase.co/functions/v1/shopping-shorts-collect",
+      feedUrl: "https://ajvtyotblrtexcxuazqm.supabase.co/functions/v1/shopping-shorts-feed",
       anon: "sb_publishable_cmn9eVnnvaAjXVJWa6bRQA_qrb1xglQ",
       pinKey: "cs_admin_pin"
     };
@@ -178,6 +181,57 @@
         $("collectMsg").className = "note err";
       }
       $("btnCollect").disabled = false;
+    };
+
+    $("btnCsv").onclick = async function () {
+      $("csvMsg").textContent = "목록 불러오는 중…";
+      $("csvMsg").className = "note";
+      $("btnCsv").disabled = true;
+      try {
+        var res = await fetch(CFG.feedUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + CFG.anon,
+            "apikey": CFG.anon
+          },
+          body: "{}",
+          cache: "no-store"
+        });
+        var data = await res.json();
+        var rows = (data && data.results) || [];
+        if (!res.ok || !data.ok || !rows.length) {
+          $("csvMsg").textContent = (data && data.error) || "저장할 목록이 없습니다.";
+          $("csvMsg").className = "note err";
+          $("btnCsv").disabled = false;
+          return;
+        }
+        var lines = [["rank","video_id","title","channel","views","region","url","collected_at"].join(",")];
+        rows.forEach(function (v, i) {
+          lines.push([
+            v.rank || (i + 1),
+            v.video_id,
+            '"' + String(v.title || "").replace(/"/g, '""') + '"',
+            '"' + String(v.channel || "").replace(/"/g, '""') + '"',
+            v.view_count,
+            v.country_code || "KR",
+            v.youtube_url,
+            data.collected_at || ""
+          ].join(","));
+        });
+        var blob = new Blob(["\uFEFF" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
+        var a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "shopping-shorts-daily.csv";
+        a.click();
+        URL.revokeObjectURL(a.href);
+        $("csvMsg").textContent = "저장 완료 · " + rows.length + "개 (관리자 전용)";
+        $("csvMsg").className = "note ok";
+      } catch (e) {
+        $("csvMsg").textContent = e.message || String(e);
+        $("csvMsg").className = "note err";
+      }
+      $("btnCsv").disabled = false;
     };
 
     if (sessionStorage.getItem(CFG.pinKey)) {
