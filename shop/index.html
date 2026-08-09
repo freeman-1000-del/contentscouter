@@ -26,37 +26,11 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "WebPage",
-      "@id": "https://contentscouter.com/shop/#webpage",
-      "url": "https://contentscouter.com/shop/",
-      "name": "한국어 쇼핑 쇼츠 차트",
-      "description": "매일 1회 자동 수집되는 한국어 쇼핑 쇼츠 차트와 연예인쇼츠·쿠팡·네이버 키워드 검색.",
-      "inLanguage": "ko-KR"
-    },
-    {
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "쇼핑 쇼츠는 얼마나 자주 갱신되나요?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "한국어 쇼핑 쇼츠 메인 차트는 24시간에 1회 자동으로 수집·갱신됩니다. 키워드 검색은 보조 기능입니다."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "연예인쇼츠도 찾을 수 있나요?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "네. 연예인쇼츠, 연예인 쇼핑쇼츠 키워드로 검색할 수 있으며, 일일 차트 수집에도 포함됩니다."
-          }
-        }
-      ]
-    }
-  ]
+  "@type": "WebPage",
+  "url": "https://contentscouter.com/shop/",
+  "name": "한국어 쇼핑 쇼츠 차트",
+  "description": "매일 1회 자동 수집되는 한국어 쇼핑 쇼츠 차트와 연예인쇼츠·쿠팡·네이버 키워드 검색.",
+  "inLanguage": "ko-KR"
 }
 </script>
 <script>
@@ -71,24 +45,37 @@
   :root{
     --bg:#0d0f14; --panel:#161922; --line:#2a2f3c;
     --txt:#eef1f6; --sub:#aeb6c4; --accent:#ffb454; --good:#46d39a; --bad:#ff8b8b;
+    --ad-w:220px; --main-w:min(720px,100%); --ad-gap:18px; --page-pad:16px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{
     background:var(--bg);color:var(--txt);
     font-family:"Pretendard","Noto Sans KR",system-ui,sans-serif;
-    line-height:1.5;padding:24px 16px 64px;
+    line-height:1.5;
   }
-  .wrap{max-width:1100px;margin:0 auto}
-  h1{font-size:28px;margin:8px 0 6px;color:var(--accent)}
-  h2.sectionTitle{font-size:18px;margin:0 0 8px;color:var(--txt)}
-  .lead{color:var(--sub);margin-bottom:18px;font-size:15px}
-  .metaLine{font-size:13px;color:var(--sub);margin:-8px 0 14px}
+  a{color:inherit;text-decoration:none}
+  .pageRow{width:100%;padding:0}
+  .pageRowInner{
+    display:grid;
+    grid-template-columns:var(--ad-w) minmax(0,1fr) var(--ad-w);
+    column-gap:var(--ad-gap);
+    width:100%;
+    max-width:1240px;
+    margin:0 auto;
+    padding:20px var(--page-pad) 48px;
+    align-items:start;
+  }
+  .adCol{width:var(--ad-w);min-width:0;position:sticky;top:20px;align-self:start;z-index:4}
+  .centerCol{min-width:0;max-width:100%}
+  .wrap{max-width:100%;margin:0 auto}
+  h1{font-size:26px;margin:8px 0 6px;color:var(--accent)}
+  .lead{color:var(--sub);margin-bottom:14px;font-size:14px}
+  .metaLine{font-size:13px;color:var(--sub);margin:0 0 12px}
   .metaLine b{color:var(--accent)}
   .panel{
     border:1px solid var(--line);border-radius:16px;background:var(--panel);
     padding:16px;margin-bottom:16px;
   }
-  .panel.secondary{opacity:.98}
   label{display:block;font-size:13px;color:var(--sub);margin:0 0 6px;font-weight:700}
   input,select{
     width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);
@@ -112,7 +99,7 @@
   .note b{color:var(--accent)}
   .err{color:var(--bad)}
   .grid{
-    display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;
     align-items:start;
   }
   .card{
@@ -141,78 +128,192 @@
   .seoBlock p{font-size:14px;color:var(--sub);margin-bottom:10px}
   .seoBlock ul{margin:0 0 0 18px;color:var(--sub);font-size:14px}
   .seoBlock li{margin:4px 0}
-  details.searchBox > summary{
-    cursor:pointer;font-weight:800;color:var(--accent);list-style:none;padding:2px 0;
-  }
-  details.searchBox > summary::-webkit-details-marker{display:none}
-  details.searchBox[open] > summary{margin-bottom:12px}
   .modeTag{
     display:inline-block;font-size:11px;font-weight:800;letter-spacing:.04em;
     color:#0d0f14;background:var(--accent);border-radius:6px;padding:3px 8px;margin-bottom:8px;
   }
+  .searchTitle{font-size:15px;font-weight:800;color:var(--accent);margin:0 0 12px}
+  .dailyHead{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 14px;margin:8px 0 10px}
+  .dailyHead h2{font-size:18px;color:var(--txt);margin:0}
+
+  .keywordProAd,.getkeyEditorAd,.csHomeAd{
+    display:flex;flex-direction:column;width:100%;min-height:0;padding:12px 10px 14px;
+    background:linear-gradient(165deg,#0b1f24 0%,#0a1620 50%,#071018 100%);
+    border:2px solid rgba(45,212,191,.55);border-radius:12px;color:#e8edf5;
+    box-shadow:0 12px 40px rgba(0,0,0,.45),0 0 0 1px rgba(45,212,191,.12);
+    transition:transform .18s,box-shadow .18s;text-decoration:none;
+  }
+  .csHomeAd{
+    background:linear-gradient(165deg,#1a1420 0%,#14101a 50%,#0d0f14 100%);
+    border-color:rgba(255,180,84,.55);
+    box-shadow:0 12px 40px rgba(0,0,0,.45),0 0 0 1px rgba(255,180,84,.12);
+  }
+  .keywordProAd:hover,.getkeyEditorAd:hover{
+    transform:translateY(-4px);
+    box-shadow:0 16px 48px rgba(0,0,0,.55),0 0 24px rgba(45,212,191,.18);
+    border-color:rgba(94,234,212,.85);
+  }
+  .csHomeAd:hover{
+    transform:translateY(-4px);
+    box-shadow:0 16px 48px rgba(0,0,0,.55),0 0 24px rgba(255,180,84,.18);
+    border-color:rgba(255,208,138,.9);
+  }
+  .keywordProLogo,.getkeyEditorLogo,.csHomeLogo{
+    display:block;width:72%;max-width:132px;height:auto;border-radius:6px;margin:0 auto 8px;
+    object-fit:contain;background:#0a1218;padding:6px;
+  }
+  .csHomeLogo{background:#121722;max-width:160px;width:85%}
+  .getkeyFreeBadge,.csBadge{
+    display:block;margin:0 0 6px;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;line-height:1.2;
+  }
+  .getkeyFreeBadge{color:#facc15}
+  .csBadge{color:var(--accent)}
+  .keywordProTag{
+    display:inline-block;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+    color:#99f6e4;background:rgba(15,118,110,.35);border:1px solid rgba(45,212,191,.45);
+    border-radius:999px;padding:3px 8px;margin-bottom:8px;
+  }
+  .csHomeAd .keywordProTag{
+    color:#ffd08a;background:rgba(92,67,21,.35);border-color:rgba(255,180,84,.45);
+  }
+  .keywordProTitle{display:block;font-size:14px;font-weight:800;line-height:1.35;color:#5eead4;margin:0 0 8px}
+  .csHomeAd .keywordProTitle{color:var(--accent)}
+  .keywordProFeat{display:block;font-size:12px;line-height:1.45;color:#c5d0de;font-weight:500;margin:0 0 5px}
+  .keywordProFeat .gkHi{color:#ffb454;font-weight:800}
+  .keywordProCat{display:block;margin:8px 0 4px;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#5eead4}
+  .csHomeAd .keywordProCat{color:var(--accent)}
+  .getkeyAdRule{display:block;height:1px;margin:8px 0;background:rgba(148,163,184,.22);border:0}
+  .keywordProCta{display:block;margin:8px 0;font-size:13px;font-weight:700;color:#5eead4}
+  .csHomeAd .keywordProCta{color:var(--accent)}
+  .keywordProPhoto,.getkeyEditorPhoto{
+    display:block;width:100%;min-height:140px;margin-top:4px;border-radius:8px;
+    border:1px solid rgba(45,212,191,.35);object-fit:cover;background:#0a1218;aspect-ratio:4/3;
+  }
+  .csHomePhoto{
+    display:block;width:100%;margin-top:4px;border-radius:8px;
+    border:1px solid rgba(255,180,84,.35);object-fit:contain;background:#121722;padding:10px;aspect-ratio:4/3;
+  }
+
+  @media(max-width:960px){
+    .pageRowInner{display:flex;flex-direction:column;align-items:center;gap:16px;padding:16px}
+    .adCol{width:100%;max-width:480px;position:static}
+    .centerCol{width:100%}
+    .keywordProAd,.csHomeAd{min-height:auto}
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="topnav">
-    <a href="/">← 컨텐츠 스카우터</a>
-    <div class="lang">
-      <a class="on" href="/shop/">한국어</a>
-      <a href="/shop/en/">English</a>
-      <a class="adminLink" href="/shop/admin/">관리자</a>
+<section class="pageRow">
+  <div class="pageRowInner">
+    <aside class="adCol">
+      <a class="keywordProAd getkeyEditorAd" data-ad-placement="left" href="https://getkeypro.com/ko/editor" target="_blank" rel="noopener">
+        <img class="keywordProLogo getkeyEditorLogo" src="/getkey-logo.png" alt="Getkey — 웹 영상 편집기" loading="lazy">
+        <div class="keywordProBody">
+          <span class="getkeyFreeBadge">무료</span>
+          <span class="keywordProTag">웹 영상 편집기</span>
+          <span class="keywordProTitle">쇼츠·롱폼, 웹에서 바로 완성</span>
+          <span class="getkeyAdRule" aria-hidden="true"></span>
+          <span class="keywordProCat">영상</span>
+          <span class="keywordProFeat">· <span class="gkHi">자동 캡션</span> &amp; 편집</span>
+          <span class="keywordProFeat">· <span class="gkHi">배경제거</span> (크로마키)</span>
+          <span class="keywordProFeat">· <span class="gkHi">페이드</span> 인 · 아웃</span>
+          <span class="keywordProFeat">· <span class="gkHi">전환효과</span> · 텍스트</span>
+          <span class="keywordProFeat">· <span class="gkHi">컷</span> · 분할 · <span class="gkHi">장면분할</span></span>
+          <span class="keywordProCat">오디오</span>
+          <span class="keywordProFeat">· <span class="gkHi">TTS</span> · <span class="gkHi">잡음제거</span> · <span class="gkHi">EQ</span></span>
+        </div>
+        <span class="keywordProCta">Getkey 편집기 열기 →</span>
+        <img class="keywordProPhoto getkeyEditorPhoto" src="/getkey-editor-ad.png" alt="Getkey 웹 영상 편집기" loading="lazy">
+      </a>
+    </aside>
+
+    <div class="centerCol">
+      <div class="wrap">
+        <div class="topnav">
+          <a href="/">← 컨텐츠 스카우터</a>
+          <div class="lang">
+            <a class="on" href="/shop/">한국어</a>
+            <a href="/shop/en/">English</a>
+            <a class="adminLink" href="/shop/admin/">관리자</a>
+          </div>
+        </div>
+        <h1>한국어 쇼핑 쇼츠</h1>
+        <p class="lead">메인 차트는 <b style="color:var(--txt)">24시간마다 자동 수집</b>됩니다. 위 보조 검색으로 키워드를 바로 찾을 수 있습니다.</p>
+
+        <div class="panel" id="searchPanel">
+          <p class="searchTitle">보조 기능 · 키워드 검색</p>
+          <div class="row">
+            <div>
+              <label for="region">지역</label>
+              <select id="region">
+                <option value="KR" selected>한국 (KR)</option>
+                <option value="US">미국 (US)</option>
+              </select>
+            </div>
+            <div>
+              <label for="period">게시 기간</label>
+              <select id="period">
+                <option value="7">7일</option>
+                <option value="30" selected>30일</option>
+                <option value="90">90일</option>
+                <option value="365">1년</option>
+                <option value="0">전체</option>
+              </select>
+            </div>
+            <div>
+              <label for="q">키워드</label>
+              <input id="q" type="text" placeholder="예: 연예인쇼츠, 쿠팡쇼츠, 올리브영">
+            </div>
+          </div>
+          <div class="chips" id="presets"></div>
+          <div class="actions">
+            <button class="btn" type="button" id="btnSearch">쇼츠 검색</button>
+            <button class="btn secondary" type="button" id="btnCsv">CSV 다운로드</button>
+            <button class="btn secondary" type="button" id="btnShowDaily">일일 차트로</button>
+          </div>
+          <p class="note" id="apiNote">검색은 보조 기능입니다. 영문 위주 결과는 자동 제외됩니다.</p>
+          <div id="searchContent" style="margin-top:14px"></div>
+        </div>
+
+        <div class="dailyHead">
+          <h2>오늘의 일일 차트</h2>
+          <p class="metaLine" id="feedMeta" style="margin:0">불러오는 중…</p>
+        </div>
+        <div id="dailyContent"><div class="state"><div class="spin"></div><div>오늘의 한국어 쇼핑 쇼츠 불러오는 중…</div></div></div>
+
+        <section class="seoBlock" aria-label="쇼핑 쇼츠 안내">
+          <h2>한국어 쇼핑 쇼츠 · 연예인쇼츠 안내</h2>
+          <p>메인에는 매일 자동 수집된 한국어 쇼핑 쇼츠가 뜹니다. 보조 검색으로 <strong style="color:var(--txt)">쿠팡, 네이버, 쿠팡쇼츠, 네이버쇼츠, 연예인쇼츠, 연예인 쇼핑쇼츠, 인스타, 틱톡, 스레드, 올리브영, 2차 창작, 구매, 쇼핑컨텐츠</strong>를 찾을 수 있습니다.</p>
+          <ul>
+            <li>메인: 한국어 쇼핑 쇼츠 일일 차트 (24시간 1회)</li>
+            <li>보조: 키워드 실시간 검색 (페이지 상단)</li>
+            <li>추가 검색어: 연예인쇼츠, 연예인 쇼핑쇼츠</li>
+          </ul>
+        </section>
+      </div>
     </div>
+
+    <aside class="adCol">
+      <a class="csHomeAd" data-ad-placement="right" href="/" target="_blank" rel="noopener">
+        <img class="csHomeLogo" src="/content-scouter-logo.png" alt="컨텐츠 스카우터" loading="lazy">
+        <div class="keywordProBody">
+          <span class="csBadge">무료</span>
+          <span class="keywordProTag">유튜브 트렌드</span>
+          <span class="keywordProTitle">컨텐츠 스카우터 홈</span>
+          <span class="getkeyAdRule" aria-hidden="true"></span>
+          <span class="keywordProCat">조사</span>
+          <span class="keywordProFeat">· <span class="gkHi">16개국</span> 인기 영상</span>
+          <span class="keywordProFeat">· 국가·카테고리 <span class="gkHi">트렌드</span></span>
+          <span class="keywordProFeat">· <span class="gkHi">급상승</span> 키워드</span>
+          <span class="keywordProFeat">· <span class="gkHi">CC</span> 재사용 컨텐츠</span>
+          <span class="keywordProFeat">· 쇼핑 쇼츠 일일 차트</span>
+        </div>
+        <span class="keywordProCta">트렌드 홈으로 →</span>
+        <img class="csHomePhoto" src="/content-scouter-logo.png" alt="컨텐츠 스카우터" loading="lazy">
+      </a>
+    </aside>
   </div>
-  <h1>한국어 쇼핑 쇼츠</h1>
-  <p class="lead">메인 차트는 <b style="color:var(--txt)">24시간마다 자동 수집</b>됩니다. 키워드 검색은 아래에서 보조로 이용하세요.</p>
-  <p class="metaLine" id="feedMeta">일일 차트 불러오는 중…</p>
-
-  <div id="dailyContent"><div class="state"><div class="spin"></div><div>오늘의 한국어 쇼핑 쇼츠 불러오는 중…</div></div></div>
-
-  <details class="panel secondary searchBox" id="searchPanel">
-    <summary>보조 기능 · 키워드 검색 (쿠팡·연예인쇼츠 등)</summary>
-    <div class="row">
-      <div>
-        <label for="region">지역</label>
-        <select id="region">
-          <option value="KR" selected>한국 (KR)</option>
-          <option value="US">미국 (US)</option>
-        </select>
-      </div>
-      <div>
-        <label for="period">게시 기간</label>
-        <select id="period">
-          <option value="7">7일</option>
-          <option value="30" selected>30일</option>
-          <option value="90">90일</option>
-          <option value="365">1년</option>
-          <option value="0">전체</option>
-        </select>
-      </div>
-      <div>
-        <label for="q">키워드</label>
-        <input id="q" type="text" placeholder="예: 연예인쇼츠, 쿠팡쇼츠, 올리브영">
-      </div>
-    </div>
-    <div class="chips" id="presets"></div>
-    <div class="actions">
-      <button class="btn" type="button" id="btnSearch">쇼츠 검색</button>
-      <button class="btn secondary" type="button" id="btnCsv">CSV 다운로드</button>
-      <button class="btn secondary" type="button" id="btnShowDaily">일일 차트로 돌아가기</button>
-    </div>
-    <p class="note" id="apiNote">검색은 보조 기능입니다. (1회 ≈ 101 API units)</p>
-    <div id="searchContent" style="margin-top:14px"></div>
-  </details>
-
-  <section class="seoBlock" aria-label="쇼핑 쇼츠 안내">
-    <h2>한국어 쇼핑 쇼츠 · 연예인쇼츠 안내</h2>
-    <p>메인에는 매일 자동 수집된 한국어 쇼핑 쇼츠가 뜹니다. 보조 검색으로 <strong style="color:var(--txt)">쿠팡, 네이버, 쿠팡쇼츠, 네이버쇼츠, 연예인쇼츠, 연예인 쇼핑쇼츠, 인스타, 틱톡, 스레드, 올리브영, 2차 창작, 구매, 쇼핑컨텐츠</strong>를 찾을 수 있습니다.</p>
-    <ul>
-      <li>메인: 한국어 쇼핑 쇼츠 일일 차트 (24시간 1회)</li>
-      <li>보조: 키워드 실시간 검색</li>
-      <li>추가 검색어: 연예인쇼츠, 연예인 쇼핑쇼츠</li>
-    </ul>
-  </section>
-</div>
+</section>
 
 <script>
 (function(){
@@ -313,9 +414,9 @@
         return;
       }
       dailyRows = data.results || [];
-      meta.innerHTML = '일일 차트 · 수집시각 <b>' + esc(fmtWhen(data.collected_at)) + '</b> · <b>' + dailyRows.length + '</b>개 · 한국어(KR) · 24시간마다 자동 갱신';
+      meta.innerHTML = '수집 <b>' + esc(fmtWhen(data.collected_at)) + '</b> · <b>' + dailyRows.length + '</b>개 · 자동 갱신';
       box.innerHTML = '<span class="modeTag">TODAY · AUTO</span>' +
-        renderGrid(dailyRows, '아직 일일 차트가 없습니다. 잠시 후 다시 확인해 주세요.');
+        renderGrid(dailyRows, '아직 일일 차트가 없습니다.');
       showing = 'daily';
     }catch(e){
       box.innerHTML = '<div class="state">네트워크 오류</div>';
@@ -329,9 +430,8 @@
     var periodDays = parseInt(document.getElementById('period').value, 10);
     if(isNaN(periodDays)) periodDays = 30;
     var content = document.getElementById('searchContent');
-    document.getElementById('searchPanel').open = true;
     content.innerHTML = '<div class="state"><div class="spin"></div><div>키워드 검색 중…</div></div>';
-    setNote('검색 중… (≈101 units)');
+    setNote('검색 중…');
     try{
       var res = await fetch(SEARCH_URL, {
         method: 'POST',
@@ -357,7 +457,7 @@
       searchRows = data.results || [];
       showing = 'search';
       setNote('<b>≈' + (data.apiUnits || 101) + ' units</b> · ' + esc(data.apiNote || '') +
-        ' · ' + searchRows.length + '개 · 실제쿼리: ' + esc(data.searchQ || ''));
+        ' · ' + searchRows.length + '개');
       content.innerHTML = '<span class="modeTag">SEARCH</span>' +
         renderGrid(searchRows, '일치하는 쇼핑 쇼츠가 없습니다.');
     }catch(e){
@@ -395,11 +495,10 @@
   document.getElementById('btnSearch').addEventListener('click', runSearch);
   document.getElementById('btnCsv').addEventListener('click', downloadCsv);
   document.getElementById('btnShowDaily').addEventListener('click', function(){
-    document.getElementById('searchPanel').open = false;
     document.getElementById('searchContent').innerHTML = '';
     showing = 'daily';
-    setNote('일일 차트를 보는 중 · 검색은 보조 기능입니다.');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setNote('일일 차트를 보는 중 · 검색은 상단 보조 기능입니다.');
+    document.getElementById('dailyContent').scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
   document.getElementById('q').addEventListener('keydown', function(e){
     if(e.key === 'Enter') runSearch();
@@ -410,7 +509,6 @@
     var qParam = (params.get('q') || '').trim();
     if(qParam){
       document.getElementById('q').value = qParam;
-      document.getElementById('searchPanel').open = true;
       runSearch();
     }
   }catch(e){}
