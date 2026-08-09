@@ -3,18 +3,35 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shopping Shorts Search — Content Scouter</title>
-<meta name="description" content="Search YouTube shopping and product Shorts by views. Korea (KR) and US markets.">
-<meta name="keywords" content="shopping shorts,youtube shopping,product shorts,shorts search,amazon finds,haul">
+<title>Shopping Shorts Search | Coupang, Naver, Buy &amp; Product Shorts — Content Scouter</title>
+<meta name="description" content="Search YouTube shopping Shorts for Coupang, Naver, Coupang Shorts, Naver Shorts, buy reviews, and shopping content. Free KR / US market search by views.">
+<meta name="keywords" content="Coupang,Naver,Coupang Shorts,Naver Shorts,shopping content,buy,shopping shorts,youtube shopping,product shorts,amazon finds,haul">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Content Scouter">
 <meta property="og:title" content="Shopping Shorts Search — Content Scouter">
-<meta property="og:description" content="Find shopping and product YouTube Shorts by market and views.">
+<meta property="og:description" content="Find Coupang, Naver, buy, and shopping-content YouTube Shorts by market and views.">
 <meta property="og:url" content="https://contentscouter.com/shop/en/">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://contentscouter.com/content-scouter-logo.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Shopping Shorts Search — Content Scouter">
+<meta name="twitter:description" content="Coupang, Naver, shopping content, and product Shorts search.">
+<meta name="twitter:image" content="https://contentscouter.com/content-scouter-logo.png">
 <link rel="canonical" href="https://contentscouter.com/shop/en/">
 <link rel="alternate" hreflang="ko" href="https://contentscouter.com/shop/">
 <link rel="alternate" hreflang="en" href="https://contentscouter.com/shop/en/">
 <link rel="alternate" hreflang="x-default" href="https://contentscouter.com/shop/">
-<meta name="robots" content="index, follow">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Shopping Shorts Search",
+  "url": "https://contentscouter.com/shop/en/",
+  "inLanguage": "en-US",
+  "description": "Search YouTube shopping Shorts including Coupang, Naver, buy reviews, and shopping content."
+}
+</script>
 <script>
   window.SCOUTER_CONFIG = {
     SUPABASE_URL: 'https://ajvtyotblrtexcxuazqm.supabase.co',
@@ -85,6 +102,9 @@
   .lang{margin-left:auto;font-size:13px}
   .lang a{color:var(--sub);margin-left:10px}
   .lang a.on{color:var(--accent)}
+  .seoBlock{margin-top:28px;padding:18px 16px;border:1px solid var(--line);border-radius:14px;background:#121722}
+  .seoBlock h2{font-size:17px;color:var(--accent);margin-bottom:8px}
+  .seoBlock p{font-size:14px;color:var(--sub);margin:0}
 </style>
 </head>
 <body>
@@ -96,8 +116,8 @@
       <a class="on" href="/shop/en/">English</a>
     </div>
   </div>
-  <h1>Shopping Shorts Search</h1>
-  <p class="lead">Browse YouTube shopping / product / review Shorts by views. Markets: Korea (KR) and United States (US).</p>
+  <h1>Shopping Shorts Search — Coupang &amp; Naver</h1>
+  <p class="lead">Find Coupang Shorts, Naver Shorts, buy reviews, and shopping-content YouTube Shorts by views. Markets: Korea (KR) / United States (US).</p>
 
   <div class="panel">
     <div class="row">
@@ -132,6 +152,11 @@
   </div>
 
   <div id="content"><div class="state">No results yet.</div></div>
+
+  <section class="seoBlock">
+    <h2>About this shopping Shorts search</h2>
+    <p>Search YouTube Shorts tied to Coupang, Naver, buy intent, and shopping content. Use Korea market presets (쿠팡, 네이버, 쿠팡쇼츠, 네이버쇼츠, 구매, 쇼핑컨텐츠) or US product/haul keywords.</p>
+  </section>
 </div>
 
 <script>
@@ -142,12 +167,12 @@
   var lastRows = [];
 
   var PRESETS_KR = [
-    '쇼핑 쇼츠','가성비 추천','언박싱','제품 리뷰','여름 원피스',
-    '이어폰 추천','스킨케어','주방템','홈카페','쿠팡 추천'
+    '쿠팡','네이버','쿠팡쇼츠','네이버쇼츠','구매','쇼핑컨텐츠',
+    '쇼핑 쇼츠','쿠팡 추천','네이버 쇼핑','언박싱','제품 리뷰'
   ];
   var PRESETS_US = [
     'shopping haul','amazon finds','product review','unboxing',
-    'tiktok made me buy','temu haul','skincare','gadgets','home finds'
+    'tiktok made me buy','temu haul','skincare','gadgets','home finds','buy'
   ];
 
   function currentPresets(){
@@ -276,6 +301,15 @@
   document.getElementById('q').addEventListener('keydown', function(e){
     if(e.key === 'Enter') runSearch();
   });
+
+  try{
+    var params = new URLSearchParams(location.search);
+    var qParam = (params.get('q') || '').trim();
+    if(qParam){
+      document.getElementById('q').value = qParam;
+      runSearch();
+    }
+  }catch(e){}
 })();
 </script>
 <script src="/analytics.js" defer></script>
