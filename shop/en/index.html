@@ -153,7 +153,6 @@
     <div class="chips" id="presets"></div>
     <div class="actions">
       <button class="btn" type="button" id="btnSearch">Search Shorts</button>
-      <button class="btn secondary" type="button" id="btnCsv">Download CSV</button>
     </div>
     <p class="note" id="apiNote">Search is optional (~101 API units).</p>
   </div>
@@ -309,33 +308,7 @@
     }
   }
 
-  function downloadCsv(){
-    if(!lastRows.length){
-      setNote('Nothing to export. Run a search first.', true);
-      return;
-    }
-    var lines = [['rank','video_id','title','channel','views','region','url'].join(',')];
-    lastRows.forEach(function(v){
-      lines.push([
-        v.rank,
-        v.video_id,
-        '"' + String(v.title||'').replace(/"/g,'""') + '"',
-        '"' + String(v.channel||'').replace(/"/g,'""') + '"',
-        v.view_count,
-        v.country_code,
-        v.youtube_url
-      ].join(','));
-    });
-    var blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' });
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'shopping-shorts.csv';
-    a.click();
-    URL.revokeObjectURL(a.href);
-  }
-
   document.getElementById('btnSearch').addEventListener('click', runSearch);
-  document.getElementById('btnCsv').addEventListener('click', downloadCsv);
   document.getElementById('q').addEventListener('keydown', function(e){
     if(e.key === 'Enter') runSearch();
   });
