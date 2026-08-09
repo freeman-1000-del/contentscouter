@@ -68,14 +68,38 @@
   .adCol{width:var(--ad-w);min-width:0;position:sticky;top:20px;align-self:start;z-index:4}
   .centerCol{min-width:0;max-width:100%}
   .wrap{max-width:100%;margin:0 auto}
-  h1{font-size:26px;margin:8px 0 6px;color:var(--accent)}
-  .lead{color:var(--sub);margin-bottom:14px;font-size:14px}
+  h1{font-size:26px;margin:0;color:var(--accent)}
+  .titleRow{
+    display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin:8px 0 10px;
+  }
+  .refreshBadge{
+    display:inline-block;font-size:12px;font-weight:800;letter-spacing:.04em;
+    color:#0d0f14;background:#5eead4;border-radius:6px;padding:4px 10px;
+  }
+  .countdownBox{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:6px 12px;border-radius:10px;
+    background:#051410;border:1px solid rgba(52,211,153,.65);
+    box-shadow:0 0 18px rgba(16,185,129,.28);
+  }
+  .countdownLabel{font-size:11px;font-weight:800;color:#6ee7b7;letter-spacing:.04em}
+  .countdownClock{
+    font-family:"JetBrains Mono","Cascadia Mono","Consolas","Courier New",monospace;
+    font-size:22px;font-weight:800;letter-spacing:.08em;
+    color:#34f5a0;text-shadow:0 0 10px rgba(52,245,160,.55);
+    min-width:7.2ch;text-align:center;
+  }
+  .countdownClock.warn{color:#fbbf24;text-shadow:0 0 10px rgba(251,191,36,.55)}
+  .countdownClock.urgent{color:#fb7185;text-shadow:0 0 10px rgba(251,113,133,.55)}
+  .lead{color:var(--sub);margin-bottom:12px;font-size:14px}
   .metaLine{font-size:13px;color:var(--sub);margin:0 0 12px}
   .metaLine b{color:var(--accent)}
+  .toolbar{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 14px}
   .panel{
     border:1px solid var(--line);border-radius:16px;background:var(--panel);
     padding:16px;margin-bottom:16px;
   }
+  .panel[hidden]{display:none !important}
   label{display:block;font-size:13px;color:var(--sub);margin:0 0 6px;font-weight:700}
   input,select{
     width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);
@@ -237,10 +261,25 @@
             <a class="adminLink" href="/shop/admin/">관리자</a>
           </div>
         </div>
-        <h1>한국어 쇼핑 쇼츠</h1>
+        <div class="titleRow">
+          <h1>한국어 쇼핑 쇼츠</h1>
+          <span class="refreshBadge">24시간 갱신</span>
+          <div class="countdownBox" title="다음 갱신까지 남은 시간">
+            <span class="countdownLabel">잔여</span>
+            <span class="countdownClock" id="countdownClock">--:--:--</span>
+          </div>
+        </div>
         <p class="lead">쇼핑쇼츠는 별도의 유튜브 공개대상 컨텐츠가 아닙니다. 쇼핑쇼츠가 아닌 영상이 검색되는 경우가 많아도 양해 부탁드립니다.</p>
+        <p class="metaLine" id="feedMeta">일일 차트 불러오는 중…</p>
 
-        <div class="panel" id="searchPanel">
+        <div class="toolbar">
+          <button class="btn secondary" type="button" id="btnToggleSearch">한국어 쇼핑쇼츠 검색</button>
+          <button class="btn secondary" type="button" id="btnCsv">CSV 다운로드</button>
+        </div>
+
+        <div id="dailyContent"><div class="state"><div class="spin"></div><div>오늘의 한국어 쇼핑 쇼츠 불러오는 중…</div></div></div>
+
+        <div class="panel" id="searchPanel" hidden>
           <p class="searchTitle">보조 기능 · 키워드 검색</p>
           <div class="row">
             <div>
@@ -267,27 +306,19 @@
           </div>
           <div class="chips" id="presets"></div>
           <div class="actions">
-            <button class="btn" type="button" id="btnSearch">쇼츠 검색</button>
-            <button class="btn secondary" type="button" id="btnCsv">CSV 다운로드</button>
-            <button class="btn secondary" type="button" id="btnShowDaily">일일 차트로</button>
+            <button class="btn" type="button" id="btnSearch">검색 실행</button>
+            <button class="btn secondary" type="button" id="btnCloseSearch">닫기 · 메인 영상</button>
           </div>
           <p class="note" id="apiNote">검색은 보조 기능입니다. 영문 위주 결과는 자동 제외됩니다.</p>
           <div id="searchContent" style="margin-top:14px"></div>
         </div>
 
-        <div class="dailyHead">
-          <h2>오늘의 일일 차트</h2>
-          <p class="metaLine" id="feedMeta" style="margin:0">불러오는 중…</p>
-        </div>
-        <div id="dailyContent"><div class="state"><div class="spin"></div><div>오늘의 한국어 쇼핑 쇼츠 불러오는 중…</div></div></div>
-
         <section class="seoBlock" aria-label="쇼핑 쇼츠 안내">
           <h2>한국어 쇼핑 쇼츠 · 연예인쇼츠 안내</h2>
-          <p>메인에는 매일 자동 수집된 한국어 쇼핑 쇼츠가 뜹니다. 보조 검색으로 <strong style="color:var(--txt)">쿠팡, 네이버, 쿠팡쇼츠, 네이버쇼츠, 연예인쇼츠, 연예인 쇼핑쇼츠, 인스타, 틱톡, 스레드, 올리브영, 2차 창작, 구매, 쇼핑컨텐츠</strong>를 찾을 수 있습니다.</p>
+          <p>메인에는 매일 자동 수집된 한국어 쇼핑 쇼츠가 뜹니다. 「한국어 쇼핑쇼츠 검색」 버튼으로 <strong style="color:var(--txt)">쿠팡, 네이버, 쿠팡쇼츠, 네이버쇼츠, 연예인쇼츠, 연예인 쇼핑쇼츠</strong> 등을 찾을 수 있습니다.</p>
           <ul>
             <li>메인: 한국어 쇼핑 쇼츠 일일 차트 (24시간 1회)</li>
-            <li>보조: 키워드 실시간 검색 (페이지 상단)</li>
-            <li>추가 검색어: 연예인쇼츠, 연예인 쇼핑쇼츠</li>
+            <li>보조: 버튼으로 여는 키워드 검색</li>
           </ul>
         </section>
       </div>
@@ -324,6 +355,8 @@
   var dailyRows = [];
   var searchRows = [];
   var showing = 'daily';
+  var nextRefreshAt = 0;
+  var countdownTimer = null;
 
   var PRESETS_KR = [
     '연예인쇼츠','연예인 쇼핑쇼츠','쿠팡','네이버','쿠팡쇼츠','네이버쇼츠',
@@ -380,6 +413,64 @@
     }catch(e){ return iso; }
   }
 
+  function pad2(n){ return (n < 10 ? '0' : '') + n; }
+
+  function setNextRefreshFromCollected(iso){
+    var t = iso ? new Date(iso).getTime() : NaN;
+    if(!isNaN(t)){
+      nextRefreshAt = t + 24 * 60 * 60 * 1000;
+    }else{
+      // fallback: next KST midnight
+      var now = new Date();
+      var kst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+      var next = Date.UTC(kst.getUTCFullYear(), kst.getUTCMonth(), kst.getUTCDate() + 1, 0, 0, 0);
+      nextRefreshAt = next - 9 * 60 * 60 * 1000;
+    }
+    tickCountdown();
+  }
+
+  function tickCountdown(){
+    var el = document.getElementById('countdownClock');
+    if(!el || !nextRefreshAt){
+      if(el) el.textContent = '--:--:--';
+      return;
+    }
+    var ms = nextRefreshAt - Date.now();
+    if(ms <= 0){
+      el.textContent = '00:00:00';
+      el.className = 'countdownClock urgent';
+      return;
+    }
+    var total = Math.floor(ms / 1000);
+    var h = Math.floor(total / 3600);
+    var m = Math.floor((total % 3600) / 60);
+    var s = total % 60;
+    el.textContent = pad2(h) + ':' + pad2(m) + ':' + pad2(s);
+    el.className = 'countdownClock' + (h < 1 ? ' urgent' : (h < 3 ? ' warn' : ''));
+  }
+
+  function startCountdown(){
+    if(countdownTimer) clearInterval(countdownTimer);
+    tickCountdown();
+    countdownTimer = setInterval(tickCountdown, 1000);
+  }
+
+  function openSearch(){
+    var panel = document.getElementById('searchPanel');
+    panel.hidden = false;
+    document.getElementById('btnToggleSearch').textContent = '검색 닫기';
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function closeSearch(){
+    var panel = document.getElementById('searchPanel');
+    panel.hidden = true;
+    document.getElementById('searchContent').innerHTML = '';
+    document.getElementById('btnToggleSearch').textContent = '한국어 쇼핑쇼츠 검색';
+    showing = 'daily';
+    setNote('검색은 버튼으로 열리는 보조 기능입니다.');
+  }
+
   function renderGrid(rows, emptyMsg){
     if(!rows || !rows.length){
       return '<div class="state">' + esc(emptyMsg || '결과가 없습니다.') + '</div>';
@@ -414,17 +505,22 @@
         return;
       }
       dailyRows = data.results || [];
-      meta.innerHTML = '수집 <b>' + esc(fmtWhen(data.collected_at)) + '</b> · <b>' + dailyRows.length + '</b>개 · 자동 갱신';
+      meta.innerHTML = '수집 <b>' + esc(fmtWhen(data.collected_at)) + '</b> · <b>' + dailyRows.length + '</b>개';
       box.innerHTML = '<span class="modeTag">TODAY · AUTO</span>' +
         renderGrid(dailyRows, '아직 일일 차트가 없습니다.');
       showing = 'daily';
+      setNextRefreshFromCollected(data.collected_at);
+      startCountdown();
     }catch(e){
       box.innerHTML = '<div class="state">네트워크 오류</div>';
       meta.innerHTML = '<span class="err">' + esc(e.message || String(e)) + '</span>';
+      setNextRefreshFromCollected(null);
+      startCountdown();
     }
   }
 
   async function runSearch(){
+    openSearch();
     var q = String(document.getElementById('q').value || '').trim();
     var regionCode = document.getElementById('region').value;
     var periodDays = parseInt(document.getElementById('period').value, 10);
@@ -469,7 +565,7 @@
   function downloadCsv(){
     var rows = showing === 'search' ? searchRows : dailyRows;
     if(!rows.length){
-      setNote('내보낼 결과가 없습니다.', true);
+      alert('내보낼 결과가 없습니다.');
       return;
     }
     var lines = [['rank','video_id','title','channel','views','region','url'].join(',')];
@@ -492,14 +588,14 @@
     URL.revokeObjectURL(a.href);
   }
 
+  document.getElementById('btnToggleSearch').addEventListener('click', function(){
+    var panel = document.getElementById('searchPanel');
+    if(panel.hidden) openSearch();
+    else closeSearch();
+  });
+  document.getElementById('btnCloseSearch').addEventListener('click', closeSearch);
   document.getElementById('btnSearch').addEventListener('click', runSearch);
   document.getElementById('btnCsv').addEventListener('click', downloadCsv);
-  document.getElementById('btnShowDaily').addEventListener('click', function(){
-    document.getElementById('searchContent').innerHTML = '';
-    showing = 'daily';
-    setNote('일일 차트를 보는 중 · 검색은 상단 보조 기능입니다.');
-    document.getElementById('dailyContent').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
   document.getElementById('q').addEventListener('keydown', function(e){
     if(e.key === 'Enter') runSearch();
   });
@@ -509,10 +605,12 @@
     var qParam = (params.get('q') || '').trim();
     if(qParam){
       document.getElementById('q').value = qParam;
+      openSearch();
       runSearch();
     }
   }catch(e){}
 
+  startCountdown();
   loadDaily();
 })();
 </script>
