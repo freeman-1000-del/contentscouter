@@ -97,6 +97,36 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://contentscouter.com/shop/?q=%EC%97%B0%EC%98%88%EC%9D%B8%ED%85%9C</loc>
+    <lastmod>2026-08-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://contentscouter.com/shop/?q=%EC%95%84%EC%9D%B4%EB%8F%8C%ED%85%9C</loc>
+    <lastmod>2026-08-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://contentscouter.com/shop/?q=%EC%97%AC%ED%96%89%ED%85%9C</loc>
+    <lastmod>2026-08-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://contentscouter.com/shop/?q=%EC%9D%B8%EA%B8%B0%ED%85%9C</loc>
+    <lastmod>2026-08-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://contentscouter.com/shop/?q=%ED%8A%B8%EB%9E%9C%EB%93%9C%ED%85%9C</loc>
+    <lastmod>2026-08-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
     <loc>https://contentscouter.com/shop/en/</loc>
     <lastmod>2026-08-10</lastmod>
     <changefreq>daily</changefreq>
