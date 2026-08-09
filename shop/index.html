@@ -263,7 +263,7 @@
         </div>
         <div class="titleRow">
           <h1>한국어 쇼핑 쇼츠</h1>
-          <span class="refreshBadge">24시간 갱신</span>
+          <span class="refreshBadge">12시간 갱신</span>
           <div class="countdownBox" title="다음 갱신까지 남은 시간">
             <span class="countdownLabel">남은 시간</span>
             <span class="countdownClock" id="countdownClock">--:--:--</span>
@@ -327,7 +327,7 @@
 
   function setNextRefreshFromCollected(iso){
     var t = iso ? new Date(iso).getTime() : NaN;
-    if(!isNaN(t)) nextRefreshAt = t + 24 * 60 * 60 * 1000;
+    if(!isNaN(t)) nextRefreshAt = t + 12 * 60 * 60 * 1000;
     else {
       var now = new Date();
       var kst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
@@ -347,7 +347,7 @@
     var m = Math.floor((total % 3600) / 60);
     var s = total % 60;
     el.textContent = pad2(h) + ':' + pad2(m) + ':' + pad2(s);
-    el.className = 'countdownClock' + (h < 1 ? ' urgent' : (h < 3 ? ' warn' : ''));
+    el.className = 'countdownClock' + (h < 1 ? ' urgent' : (h < 2 ? ' warn' : ''));
   }
 
   function startCountdown(){

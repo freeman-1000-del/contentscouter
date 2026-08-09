@@ -1,9 +1,9 @@
-name: Daily Korean Shopping Shorts Collect
+name: Korean Shopping Shorts Collect (12h)
 
 # Requires repo secret: CS_ADMIN_PIN (or CRON_SECRET if you switch header)
 on:
   schedule:
-    - cron: '0 15 * * *' # 00:00 KST
+    - cron: '0 3,15 * * *' # 12:00 & 00:00 KST (every 12 hours)
   workflow_dispatch:
 
 jobs:
